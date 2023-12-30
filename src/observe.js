@@ -33,7 +33,11 @@
         var guid = newGuid(),
             compareOptions = getCompareOptions( options );
 
-        _compares[ guid ] = setInterval( function() {
+        _compares[ guid ] = {};
+        _compares[ guid ].object1 = object1;
+        _compares[ guid ].object2 = object2;
+
+        _compares[ guid ].timer = setInterval( function() {
             compareObject( object1, object2, compareOptions );
         }, compareOptions.compareTimeout );
     }
@@ -52,6 +56,9 @@
     function createObservable( object, options ) {
         var guid = newGuid(),
             observeOptions = getObserveOptions( options );
+
+        _observables[ guid ] = {};
+        _observables[ guid ].object = object;
 
         _observables[ guid ] = setInterval( function() {
             observeObject( object, observeOptions );
