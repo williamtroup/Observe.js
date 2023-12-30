@@ -34,7 +34,7 @@
             compareOptions = getCompareOptions( options );
 
         _compares[ guid ] = {};
-        _compares[ guid ].object1 = object1;
+        _compares[ guid ].object1 = JSON.stringify( object1 );
         _compares[ guid ].object2 = object2;
 
         _compares[ guid ].timer = setInterval( function() {
@@ -58,7 +58,7 @@
             observeOptions = getObserveOptions( options );
 
         _observables[ guid ] = {};
-        _observables[ guid ].object = object;
+        _observables[ guid ].object = JSON.stringify( object );
 
         _observables[ guid ] = setInterval( function() {
             observeObject( object, observeOptions );
