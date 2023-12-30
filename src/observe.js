@@ -15,6 +15,11 @@
     var // Variables: Constructor Parameters
         _parameter_Window = null,
 
+        // Variables: Strings
+        _string = {
+            empty: ""
+        },
+
         // Variables: Observables
         _compares = {},
         _observables = {},
@@ -67,10 +72,11 @@
             observeOptions = getObserveOptions( options );
 
         _observables[ storageId ] = {};
-        _observables[ storageId ].object = JSON.stringify( object );
+        _observables[ storageId ].cachedObject = JSON.stringify( object );
+        _observables[ storageId ].originalObject = object;
         _observables[ storageId ].options = observeOptions;
 
-        _observables[ storageId ] = setInterval( function() {
+        _observables[ storageId ].timer = setInterval( function() {
             var currentDateTime = new Date();
 
             observeObject( storageId );
@@ -84,7 +90,19 @@
     }
 
     function observeObject( storageId ) {
+        var cachedObject = _observables[ storageId ].cachedObject,
+            originalObject = _observables[ storageId ].originalObject,
+            originalObjectJson = JSON.stringify( originalObject );
 
+        if ( cachedObject !== originalObjectJson ) {
+            _observables[ storageId ].cachedObject = JSON.stringify( _observables[ storageId ].originalObject );
+
+            var options = _observables[ storageId ].options,
+                valueOriginal = getObjectFromString( cachedObject ).result,
+                valueNew = getObjectFromString( originalObjectJson ).result;
+
+            fireCustomTrigger( options.onChange, valueOriginal, valueNew );
+        }
     }
 
 
@@ -115,8 +133,22 @@
 
         options.observeTimeout = getDefaultNumber( options.observeTimeout, 1000 );
         options.expires = getDefaultDate( options.expires, null );
+        options.onChange = getDefaultFunction( options.onChange, null );
 
         return options;
+    }
+
+
+    /*
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     * Triggering Custom Events
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     */
+
+    function fireCustomTrigger( triggerFunction ) {
+        if ( isDefinedFunction( triggerFunction ) ) {
+            triggerFunction.apply( null, [].slice.call( arguments, 1 ) );
+        }
     }
 
 
@@ -214,6 +246,47 @@
     function getDefaultDate( value, defaultValue ) {
         return isDefinedDate( value ) ? value : defaultValue;
     }
+
+    function getObjectFromString( objectString ) {
+        var parsed = true,
+            result = null;
+
+        try {
+            if ( isDefinedString( objectString ) ) {
+                result = JSON.parse( objectString );
+            }
+
+        } catch ( e1 ) {
+
+            try {
+                result = eval( "(" + objectString + ")" );
+
+                if ( isDefinedFunction( result ) ) {
+                    result = result();
+                }
+                
+            } catch ( e2 ) {
+                parsed = logError( "Errors in object: " + e1.message + ", " + e2.message );
+                result = null;
+            }
+        }
+
+        return {
+            parsed: parsed,
+            result: result
+        };
+    }
+
+
+    /*
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     * Public Functions:  Observables
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     */
+
+    this.addObservable = function( object, options ) {
+        createObservable( object, options );
+    };
 
 
     /*

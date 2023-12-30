@@ -10,11 +10,23 @@
 
     <body>
         <div class="header">
-            <h1 id="header">Observe.js - Minimized</h1>
+            <h1 id="header">Observe.js - Basic</h1>
             <p>This is a basic example of how to use Observe.js an HTML DOM element.</p>
         </div>
 
         <div class="contents">
+            <h2>Add Observables:</h2>
+            <button onclick="$observe.addObservable( window.observeObject, { onChange: onObservableChange } );">Add Observable - 1</button>
+            <button onclick="$observe.addObservable( window.observeObject, { onChange: onObservableChange } );">Add Observable - 2</button>
+            <button onclick="$observe.addObservable( window.observeObject, { onChange: onObservableChange } );">Add Observable - 3</button>
+            <br />
+
+            <h2>Change Observable Values:</h2>
+            <button onclick="window.observeObject.bool = false;">Change Observable Value - 1</button>
+            <button onclick="window.observeObject.num = 2;">Change Observable Value - 2</button>
+            <button onclick="window.observeObject.str = 'This is another string';">Change Observable Value - 3</button>
+            <br />
+
             <h2>Configuration:</h2>
             <button onclick="setupConfiguration();">Set Configuration</button>
             <br />
@@ -28,10 +40,20 @@
         document.title += " v" + $observe.getVersion();
         document.getElementById( "header" ).innerText += " - v" + $observe.getVersion();
 
+        window.observeObject = {};
+        window.observeObject.bool = true;
+        window.observeObject.num = 1;
+        window.observeObject.str = "This is a string";
+
         function setupConfiguration() {
             $observe.setConfiguration( {
                 safeMode: false
             } );
+        }
+
+        function onObservableChange( originalValue, newValue ) {
+            console.log( "Original Value: " + JSON.stringify( originalValue ) );
+            console.log( "New Value: " + JSON.stringify( newValue ) );
         }
     </script>
 </html>
