@@ -15,11 +15,23 @@
         </div>
 
         <div class="contents">
+            <h2>Configuration:</h2>
+            <button onclick="setupConfiguration();">Set Configuration</button>
+            <br />
+
+            <h2>Additional Data:</h2>
+            <button onclick="console.log( $observe.getVersion() );">Get Version</button>
         </div>
     </body>
 
     <script>
         document.title += " v" + $observe.getVersion();
         document.getElementById( "header" ).innerText += " - v" + $observe.getVersion();
+
+        function setupConfiguration() {
+            $observe.setConfiguration( {
+                safeMode: false
+            } );
+        }
     </script>
 </html>
