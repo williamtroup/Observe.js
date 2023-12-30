@@ -68,25 +68,27 @@
      */
 
     function createObservableObject( object, options ) {
-        var storageId = newGuid(),
-            observeOptions = getObserveOptions( options );
+        if ( isDefinedObject( object ) ) {
+            var storageId = newGuid(),
+                observeOptions = getObserveOptions( options );
 
-        _observables[ storageId ] = {};
-        _observables[ storageId ].cachedObject = JSON.stringify( object );
-        _observables[ storageId ].originalObject = object;
-        _observables[ storageId ].options = observeOptions;
+            _observables[ storageId ] = {};
+            _observables[ storageId ].cachedObject = JSON.stringify( object );
+            _observables[ storageId ].originalObject = object;
+            _observables[ storageId ].options = observeOptions;
 
-        _observables[ storageId ].timer = setInterval( function() {
-            var currentDateTime = new Date();
+            _observables[ storageId ].timer = setInterval( function() {
+                var currentDateTime = new Date();
 
-            observeObject( storageId );
+                observeObject( storageId );
 
-            if ( isDefinedDate( observeOptions.expires ) && currentDateTime > observeOptions.expires ) {
-                clearTimeout( _observables[ storageId ].timer );
-                delete _observables[ storageId ];
-            }
+                if ( isDefinedDate( observeOptions.expires ) && currentDateTime > observeOptions.expires ) {
+                    clearTimeout( _observables[ storageId ].timer );
+                    delete _observables[ storageId ];
+                }
 
-        }, observeOptions.observeTimeout );
+            }, observeOptions.observeTimeout );
+        }
     }
 
     function observeObject( storageId ) {
@@ -134,6 +136,7 @@
         options.observeTimeout = getDefaultNumber( options.observeTimeout, 1000 );
         options.expires = getDefaultDate( options.expires, null );
         options.onChange = getDefaultFunction( options.onChange, null );
+        options.onPropertyChange = getDefaultFunction( options.onPropertyChange, null );
 
         return options;
     }
