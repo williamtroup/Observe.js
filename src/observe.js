@@ -39,7 +39,15 @@
         _compares[ storageId ].options = compareOptions;
 
         _compares[ storageId ].timer = setInterval( function() {
+            var currentDateTime = new Date();
+
             compareObject( storageId );
+
+            if ( isDefinedDate( compareOptions.expires ) && currentDateTime > compareOptions.expires ) {
+                clearTimeout( _compares[ storageId ].timer );
+                delete _compares[ storageId ];
+            }
+
         }, compareOptions.compareTimeout );
     }
 
@@ -63,7 +71,15 @@
         _observables[ storageId ].options = observeOptions;
 
         _observables[ storageId ] = setInterval( function() {
+            var currentDateTime = new Date();
+
             observeObject( storageId );
+
+            if ( isDefinedDate( observeOptions.expires ) && currentDateTime > observeOptions.expires ) {
+                clearTimeout( _observables[ storageId ].timer );
+                delete _observables[ storageId ];
+            }
+
         }, observeOptions.observeTimeout );
     }
 
@@ -82,6 +98,7 @@
         var options = !isDefinedObject( newOptions ) ? {} : newOptions;
 
         options.compareTimeout = getDefaultNumber( options.compareTimeout, 1000 );
+        options.expires = getDefaultDate( options.expires, null );
 
         return options;
     }
@@ -97,6 +114,7 @@
         var options = !isDefinedObject( newOptions ) ? {} : newOptions;
 
         options.observeTimeout = getDefaultNumber( options.observeTimeout, 1000 );
+        options.expires = getDefaultDate( options.expires, null );
 
         return options;
     }
@@ -158,6 +176,10 @@
         return isDefinedObject( object ) && object instanceof Array;
     }
 
+    function isDefinedDate( object ) {
+        return isDefinedObject( object ) && object instanceof Date;
+    }
+
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -183,6 +205,14 @@
 
     function getDefaultNumber( value, defaultValue ) {
         return isDefinedNumber( value ) ? value : defaultValue;
+    }
+
+    function getDefaultObject( value, defaultValue ) {
+        return isDefinedObject( value ) ? value : defaultValue;
+    }
+
+    function getDefaultDate( value, defaultValue ) {
+        return isDefinedDate( value ) ? value : defaultValue;
     }
 
 
