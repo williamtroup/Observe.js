@@ -63,11 +63,11 @@
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     * Observable Creation / Handling
+     * Observable Object Creation / Handling
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
-    function createObservable( object, options ) {
+    function createObservableObject( object, options ) {
         var storageId = newGuid(),
             observeOptions = getObserveOptions( options );
 
@@ -284,8 +284,8 @@
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
-    this.addObservable = function( object, options ) {
-        createObservable( object, options );
+    this.addObservableObject = function( object, options ) {
+        createObservableObject( object, options );
     };
 
 
