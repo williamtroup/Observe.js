@@ -13,12 +13,91 @@
 
 ( function() {
     var // Variables: Constructor Parameters
-        _parameter_Document = null,
-        _parameter_Navigator = null,
         _parameter_Window = null,
+
+        // Variables: Observables
+        _compares = {},
+        _observables = {},
 
         // Variables: Configuration
         _configuration = {};
+
+
+    /*
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     * Compare Creation / Handling
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     */
+
+    function createCompare( object1, object2, options ) {
+        var guid = newGuid(),
+            observeOptions = getObserveOptions( options );
+
+        _compares[ guid ] = setInterval( function() {
+            compareObject( object1, object2, observeOptions );
+        }, observeOptions.observeTimeout );
+    }
+
+    function compareObject( object1, object2, options ) {
+
+    }
+
+
+    /*
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     * Observable Creation / Handling
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     */
+
+    function createObservable( object, options ) {
+        var guid = newGuid(),
+            observeOptions = getObserveOptions( options );
+
+        _observables[ guid ] = setInterval( function() {
+            observeObject( object, observeOptions );
+        }, observeOptions.observeTimeout );
+    }
+
+    function observeObject( object, options ) {
+
+    }
+
+
+    /*
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     * Observe Options
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     */
+
+    function getObserveOptions( newOptions ) {
+        var options = !isDefinedObject( newOptions ) ? {} : newOptions;
+
+        options.observeTimeout = getDefaultNumber( options.observeTimeout, 1000 );
+
+        return options;
+    }
+
+
+    /*
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     * String Handling
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     */
+
+    function newGuid() {
+        var result = [];
+
+        for ( var charIndex = 0; charIndex < 32; charIndex++ ) {
+            if ( charIndex === 8 || charIndex === 12 || charIndex === 16 || charIndex === 20 ) {
+                result.push( "-" );
+            }
+
+            var character = Math.floor( Math.random() * 16 ).toString( 16 );
+            result.push( character );
+        }
+
+        return result.join( _string.empty );
+    }
 
 
     /*
@@ -139,9 +218,7 @@
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
-    ( function ( documentObject, navigatorObject, windowObject ) {
-        _parameter_Document = documentObject;
-        _parameter_Navigator = navigatorObject;
+    ( function ( windowObject ) {
         _parameter_Window = windowObject;
 
         buildDefaultConfiguration();
@@ -150,5 +227,5 @@
             _parameter_Window.$observe = this;
         }
 
-    } ) ( document, navigator, window );
+    } ) ( window );
 } )();
