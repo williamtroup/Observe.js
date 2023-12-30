@@ -30,19 +30,20 @@
      */
 
     function createCompare( object1, object2, options ) {
-        var guid = newGuid(),
+        var storageId = newGuid(),
             compareOptions = getCompareOptions( options );
 
-        _compares[ guid ] = {};
-        _compares[ guid ].object1 = JSON.stringify( object1 );
-        _compares[ guid ].object2 = object2;
+        _compares[ storageId ] = {};
+        _compares[ storageId ].object1 = JSON.stringify( object1 );
+        _compares[ storageId ].object2 = object2;
+        _compares[ storageId ].options = compareOptions;
 
-        _compares[ guid ].timer = setInterval( function() {
-            compareObject( object1, object2, compareOptions );
+        _compares[ storageId ].timer = setInterval( function() {
+            compareObject( storageId );
         }, compareOptions.compareTimeout );
     }
 
-    function compareObject( object1, object2, compareOptions ) {
+    function compareObject( storageId ) {
 
     }
 
@@ -54,18 +55,19 @@
      */
 
     function createObservable( object, options ) {
-        var guid = newGuid(),
+        var storageId = newGuid(),
             observeOptions = getObserveOptions( options );
 
-        _observables[ guid ] = {};
-        _observables[ guid ].object = JSON.stringify( object );
+        _observables[ storageId ] = {};
+        _observables[ storageId ].object = JSON.stringify( object );
+        _observables[ storageId ].options = observeOptions;
 
-        _observables[ guid ] = setInterval( function() {
-            observeObject( object, observeOptions );
+        _observables[ storageId ] = setInterval( function() {
+            observeObject( storageId );
         }, observeOptions.observeTimeout );
     }
 
-    function observeObject( object, observeOptions ) {
+    function observeObject( storageId ) {
 
     }
 
