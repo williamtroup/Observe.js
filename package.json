@@ -1,0 +1,23 @@
+{
+    "name": "jobserve.js",
+    "title": "Observe.js",
+    "description": "A lightweight, and easy-to-use, JavaScript library for observing any kind of JS object, or HTML DOM element.",
+    "version": "0.1.0",
+    "main": "dist/observe.js",
+    "author": {
+      "name": "Bunoon"
+    },
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/williamtroup/Observe.js"
+    },
+    "keywords": [
+      "javascript",
+      "css",
+      "Observe.js"
+    ],
+    "bugs": {
+      "url": "https://github.com/williamtroup/Observe.js/issues"
+    },
+    "license": "MIT"
+  }
