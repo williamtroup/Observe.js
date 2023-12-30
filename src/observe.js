@@ -84,10 +84,6 @@
 
         buildDefaultConfiguration();
 
-        _parameter_Document.addEventListener( "DOMContentLoaded", function() {
-            render();
-        } );
-
         if ( !isDefined( _parameter_Window.$observe ) ) {
             _parameter_Window.$observe = this;
         }
