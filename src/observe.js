@@ -31,14 +31,14 @@
 
     function createCompare( object1, object2, options ) {
         var guid = newGuid(),
-            observeOptions = getObserveOptions( options );
+            compareOptions = getCompareOptions( options );
 
         _compares[ guid ] = setInterval( function() {
-            compareObject( object1, object2, observeOptions );
-        }, observeOptions.observeTimeout );
+            compareObject( object1, object2, compareOptions );
+        }, compareOptions.compareTimeout );
     }
 
-    function compareObject( object1, object2, options ) {
+    function compareObject( object1, object2, compareOptions ) {
 
     }
 
@@ -58,8 +58,23 @@
         }, observeOptions.observeTimeout );
     }
 
-    function observeObject( object, options ) {
+    function observeObject( object, observeOptions ) {
 
+    }
+
+
+    /*
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     * Compare Options
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     */
+
+    function getCompareOptions( newOptions ) {
+        var options = !isDefinedObject( newOptions ) ? {} : newOptions;
+
+        options.compareTimeout = getDefaultNumber( options.compareTimeout, 1000 );
+
+        return options;
     }
 
 
