@@ -3,7 +3,7 @@
     <metadata>
         <id>jObserve.js</id>
         <version>0.1.0</version>
-        <title>Syntax.js</title>
+        <title>Observe.js</title>
         <description>A lightweight, and easy-to-use, JavaScript library for observing any kind of JS object, or HTML DOM element.</description>
         <authors>William Troup</authors>
         <projectUrl>https://github.com/williamtroup/Observe.js</projectUrl>
