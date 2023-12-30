@@ -23,6 +23,68 @@
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     * Validation
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     */
+
+    function isDefined( value ) {
+        return value !== null && value !== undefined && value !== _string.empty;
+    }
+
+    function isDefinedObject( object ) {
+        return isDefined( object ) && typeof object === "object";
+    }
+
+    function isDefinedBoolean( object ) {
+        return isDefined( object ) && typeof object === "boolean";
+    }
+
+    function isDefinedString( object ) {
+        return isDefined( object ) && typeof object === "string";
+    }
+
+    function isDefinedFunction( object ) {
+        return isDefined( object ) && typeof object === "function";
+    }
+
+    function isDefinedNumber( object ) {
+        return isDefined( object ) && typeof object === "number";
+    }
+
+    function isDefinedArray( object ) {
+        return isDefinedObject( object ) && object instanceof Array;
+    }
+
+
+    /*
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     * Default Parameter/Option Handling
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     */
+
+    function getDefaultString( value, defaultValue ) {
+        return isDefinedString( value ) ? value : defaultValue;
+    }
+
+    function getDefaultBoolean( value, defaultValue ) {
+        return isDefinedBoolean( value ) ? value : defaultValue;
+    }
+
+    function getDefaultFunction( value, defaultValue ) {
+        return isDefinedFunction( value ) ? value : defaultValue;
+    }
+
+    function getDefaultArray( value, defaultValue ) {
+        return isDefinedArray( value ) ? value : defaultValue;
+    }
+
+    function getDefaultNumber( value, defaultValue ) {
+        return isDefinedNumber( value ) ? value : defaultValue;
+    }
+
+
+    /*
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      * Public Functions:  Configuration
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
