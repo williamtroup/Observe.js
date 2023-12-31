@@ -106,18 +106,27 @@
             fireCustomTrigger( options.onChange, oldValue, newValue );
 
             if ( isDefinedFunction( options.onPropertyChange ) ) {
-                for ( var propertyName in oldValue ) {
-                    if ( oldValue.hasOwnProperty( propertyName ) ) {
-                        var propertyOldValue = oldValue[ propertyName ],
-                            propertyNewValue = null;
+                compareObservableObjectProperties( oldValue, newValue, options );
+            }
+        }
+    }
 
-                        if ( newValue.hasOwnProperty( propertyName ) ) {
-                            propertyNewValue = newValue[ propertyName ];
-                        }
+    function compareObservableObjectProperties( oldObject, newObject, options ) {
+        for ( var propertyName in oldObject ) {
+            if ( oldObject.hasOwnProperty( propertyName ) ) {
+                var propertyOldValue = oldObject[ propertyName ],
+                    propertyNewValue = null;
 
-                        if ( JSON.stringify( propertyOldValue ) !== JSON.stringify( propertyNewValue ) ) {
-                            fireCustomTrigger( options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue );
-                        }
+                if ( newObject.hasOwnProperty( propertyName ) ) {
+                    propertyNewValue = newObject[ propertyName ];
+                }
+
+                if ( isDefinedObject( propertyOldValue ) && isDefinedObject( propertyNewValue ) ) {
+                    compareObservableObjectProperties( propertyOldValue, propertyNewValue, options );
+                } else {
+
+                    if ( JSON.stringify( propertyOldValue ) !== JSON.stringify( propertyNewValue ) ) {
+                        fireCustomTrigger( options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue );
                     }
                 }
             }
