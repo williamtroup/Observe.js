@@ -100,10 +100,27 @@
             _observables[ storageId ].cachedObject = JSON.stringify( _observables[ storageId ].originalObject );
 
             var options = _observables[ storageId ].options,
-                valueOriginal = getObjectFromString( cachedObject ).result,
-                valueNew = getObjectFromString( originalObjectJson ).result;
+                oldValue = getObjectFromString( cachedObject ).result,
+                newValue = getObjectFromString( originalObjectJson ).result;
 
-            fireCustomTrigger( options.onChange, valueOriginal, valueNew );
+            fireCustomTrigger( options.onChange, oldValue, newValue );
+
+            if ( isDefinedFunction( options.onPropertyChange ) ) {
+                for ( var propertyName in oldValue ) {
+                    if ( oldValue.hasOwnProperty( propertyName ) ) {
+                        var propertyOldValue = oldValue[ propertyName ],
+                            propertyNewValue = null;
+
+                        if ( newValue.hasOwnProperty( propertyName ) ) {
+                            propertyNewValue = newValue[ propertyName ];
+                        }
+
+                        if ( JSON.stringify( propertyOldValue ) !== JSON.stringify( propertyNewValue ) ) {
+                            fireCustomTrigger( options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue );
+                        }
+                    }
+                }
+            }
         }
     }
 

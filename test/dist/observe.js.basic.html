@@ -16,9 +16,7 @@
 
         <div class="contents">
             <h2>Add Observable Object:</h2>
-            <button onclick="$observe.addObservableObject( window.observeObject, { onChange: onObservableObjectChange } );">Add Observable Object - 1</button>
-            <button onclick="$observe.addObservableObject( window.observeObject, { onChange: onObservableObjectChange } );">Add Observable Object - 2</button>
-            <button onclick="$observe.addObservableObject( window.observeObject, { onChange: onObservableObjectChange } );">Add Observable Object - 3</button>
+            <button onclick="$observe.addObservableObject( window.observeObject, { onChange: onObservableObjectChange, onPropertyChange: onObservableObjectPropertyChange } );">Add Observable Object</button>
             <br />
 
             <h2>Change Observable Object Values:</h2>
@@ -51,9 +49,17 @@
             } );
         }
 
-        function onObservableObjectChange( originalValue, newValue ) {
-            console.log( "Original Value: " + JSON.stringify( originalValue ) );
+        function onObservableObjectChange( oldValue, newValue ) {
+            console.log( "Old Value: " + JSON.stringify( oldValue ) );
             console.log( "New Value: " + JSON.stringify( newValue ) );
+            console.log( "" );
+        }
+
+        function onObservableObjectPropertyChange( propertyName, oldValue, newValue ) {
+            console.log( "Property Name: " + propertyName );
+            console.log( "Old Value: " + JSON.stringify( oldValue ) );
+            console.log( "New Value: " + JSON.stringify( newValue ) );
+            console.log( "" );
         }
     </script>
 </html>
