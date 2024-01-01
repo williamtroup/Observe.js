@@ -386,7 +386,7 @@
      * @public
      * 
      * @param       {Object}    object                                      The object that should be watched. 
-     * @param       {Object}    options                                     All the configuration options that should be used.
+     * @param       {Object}    options                                     All the options that should be used.
      * 
      * @returns     {string}                                                The ID that object watch is stored under.
      */
