@@ -242,6 +242,19 @@
     }
     return result;
   };
+  this.cancelDomElementWatch = function(elementId) {
+    var result = false;
+    var storageId;
+    for (storageId in _observables) {
+      if (_observables.hasOwnProperty(storageId) && isDefinedString(_observables[storageId].domElementId) && _observables[storageId].domElementId === elementId) {
+        clearTimeout(_observables[storageId].timer);
+        delete _observables[storageId];
+        result = true;
+        break;
+      }
+    }
+    return result;
+  };
   this.setConfiguration = function(newOptions) {
     _configuration = !isDefinedObject(newOptions) ? {} : newOptions;
     buildDefaultConfiguration();

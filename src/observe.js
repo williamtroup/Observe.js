@@ -418,6 +418,33 @@
         return result;
     };
 
+    /**
+     * cancelDomElementWatch().
+     * 
+     * Cancels the watching of a DOM element object for changes.
+     * 
+     * @public
+     * 
+     * @param       {string}    elementId                                   The Id of the DOM element object being watched.
+     * 
+     * @returns     {boolean}                                               States if the DOM element object being watched has been canceled.
+     */
+    this.cancelDomElementWatch = function( elementId ) {
+        var result = false;
+
+        for ( var storageId in _observables ) {
+            if ( _observables.hasOwnProperty( storageId ) && isDefinedString( _observables[ storageId ].domElementId ) && _observables[ storageId ].domElementId === elementId ) {
+                clearTimeout( _observables[ storageId ].timer );
+                delete _observables[ storageId ];
+    
+                result = true;
+                break;
+            }
+        }
+
+        return result;
+    };
+
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
