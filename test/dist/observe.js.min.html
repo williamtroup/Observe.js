@@ -14,6 +14,10 @@
             <p>This is a basic example of how to use Observe.js an HTML DOM element.</p>
         </div>
 
+        <div class="contents" data-observe-options="{ 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange }">
+            When changed, this element should fire a custom trigger.
+        </div>
+
         <div class="contents">
             <h2>Add Observable Object:</h2>
             <button onclick="$observe.addObservableObject( window.observeObject, { onChange: onObservableObjectChange, onPropertyChange: onObservableObjectPropertyChange } );">Add Observable Object</button>

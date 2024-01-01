@@ -13,6 +13,7 @@
 
 ( function() {
     var // Variables: Constructor Parameters
+        _parameter_Document = null,
         _parameter_Window = null,
 
         // Variables: Strings
@@ -24,7 +25,70 @@
         _observables = {},
 
         // Variables: Configuration
-        _configuration = {};
+        _configuration = {},
+
+        // Variables: Attribute Names
+        _attribute_Name_Options = "data-observe-options";
+
+
+    /*
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     * Observable DOM Object Creation / Handling
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     */
+
+    function collectDOMObjects() {
+        var tagTypes = _configuration.domElementTypes,
+            tagTypesLength = tagTypes.length;
+
+        for ( var tagTypeIndex = 0; tagTypeIndex < tagTypesLength; tagTypeIndex++ ) {
+            var domElements = _parameter_Document.getElementsByTagName( tagTypes[ tagTypeIndex ] ),
+                elements = [].slice.call( domElements ),
+                elementsLength = elements.length;
+
+            for ( var elementIndex = 0; elementIndex < elementsLength; elementIndex++ ) {
+                if ( !collectDOMObject( elements[ elementIndex ] ) ) {
+                    break;
+                }
+            }
+        }
+    }
+
+    function collectDOMObject( element ) {
+        var result = true;
+
+        if ( isDefined( element ) && element.hasAttribute( _attribute_Name_Options ) ) {
+            var bindingOptionsData = element.getAttribute( _attribute_Name_Options );
+
+            if ( isDefinedString( bindingOptionsData ) ) {
+                var bindingOptions = getObjectFromString( bindingOptionsData );
+
+                if ( bindingOptions.parsed && isDefinedObject( bindingOptions.result ) ) {
+                    bindingOptions = getObserveOptions( bindingOptions.result );
+
+                    if ( !isDefinedString( element.id ) ) {
+                        element.id = newGuid();
+                    }
+
+                    createObservableObject( element, bindingOptions, element.id );
+
+                } else {
+                    if ( !_configuration.safeMode ) {
+                        console.error( "The attribute '" + _attribute_Name_Options + "' is not a valid object." );
+                        result = false;
+                    }
+                }
+
+            } else {
+                if ( !_configuration.safeMode ) {
+                    console.error( "The attribute '" + _attribute_Name_Options + "' has not been set correctly." );
+                    result = false;
+                }
+            }
+        }
+
+        return result;
+    }
 
 
     /*
@@ -33,7 +97,7 @@
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
-    function createObservableObject( object, options ) {
+    function createObservableObject( object, options, domElementId ) {
         var storageId = null;
 
         if ( isDefinedObject( object ) ) {
@@ -42,9 +106,21 @@
             var observeOptions = getObserveOptions( options );
 
             _observables[ storageId ] = {};
-            _observables[ storageId ].cachedObject = JSON.stringify( object );
-            _observables[ storageId ].originalObject = object;
             _observables[ storageId ].options = observeOptions;
+            _observables[ storageId ].domElementId = domElementId;
+
+            if ( isDefinedString( domElementId ) ) {
+                var domElement = _parameter_Document.getElementById( domElementId );
+
+                if ( isDefined( domElement ) ) {
+                    _observables[ storageId ].cachedObject = domElement.innerHTML;
+                    _observables[ storageId ].originalObject = domElement.innerHTML;
+                }
+
+            } else {
+                _observables[ storageId ].cachedObject = JSON.stringify( object );
+                _observables[ storageId ].originalObject = object;
+            }
 
             _observables[ storageId ].timer = setInterval( function() {
                 var currentDateTime = new Date();
@@ -63,21 +139,37 @@
     }
 
     function observeObject( storageId ) {
+        var isDomElement = isDefinedString( _observables[ storageId ].domElementId );
+
+        if ( isDomElement ) {
+            var domElement = _parameter_Document.getElementById( _observables[ storageId ].domElementId );
+
+            if ( isDefined( domElement ) ) {
+                _observables[ storageId ].originalObject = domElement.innerHTML;
+            }
+        }
+
         var cachedObject = _observables[ storageId ].cachedObject,
             originalObject = _observables[ storageId ].originalObject,
-            originalObjectJson = JSON.stringify( originalObject );
+            originalObjectJson = !isDomElement ? JSON.stringify( originalObject ) : originalObject;
 
         if ( cachedObject !== originalObjectJson ) {
-            _observables[ storageId ].cachedObject = JSON.stringify( _observables[ storageId ].originalObject );
+            _observables[ storageId ].cachedObject = originalObjectJson;
 
-            var options = _observables[ storageId ].options,
-                oldValue = getObjectFromString( cachedObject ).result,
-                newValue = getObjectFromString( originalObjectJson ).result;
+            var options = _observables[ storageId ].options;
 
-            fireCustomTrigger( options.onChange, oldValue, newValue );
+            if ( isDomElement ) {
+                fireCustomTrigger( options.onChange, cachedObject, originalObjectJson );
+            } else {
 
-            if ( isDefinedFunction( options.onPropertyChange ) && !isDefinedArray( oldValue ) ) {
-                compareObservableObjectProperties( oldValue, newValue, options );
+                var oldValue = getObjectFromString( cachedObject ).result,
+                    newValue = getObjectFromString( originalObjectJson ).result;
+
+                fireCustomTrigger( options.onChange, oldValue, newValue );
+
+                if ( isDefinedFunction( options.onPropertyChange ) && !isDefinedArray( oldValue ) ) {
+                    compareObservableObjectProperties( oldValue, newValue, options );
+                }
             }
         }
     }
@@ -219,6 +311,25 @@
         return isDefinedDate( value ) ? value : defaultValue;
     }
 
+    function getDefaultArray( value, defaultValue ) {
+        return isDefinedArray( value ) ? value : defaultValue;
+    }
+
+    function getDefaultStringOrArray( value, defaultValue ) {
+        if ( isDefinedString( value ) ) {
+            value = value.split( _string.space );
+
+            if ( value.length === 0 ) {
+                value = defaultValue;
+            }
+
+        } else {
+            value = getDefaultArray( value, defaultValue );
+        }
+
+        return value;
+    }
+
     function getObjectFromString( objectString ) {
         var parsed = true,
             result = null;
@@ -311,6 +422,7 @@
 
     function buildDefaultConfiguration() {
         _configuration.safeMode = getDefaultBoolean( _configuration.safeMode, true );
+        _configuration.domElementTypes = getDefaultStringOrArray( _configuration.domElementTypes, [ "*" ] );
     }
 
 
@@ -340,14 +452,19 @@
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
-    ( function ( windowObject ) {
+    ( function ( documentObject, windowObject ) {
+        _parameter_Document = documentObject;
         _parameter_Window = windowObject;
 
         buildDefaultConfiguration();
+
+        _parameter_Document.addEventListener( "DOMContentLoaded", function() {
+            collectDOMObjects();
+        } );
 
         if ( !isDefined( _parameter_Window.$observe ) ) {
             _parameter_Window.$observe = this;
         }
 
-    } ) ( window );
+    } ) ( document, window );
 } )();
