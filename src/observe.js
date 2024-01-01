@@ -21,44 +21,10 @@
         },
 
         // Variables: Observables
-        _compares = {},
         _observables = {},
 
         // Variables: Configuration
         _configuration = {};
-
-
-    /*
-     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     * Compare Creation / Handling
-     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     */
-
-    function createCompare( object1, object2, options ) {
-        var storageId = newGuid(),
-            compareOptions = getCompareOptions( options );
-
-        _compares[ storageId ] = {};
-        _compares[ storageId ].object1 = JSON.stringify( object1 );
-        _compares[ storageId ].object2 = object2;
-        _compares[ storageId ].options = compareOptions;
-
-        _compares[ storageId ].timer = setInterval( function() {
-            var currentDateTime = new Date();
-
-            compareObject( storageId );
-
-            if ( isDefinedDate( compareOptions.expires ) && currentDateTime > compareOptions.expires ) {
-                clearTimeout( _compares[ storageId ].timer );
-                delete _compares[ storageId ];
-            }
-
-        }, compareOptions.compareTimeout );
-    }
-
-    function compareObject( storageId ) {
-
-    }
 
 
     /*
@@ -105,7 +71,7 @@
 
             fireCustomTrigger( options.onChange, oldValue, newValue );
 
-            if ( isDefinedFunction( options.onPropertyChange ) ) {
+            if ( isDefinedFunction( options.onPropertyChange ) && !isDefinedArray( oldValue ) ) {
                 compareObservableObjectProperties( oldValue, newValue, options );
             }
         }
@@ -136,22 +102,6 @@
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     * Compare Options
-     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     */
-
-    function getCompareOptions( newOptions ) {
-        var options = !isDefinedObject( newOptions ) ? {} : newOptions;
-
-        options.compareTimeout = getDefaultNumber( options.compareTimeout, 1000 );
-        options.expires = getDefaultDate( options.expires, null );
-
-        return options;
-    }
-
-
-    /*
-     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      * Observe Options
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
@@ -159,7 +109,7 @@
     function getObserveOptions( newOptions ) {
         var options = !isDefinedObject( newOptions ) ? {} : newOptions;
 
-        options.observeTimeout = getDefaultNumber( options.observeTimeout, 1000 );
+        options.observeTimeout = getDefaultNumber( options.observeTimeout, 250 );
         options.expires = getDefaultDate( options.expires, null );
         options.onChange = getDefaultFunction( options.onChange, null );
         options.onPropertyChange = getDefaultFunction( options.onPropertyChange, null );
@@ -248,10 +198,6 @@
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
-    function getDefaultString( value, defaultValue ) {
-        return isDefinedString( value ) ? value : defaultValue;
-    }
-
     function getDefaultBoolean( value, defaultValue ) {
         return isDefinedBoolean( value ) ? value : defaultValue;
     }
@@ -260,16 +206,8 @@
         return isDefinedFunction( value ) ? value : defaultValue;
     }
 
-    function getDefaultArray( value, defaultValue ) {
-        return isDefinedArray( value ) ? value : defaultValue;
-    }
-
     function getDefaultNumber( value, defaultValue ) {
         return isDefinedNumber( value ) ? value : defaultValue;
-    }
-
-    function getDefaultObject( value, defaultValue ) {
-        return isDefinedObject( value ) ? value : defaultValue;
     }
 
     function getDefaultDate( value, defaultValue ) {
@@ -306,6 +244,17 @@
         };
     }
 
+    function logError( error ) {
+        var result = true;
+
+        if ( !_configuration.safeMode ) {
+            console.error( error );
+            result = false;
+        }
+
+        return result;
+    }
+
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -313,8 +262,22 @@
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
+    /**
+     * addObservableObject().
+     * 
+     * Adds an object that should be watched for changes.
+     * 
+     * @public
+     * 
+     * @param       {Object}    object                                      The object that should be watched. 
+     * @param       {Object}    options                                     All the configuration options that should be used.
+     * 
+     * @returns     {Object}                                                The Observe.js class instance.
+     */
     this.addObservableObject = function( object, options ) {
         createObservableObject( object, options );
+
+        return this;
     };
 
 
@@ -331,7 +294,7 @@
      * 
      * @public
      * 
-     * @param       {Options}   newConfiguration                            All the configuration options that should be set (refer to "Options" documentation for properties).
+     * @param       {Options}   newConfiguration                            All the configuration options that should be set (refer to "Configuration/Options" documentation for properties).
      * 
      * @returns     {Object}                                                The Observe.js class instance.
      */
