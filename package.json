@@ -14,7 +14,13 @@
     "keywords": [
       "javascript",
       "css",
-      "Observe.js"
+      "observe.js",
+      "observe",
+      "observable",
+      "watcher",
+      "object",
+      "changes",
+      "watch"
     ],
     "bugs": {
       "url": "https://github.com/williamtroup/Observe.js/issues"
