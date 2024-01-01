@@ -1,7 +1,7 @@
 /**
  * Observe.js
  * 
- * A lightweight, and easy-to-use, JavaScript library for observing any kind of JS object, or HTML DOM element.
+ * A lightweight, and easy-to-use, JavaScript library for observing any kind of JS object, or HTML DOM element, to detect changes.
  * 
  * @file        observe.js
  * @version     v0.1.0
