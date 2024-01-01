@@ -34,9 +34,12 @@
      */
 
     function createObservableObject( object, options ) {
+        var storageId = null;
+
         if ( isDefinedObject( object ) ) {
-            var storageId = newGuid(),
-                observeOptions = getObserveOptions( options );
+            storageId = newGuid();
+
+            var observeOptions = getObserveOptions( options );
 
             _observables[ storageId ] = {};
             _observables[ storageId ].cachedObject = JSON.stringify( object );
@@ -55,6 +58,8 @@
 
             }, observeOptions.observeTimeout );
         }
+
+        return storageId;
     }
 
     function observeObject( storageId ) {
@@ -272,12 +277,10 @@
      * @param       {Object}    object                                      The object that should be watched. 
      * @param       {Object}    options                                     All the configuration options that should be used.
      * 
-     * @returns     {Object}                                                The Observe.js class instance.
+     * @returns     {string}                                                The ID that object watch is stored under.
      */
     this.addObservableObject = function( object, options ) {
-        createObservableObject( object, options );
-
-        return this;
+        return createObservableObject( object, options );
     };
 
 
