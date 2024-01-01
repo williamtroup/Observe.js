@@ -19,14 +19,15 @@
         </div>
 
         <div class="contents">
-            <h2>Add Observable Object:</h2>
-            <button onclick="$observe.addObservableObject( window.observeObject, { onChange: onObservableObjectChange, onPropertyChange: onObservableObjectPropertyChange } );">Add Observable Object</button>
+            <h2>Watch Object:</h2>
+            <button onclick="watchNewObject();">Watch Object</button>
+            <button onclick="cancelWatchNewObject();">Cancel Watch Object</button>
             <br />
 
-            <h2>Change Observable Object Values:</h2>
-            <button onclick="window.observeObject.bool = false;">Change Observable Object Value - 1</button>
-            <button onclick="window.observeObject.num = 2;">Change Observable Object Value - 2</button>
-            <button onclick="window.observeObject.str = 'This is another string';">Change Observable Object Value - 3</button>
+            <h2>Change Object Values:</h2>
+            <button onclick="window.observeObject.bool = false;">Change Object Value - 1</button>
+            <button onclick="window.observeObject.num = 2;">Change Object Value - 2</button>
+            <button onclick="window.observeObject.str = 'This is another string';">Change Object Value - 3</button>
             <br />
 
             <h2>Configuration:</h2>
@@ -42,10 +43,23 @@
         document.title += " v" + $observe.getVersion();
         document.getElementById( "header" ).innerText += " - v" + $observe.getVersion();
 
+        var watchObjectId = null;
+
         window.observeObject = {};
         window.observeObject.bool = true;
         window.observeObject.num = 1;
         window.observeObject.str = "This is a string";
+
+        function watchNewObject() {
+            watchObjectId = $observe.watchObject( window.observeObject, {
+                onChange: onObservableObjectChange,
+                onPropertyChange: onObservableObjectPropertyChange
+            } );
+        }
+
+        function cancelWatchNewObject() {
+            $observe.cancelWatch( watchObjectId );
+        }
 
         function setupConfiguration() {
             $observe.setConfiguration( {

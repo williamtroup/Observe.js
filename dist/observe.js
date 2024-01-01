@@ -230,8 +230,17 @@
   var _observables = {};
   var _configuration = {};
   var _attribute_Name_Options = "data-observe-options";
-  this.addObservableObject = function(object, options) {
+  this.watchObject = function(object, options) {
     return createObservableObject(object, options);
+  };
+  this.cancelWatch = function(id) {
+    var result = false;
+    if (_observables.hasOwnProperty(id)) {
+      clearTimeout(_observables[id].timer);
+      delete _observables[id];
+      result = true;
+    }
+    return result;
   };
   this.setConfiguration = function(newOptions) {
     _configuration = !isDefinedObject(newOptions) ? {} : newOptions;

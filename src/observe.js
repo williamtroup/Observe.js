@@ -379,7 +379,7 @@
      */
 
     /**
-     * addObservableObject().
+     * watchObject().
      * 
      * Adds an object that should be watched for changes.
      * 
@@ -390,8 +390,32 @@
      * 
      * @returns     {string}                                                The ID that object watch is stored under.
      */
-    this.addObservableObject = function( object, options ) {
+    this.watchObject = function( object, options ) {
         return createObservableObject( object, options );
+    };
+
+    /**
+     * cancelWatch().
+     * 
+     * Cancels the watching of an object for changes.
+     * 
+     * @public
+     * 
+     * @param       {string}    id                                          The Id of the object being watched.
+     * 
+     * @returns     {boolean}                                               States if the object being watched has been canceled.
+     */
+    this.cancelWatch = function( id ) {
+        var result = false;
+
+        if ( _observables.hasOwnProperty( id ) ) {
+            clearTimeout( _observables[ id ].timer );
+            delete _observables[ id ];
+
+            result = true;
+        }
+
+        return result;
     };
 
 
