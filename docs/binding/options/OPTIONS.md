@@ -32,7 +32,7 @@ Below is a list of all the options supported in the "data-observe-options" bindi
 
 ```markdown
 <script> 
-    var version = $observe.watchObject( yourObject, {
+    var id = $observe.watchObject( yourObject, {
         onChange: yourCustomJsFunction
     } );
 </script>
