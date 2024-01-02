@@ -23,6 +23,7 @@
 
 #### **Fixes:**
 - Fixed the "expires" binding/option not accurately checking the expired date and time.
+- Fixed a script error that occurred sometimes when a watch is canceled using the public functions "cancelWatch()" and "cancelDomElementWatch()".
 
 <br>
 

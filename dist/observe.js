@@ -73,44 +73,46 @@
     return storageId;
   }
   function observeObject(storageId) {
-    var isDomElement = isDefinedString(_observables[storageId].domElementId);
-    var domElement = null;
-    if (isDomElement) {
-      domElement = _parameter_Document.getElementById(_observables[storageId].domElementId);
-      if (isDefined(domElement)) {
-        _observables[storageId].originalObject = domElement.outerHTML;
-      }
-    }
-    var cachedObject = _observables[storageId].cachedObject;
-    var originalObject = _observables[storageId].originalObject;
-    var originalObjectJson = !isDomElement ? JSON.stringify(originalObject) : originalObject;
-    if (cachedObject !== originalObjectJson) {
-      var options = _observables[storageId].options;
-      if (options.reset) {
-        if (isDomElement) {
-          domElement.outerHTML = _observables[storageId].cachedObject;
-        } else {
-          _observables[storageId].originalObject = getObjectFromString(cachedObject).result;
-        }
-      } else {
-        _observables[storageId].cachedObject = originalObjectJson;
-      }
+    if (_observables.hasOwnProperty(storageId)) {
+      var isDomElement = isDefinedString(_observables[storageId].domElementId);
+      var domElement = null;
       if (isDomElement) {
-        fireCustomTrigger(options.onChange, cachedObject, originalObjectJson);
-      } else {
-        var oldValue = getObjectFromString(cachedObject).result;
-        var newValue = getObjectFromString(originalObjectJson).result;
-        fireCustomTrigger(options.onChange, oldValue, newValue);
-        if (isDefinedFunction(options.onPropertyChange) && !isDefinedArray(oldValue)) {
-          compareObservableObjectProperties(oldValue, newValue, options);
+        domElement = _parameter_Document.getElementById(_observables[storageId].domElementId);
+        if (isDefined(domElement)) {
+          _observables[storageId].originalObject = domElement.outerHTML;
         }
       }
-      if (options.cancelOnChange) {
-        cancelWatchObject(storageId);
-      }
-      _observables[storageId].totalChanges++;
-      if (options.maximumChangesBeforeCanceling > 0 && _observables[storageId].totalChanges >= options.maximumChangesBeforeCanceling) {
-        cancelWatchObject(storageId);
+      var cachedObject = _observables[storageId].cachedObject;
+      var originalObject = _observables[storageId].originalObject;
+      var originalObjectJson = !isDomElement ? JSON.stringify(originalObject) : originalObject;
+      if (cachedObject !== originalObjectJson) {
+        var options = _observables[storageId].options;
+        if (options.reset) {
+          if (isDomElement) {
+            domElement.outerHTML = _observables[storageId].cachedObject;
+          } else {
+            _observables[storageId].originalObject = getObjectFromString(cachedObject).result;
+          }
+        } else {
+          _observables[storageId].cachedObject = originalObjectJson;
+        }
+        if (isDomElement) {
+          fireCustomTrigger(options.onChange, cachedObject, originalObjectJson);
+        } else {
+          var oldValue = getObjectFromString(cachedObject).result;
+          var newValue = getObjectFromString(originalObjectJson).result;
+          fireCustomTrigger(options.onChange, oldValue, newValue);
+          if (isDefinedFunction(options.onPropertyChange) && !isDefinedArray(oldValue)) {
+            compareObservableObjectProperties(oldValue, newValue, options);
+          }
+        }
+        if (options.cancelOnChange) {
+          cancelWatchObject(storageId);
+        }
+        _observables[storageId].totalChanges++;
+        if (options.maximumChangesBeforeCanceling > 0 && _observables[storageId].totalChanges >= options.maximumChangesBeforeCanceling) {
+          cancelWatchObject(storageId);
+        }
       }
     }
   }
