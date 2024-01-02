@@ -21,8 +21,8 @@
             empty: ""
         },
 
-        // Variables: Observables
-        _observables = {},
+        // Variables: Watches
+        _watches = {},
 
         // Variables: Configuration
         _configuration = {},
@@ -64,7 +64,7 @@
                 var bindingOptions = getObjectFromString( bindingOptionsData );
 
                 if ( bindingOptions.parsed && isDefinedObject( bindingOptions.result ) ) {
-                    bindingOptions = getObserveOptions( bindingOptions.result );
+                    bindingOptions = getWatchOptions( bindingOptions.result );
 
                     if ( !isDefinedString( element.id ) ) {
                         element.id = newGuid();
@@ -93,7 +93,7 @@
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     * Observable Watch Object Creation / Handling
+     * Watch Object Creation / Handling
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
@@ -103,98 +103,98 @@
         if ( isDefinedObject( object ) ) {
             storageId = newGuid();
 
-            var observeOptions = getObserveOptions( options ),
-                observable = {};
+            var watchOptions = getWatchOptions( options ),
+                watch = {};
 
-            observable.options = observeOptions;
-            observable.domElementId = domElementId;
-            observable.totalChanges = 0;
+            watch.options = watchOptions;
+            watch.domElementId = domElementId;
+            watch.totalChanges = 0;
 
             if ( isDefinedString( domElementId ) ) {
                 var domElement = _parameter_Document.getElementById( domElementId );
 
                 if ( isDefined( domElement ) ) {
-                    observable.cachedObject = domElement.outerHTML;
-                    observable.originalObject = domElement.outerHTML;
+                    watch.cachedObject = domElement.outerHTML;
+                    watch.originalObject = domElement.outerHTML;
                 }
 
             } else {
-                observable.cachedObject = JSON.stringify( object );
-                observable.originalObject = object;
+                watch.cachedObject = JSON.stringify( object );
+                watch.originalObject = object;
             }
 
-            observable.timer = setInterval( function() {
+            watch.timer = setInterval( function() {
                 var currentDateTime = new Date();
 
-                if ( !isDefinedDate( observeOptions.starts ) || currentDateTime >= observeOptions.starts ) {
+                if ( !isDefinedDate( watchOptions.starts ) || currentDateTime >= watchOptions.starts ) {
                     watchObjectForChanges( storageId );
 
-                    if ( isDefinedDate( observeOptions.expires ) && currentDateTime >= observeOptions.expires ) {
+                    if ( isDefinedDate( watchOptions.expires ) && currentDateTime >= watchOptions.expires ) {
                         cancelWatchObject( storageId );
                     }
                 }
 
-            }, observeOptions.observeTimeout );
+            }, watchOptions.observeTimeout );
 
-            _observables[ storageId ] = observable;
+            _watches[ storageId ] = watch;
         }
 
         return storageId;
     }
 
     function watchObjectForChanges( storageId ) {
-        if ( _observables.hasOwnProperty( storageId ) ) {
-            var observable = _observables[ storageId ],
-                isDomElement = isDefinedString( observable.domElementId ),
+        if ( _watches.hasOwnProperty( storageId ) ) {
+            var watch = _watches[ storageId ],
+                isDomElement = isDefinedString( watch.domElementId ),
                 domElement = null;
 
             if ( isDomElement ) {
-                domElement = _parameter_Document.getElementById( observable.domElementId );
+                domElement = _parameter_Document.getElementById( watch.domElementId );
 
                 if ( isDefined( domElement ) ) {
-                    observable.originalObject = domElement.outerHTML;
+                    watch.originalObject = domElement.outerHTML;
                 }
             }
 
-            var cachedObject = observable.cachedObject,
-                originalObject = observable.originalObject,
+            var cachedObject = watch.cachedObject,
+                originalObject = watch.originalObject,
                 originalObjectJson = !isDomElement ? JSON.stringify( originalObject ) : originalObject;
 
             if ( cachedObject !== originalObjectJson ) {
-                var options = observable.options;
+                var watchOptions = watch.options;
 
-                if ( options.reset ) {
+                if ( watchOptions.reset ) {
                     if ( isDomElement ) {
-                        domElement.outerHTML = observable.cachedObject;
+                        domElement.outerHTML = watch.cachedObject;
                     } else {
-                        observable.originalObject = getObjectFromString( cachedObject ).result;
+                        watch.originalObject = getObjectFromString( cachedObject ).result;
                     }
 
                 } else {
-                    observable.cachedObject = originalObjectJson;
+                    watch.cachedObject = originalObjectJson;
                 }
 
                 if ( isDomElement ) {
-                    fireCustomTrigger( options.onChange, cachedObject, originalObjectJson );
+                    fireCustomTrigger( watchOptions.onChange, cachedObject, originalObjectJson );
                 } else {
 
                     var oldValue = getObjectFromString( cachedObject ).result,
                         newValue = getObjectFromString( originalObjectJson ).result;
 
-                    fireCustomTrigger( options.onChange, oldValue, newValue );
+                    fireCustomTrigger( watchOptions.onChange, oldValue, newValue );
 
-                    if ( isDefinedFunction( options.onPropertyChange ) && !isDefinedArray( oldValue ) ) {
-                        compareWatchObjectProperties( oldValue, newValue, options );
+                    if ( isDefinedFunction( watchOptions.onPropertyChange ) && !isDefinedArray( oldValue ) ) {
+                        compareWatchObjectProperties( oldValue, newValue, watchOptions );
                     }
                 }
 
-                if ( options.cancelOnChange ) {
+                if ( watchOptions.cancelOnChange ) {
                     cancelWatchObject( storageId );
                 }
 
-                observable.totalChanges++;
+                watch.totalChanges++;
 
-                if ( options.maximumChangesBeforeCanceling > 0 && observable.totalChanges >= options.maximumChangesBeforeCanceling ) {
+                if ( watchOptions.maximumChangesBeforeCanceling > 0 && watch.totalChanges >= watchOptions.maximumChangesBeforeCanceling ) {
                     cancelWatchObject( storageId );
                 }
             }
@@ -224,24 +224,24 @@
     }
 
     function cancelWatchObject( storageId ) {
-        if ( _observables.hasOwnProperty( storageId ) ) {
-            var options = _observables[ storageId ].options;
+        if ( _watches.hasOwnProperty( storageId ) ) {
+            var watchOptions = _watches[ storageId ].options;
 
-            fireCustomTrigger( options.onCancel, storageId );
+            fireCustomTrigger( watchOptions.onCancel, storageId );
 
-            clearTimeout( _observables[ storageId ].timer );
-            delete _observables[ storageId ];
+            clearTimeout( _watches[ storageId ].timer );
+            delete _watches[ storageId ];
         }
     }
 
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     * Observe Options
+     * Watch Options
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
-    function getObserveOptions( newOptions ) {
+    function getWatchOptions( newOptions ) {
         var options = !isDefinedObject( newOptions ) ? {} : newOptions;
 
         options.observeTimeout = getDefaultNumber( options.observeTimeout, 250 );
@@ -251,12 +251,12 @@
         options.cancelOnChange = getDefaultBoolean( options.cancelOnChange, false );
         options.maximumChangesBeforeCanceling = getDefaultNumber( options.maximumChangesBeforeCanceling, 0 );
 
-        options = getObserveOptionsCustomTriggers( options );
+        options = getWatchOptionsCustomTriggers( options );
 
         return options;
     }
 
-    function getObserveOptionsCustomTriggers( options ) {
+    function getWatchOptionsCustomTriggers( options ) {
         options.onChange = getDefaultFunction( options.onChange, null );
         options.onPropertyChange = getDefaultFunction( options.onPropertyChange, null );
         options.onCancel = getDefaultFunction( options.onCancel, null );
@@ -424,7 +424,7 @@
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     * Public Functions:  Observables
+     * Public Functions:  Watching Objects
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
@@ -458,7 +458,7 @@
     this.cancelWatch = function( id ) {
         var result = false;
 
-        if ( _observables.hasOwnProperty( id ) ) {
+        if ( _watches.hasOwnProperty( id ) ) {
             cancelWatchObject( id );
 
             result = true;
@@ -481,8 +481,8 @@
     this.cancelDomElementWatch = function( elementId ) {
         var result = false;
 
-        for ( var storageId in _observables ) {
-            if ( _observables.hasOwnProperty( storageId ) && isDefinedString( _observables[ storageId ].domElementId ) && _observables[ storageId ].domElementId === elementId ) {
+        for ( var storageId in _watches ) {
+            if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === elementId ) {
                 cancelWatchObject( storageId );
     
                 result = true;

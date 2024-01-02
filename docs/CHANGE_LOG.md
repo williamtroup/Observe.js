@@ -20,6 +20,9 @@
 #### **Watching:**
 - Changes are now detected for HTML DOM element objects when attributes are updated.
 
+#### **General Improvements:**
+- Refactored lots of the internal code to align with the naming of the areas.
+
 #### **Documentation:**
 - Fixed some of the documentation referencing the wrong properties.
 
