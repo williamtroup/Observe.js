@@ -15,6 +15,9 @@
 #### **Watching:**
 - Changes are now detected for HTML DOM element objects when attributes are updated.
 
+#### **Documentation:**
+- Fixed some of the documentation referencing the wrong properties.
+
 #### **Fixes:**
 - Fixed the "expires" binding/option not accurately checking the expired date and time.
 

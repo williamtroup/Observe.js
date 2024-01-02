@@ -22,7 +22,7 @@ Below is a list of all the options supported in the "data-observe-options" bindi
 <br/>
 
 ```markdown
-<div data-observe-options="{ 'onChange': yourCustomJsFunction }">
+<div data-observe-options="{ 'observeTimeout': 1000 }">
     Your HTML.
 </div>
 ```
@@ -36,7 +36,7 @@ Below is a list of all the options supported in the "data-observe-options" bindi
 ```markdown
 <script> 
     var id = $observe.watchObject( yourObject, {
-        onChange: yourCustomJsFunction
+        observeTimeout: 1000
     } );
 </script>
 ```
