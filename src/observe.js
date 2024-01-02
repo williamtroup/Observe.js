@@ -108,6 +108,7 @@
             _observables[ storageId ] = {};
             _observables[ storageId ].options = observeOptions;
             _observables[ storageId ].domElementId = domElementId;
+            _observables[ storageId ].totalChanges = 0;
 
             if ( isDefinedString( domElementId ) ) {
                 var domElement = _parameter_Document.getElementById( domElementId );
@@ -184,6 +185,12 @@
             if ( options.cancelOnChange ) {
                 cancelWatchObject( storageId );
             }
+
+            _observables[ storageId ].totalChanges++;
+
+            if ( options.maximumChangesBeforeCanceling > 0 && _observables[ storageId ].totalChanges >= options.maximumChangesBeforeCanceling ) {
+                cancelWatchObject( storageId );
+            }
         }
     }
 
@@ -210,8 +217,10 @@
     }
 
     function cancelWatchObject( storageId ) {
-        clearTimeout( _observables[ storageId ].timer );
-        delete _observables[ storageId ];
+        if ( _observables.hasOwnProperty( storageId ) ) {
+            clearTimeout( _observables[ storageId ].timer );
+            delete _observables[ storageId ];
+        }
     }
 
 
@@ -228,6 +237,7 @@
         options.expires = getDefaultDate( options.expires, null );
         options.reset = getDefaultBoolean( options.reset, false );
         options.cancelOnChange = getDefaultBoolean( options.cancelOnChange, false );
+        options.maximumChangesBeforeCanceling = getDefaultNumber( options.maximumChangesBeforeCanceling, 0 );
 
         options = getObserveOptionsCustomTriggers( options );
 
