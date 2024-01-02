@@ -1,4 +1,4 @@
-/*! Observe.js v0.1.0 | (c) Bunoon | MIT License */
+/*! Observe.js v0.2.0 | (c) Bunoon | MIT License */
 (function() {
   function collectDOMObjects() {
     var tagTypes = _configuration.domElementTypes;
@@ -23,11 +23,11 @@
       if (isDefinedString(bindingOptionsData)) {
         var bindingOptions = getObjectFromString(bindingOptionsData);
         if (bindingOptions.parsed && isDefinedObject(bindingOptions.result)) {
-          bindingOptions = getObserveOptions(bindingOptions.result);
+          bindingOptions = getWatchOptions(bindingOptions.result);
           if (!isDefinedString(element.id)) {
             element.id = newGuid();
           }
-          createObservableObject(element, bindingOptions, element.id);
+          createWatch(element, bindingOptions, element.id);
         } else {
           if (!_configuration.safeMode) {
             console.error("The attribute '" + _attribute_Name_Options + "' is not a valid object.");
@@ -43,62 +43,84 @@
     }
     return result;
   }
-  function createObservableObject(object, options, domElementId) {
+  function createWatch(object, options, domElementId) {
     var storageId = null;
     if (isDefinedObject(object)) {
       storageId = newGuid();
-      var observeOptions = getObserveOptions(options);
-      _observables[storageId] = {};
-      _observables[storageId].options = observeOptions;
-      _observables[storageId].domElementId = domElementId;
+      var watchOptions = getWatchOptions(options);
+      var watch = {};
+      watch.options = watchOptions;
+      watch.domElementId = domElementId;
+      watch.totalChanges = 0;
       if (isDefinedString(domElementId)) {
         var domElement = _parameter_Document.getElementById(domElementId);
         if (isDefined(domElement)) {
-          _observables[storageId].cachedObject = domElement.innerHTML;
-          _observables[storageId].originalObject = domElement.innerHTML;
+          watch.cachedObject = domElement.outerHTML;
+          watch.originalObject = domElement.outerHTML;
         }
       } else {
-        _observables[storageId].cachedObject = JSON.stringify(object);
-        _observables[storageId].originalObject = object;
+        watch.cachedObject = JSON.stringify(object);
+        watch.originalObject = object;
       }
-      _observables[storageId].timer = setInterval(function() {
+      watch.timer = setInterval(function() {
         var currentDateTime = new Date();
-        observeObject(storageId);
-        if (isDefinedDate(observeOptions.expires) && currentDateTime > observeOptions.expires) {
-          clearTimeout(_observables[storageId].timer);
-          delete _observables[storageId];
+        if (!isDefinedDate(watchOptions.starts) || currentDateTime >= watchOptions.starts) {
+          watchObjectForChanges(storageId);
+          if (isDefinedDate(watchOptions.expires) && currentDateTime >= watchOptions.expires) {
+            cancelWatchObject(storageId);
+          }
         }
-      }, observeOptions.observeTimeout);
+      }, watchOptions.timeout);
+      _watches[storageId] = watch;
     }
     return storageId;
   }
-  function observeObject(storageId) {
-    var isDomElement = isDefinedString(_observables[storageId].domElementId);
-    if (isDomElement) {
-      var domElement = _parameter_Document.getElementById(_observables[storageId].domElementId);
-      if (isDefined(domElement)) {
-        _observables[storageId].originalObject = domElement.innerHTML;
-      }
-    }
-    var cachedObject = _observables[storageId].cachedObject;
-    var originalObject = _observables[storageId].originalObject;
-    var originalObjectJson = !isDomElement ? JSON.stringify(originalObject) : originalObject;
-    if (cachedObject !== originalObjectJson) {
-      _observables[storageId].cachedObject = originalObjectJson;
-      var options = _observables[storageId].options;
+  function watchObjectForChanges(storageId) {
+    if (_watches.hasOwnProperty(storageId)) {
+      var watch = _watches[storageId];
+      var isDomElement = isDefinedString(watch.domElementId);
+      var domElement = null;
       if (isDomElement) {
-        fireCustomTrigger(options.onChange, cachedObject, originalObjectJson);
-      } else {
-        var oldValue = getObjectFromString(cachedObject).result;
-        var newValue = getObjectFromString(originalObjectJson).result;
-        fireCustomTrigger(options.onChange, oldValue, newValue);
-        if (isDefinedFunction(options.onPropertyChange) && !isDefinedArray(oldValue)) {
-          compareObservableObjectProperties(oldValue, newValue, options);
+        domElement = _parameter_Document.getElementById(watch.domElementId);
+        if (isDefined(domElement)) {
+          watch.originalObject = domElement.outerHTML;
+        }
+      }
+      var cachedObject = watch.cachedObject;
+      var originalObject = watch.originalObject;
+      var originalObjectJson = !isDomElement ? JSON.stringify(originalObject) : originalObject;
+      if (cachedObject !== originalObjectJson) {
+        var watchOptions = watch.options;
+        if (watchOptions.reset) {
+          if (isDomElement) {
+            domElement.outerHTML = watch.cachedObject;
+          } else {
+            watch.originalObject = getObjectFromString(cachedObject).result;
+          }
+        } else {
+          watch.cachedObject = originalObjectJson;
+        }
+        if (isDomElement) {
+          fireCustomTrigger(watchOptions.onChange, cachedObject, originalObjectJson);
+        } else {
+          var oldValue = getObjectFromString(cachedObject).result;
+          var newValue = getObjectFromString(originalObjectJson).result;
+          fireCustomTrigger(watchOptions.onChange, oldValue, newValue);
+          if (isDefinedFunction(watchOptions.onPropertyChange) && !isDefinedArray(oldValue)) {
+            compareWatchObjectProperties(oldValue, newValue, watchOptions);
+          }
+        }
+        if (watchOptions.cancelOnChange) {
+          cancelWatchObject(storageId);
+        }
+        watch.totalChanges++;
+        if (watchOptions.maximumChangesBeforeCanceling > 0 && watch.totalChanges >= watchOptions.maximumChangesBeforeCanceling) {
+          cancelWatchObject(storageId);
         }
       }
     }
   }
-  function compareObservableObjectProperties(oldObject, newObject, options) {
+  function compareWatchObjectProperties(oldObject, newObject, options) {
     var propertyName;
     for (propertyName in oldObject) {
       if (oldObject.hasOwnProperty(propertyName)) {
@@ -108,7 +130,7 @@
           propertyNewValue = newObject[propertyName];
         }
         if (isDefinedObject(propertyOldValue) && isDefinedObject(propertyNewValue)) {
-          compareObservableObjectProperties(propertyOldValue, propertyNewValue, options);
+          compareWatchObjectProperties(propertyOldValue, propertyNewValue, options);
         } else {
           if (JSON.stringify(propertyOldValue) !== JSON.stringify(propertyNewValue)) {
             fireCustomTrigger(options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue);
@@ -117,12 +139,29 @@
       }
     }
   }
-  function getObserveOptions(newOptions) {
+  function cancelWatchObject(storageId) {
+    if (_watches.hasOwnProperty(storageId)) {
+      var watchOptions = _watches[storageId].options;
+      fireCustomTrigger(watchOptions.onCancel, storageId);
+      clearTimeout(_watches[storageId].timer);
+      delete _watches[storageId];
+    }
+  }
+  function getWatchOptions(newOptions) {
     var options = !isDefinedObject(newOptions) ? {} : newOptions;
-    options.observeTimeout = getDefaultNumber(options.observeTimeout, 250);
+    options.timeout = getDefaultNumber(options.timeout, 250);
+    options.starts = getDefaultDate(options.starts, null);
     options.expires = getDefaultDate(options.expires, null);
+    options.reset = getDefaultBoolean(options.reset, false);
+    options.cancelOnChange = getDefaultBoolean(options.cancelOnChange, false);
+    options.maximumChangesBeforeCanceling = getDefaultNumber(options.maximumChangesBeforeCanceling, 0);
+    options = getWatchOptionsCustomTriggers(options);
+    return options;
+  }
+  function getWatchOptionsCustomTriggers(options) {
     options.onChange = getDefaultFunction(options.onChange, null);
     options.onPropertyChange = getDefaultFunction(options.onPropertyChange, null);
+    options.onCancel = getDefaultFunction(options.onCancel, null);
     return options;
   }
   function fireCustomTrigger(triggerFunction) {
@@ -227,30 +266,40 @@
   var _parameter_Document = null;
   var _parameter_Window = null;
   var _string = {empty:""};
-  var _observables = {};
+  var _watches = {};
   var _configuration = {};
   var _attribute_Name_Options = "data-observe-options";
   this.watchObject = function(object, options) {
-    return createObservableObject(object, options);
+    return createWatch(object, options);
   };
   this.cancelWatch = function(id) {
     var result = false;
-    if (_observables.hasOwnProperty(id)) {
-      clearTimeout(_observables[id].timer);
-      delete _observables[id];
+    if (_watches.hasOwnProperty(id)) {
+      cancelWatchObject(id);
       result = true;
+    } else {
+      var storageId;
+      for (storageId in _watches) {
+        if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
+          cancelWatchObject(storageId);
+          result = true;
+          break;
+        }
+      }
     }
     return result;
   };
-  this.cancelDomElementWatch = function(elementId) {
-    var result = false;
-    var storageId;
-    for (storageId in _observables) {
-      if (_observables.hasOwnProperty(storageId) && isDefinedString(_observables[storageId].domElementId) && _observables[storageId].domElementId === elementId) {
-        clearTimeout(_observables[storageId].timer);
-        delete _observables[storageId];
-        result = true;
-        break;
+  this.getWatch = function(id) {
+    var result = null;
+    if (_watches.hasOwnProperty(id)) {
+      result = _watches[id];
+    } else {
+      var storageId;
+      for (storageId in _watches) {
+        if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
+          result = _watches[storageId];
+          break;
+        }
       }
     }
     return result;
@@ -261,7 +310,7 @@
     return this;
   };
   this.getVersion = function() {
-    return "0.1.0";
+    return "0.2.0";
   };
   (function(documentObject, windowObject) {
     _parameter_Document = documentObject;

@@ -10,8 +10,12 @@ Below is a list of all the options supported in the "data-observe-options" bindi
 
 | Type: | Name: | Description: |
 | --- | --- | --- |
-| *number* | observeTimeout | States the delay that should be waited before checking the object for changes (defaults to 250 milliseconds). |
+| *number* | timeout | States the delay that should be waited before checking the object for changes (defaults to 250 milliseconds). |
+| *date* | starts | States a date/time when the watch should start (defaults to null). |
 | *date* | expires | States a date/time when the watch should expire (defaults to null). |
+| *boolean* | reset | States if the original value of the object should be reset back to its original value when a change is detected (defaults to false). |
+| *boolean* | cancelOnChange | States if the watch should be canceled when te first change is detected (defaults to false). |
+| *number* | maximumChangesBeforeCanceling | States the total number of changes that are allowed before the watch is canceled (defaults to 0, which is off) |
 <br/>
 
 
@@ -19,7 +23,7 @@ Below is a list of all the options supported in the "data-observe-options" bindi
 <br/>
 
 ```markdown
-<div data-observe-options="{ 'onChange': yourCustomJsFunction }">
+<div data-observe-options="{ 'timeout': 1000 }">
     Your HTML.
 </div>
 ```
@@ -33,7 +37,7 @@ Below is a list of all the options supported in the "data-observe-options" bindi
 ```markdown
 <script> 
     var id = $observe.watchObject( yourObject, {
-        onChange: yourCustomJsFunction
+        timeout: 1000
     } );
 </script>
 ```

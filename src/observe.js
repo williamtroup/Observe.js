@@ -4,7 +4,7 @@
  * A lightweight, and easy-to-use, JavaScript library for observing any kind of JS object, or HTML DOM element, to detect changes.
  * 
  * @file        observe.js
- * @version     v0.1.0
+ * @version     v0.2.0
  * @author      Bunoon
  * @license     MIT License
  * @copyright   Bunoon 2023
@@ -21,8 +21,8 @@
             empty: ""
         },
 
-        // Variables: Observables
-        _observables = {},
+        // Variables: Watches
+        _watches = {},
 
         // Variables: Configuration
         _configuration = {},
@@ -64,13 +64,13 @@
                 var bindingOptions = getObjectFromString( bindingOptionsData );
 
                 if ( bindingOptions.parsed && isDefinedObject( bindingOptions.result ) ) {
-                    bindingOptions = getObserveOptions( bindingOptions.result );
+                    bindingOptions = getWatchOptions( bindingOptions.result );
 
                     if ( !isDefinedString( element.id ) ) {
                         element.id = newGuid();
                     }
 
-                    createObservableObject( element, bindingOptions, element.id );
+                    createWatch( element, bindingOptions, element.id );
 
                 } else {
                     if ( !_configuration.safeMode ) {
@@ -93,88 +93,115 @@
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     * Observable Object Creation / Handling
+     * Watch Object Creation / Handling
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
-    function createObservableObject( object, options, domElementId ) {
+    function createWatch( object, options, domElementId ) {
         var storageId = null;
 
         if ( isDefinedObject( object ) ) {
             storageId = newGuid();
 
-            var observeOptions = getObserveOptions( options );
+            var watchOptions = getWatchOptions( options ),
+                watch = {};
 
-            _observables[ storageId ] = {};
-            _observables[ storageId ].options = observeOptions;
-            _observables[ storageId ].domElementId = domElementId;
+            watch.options = watchOptions;
+            watch.domElementId = domElementId;
+            watch.totalChanges = 0;
 
             if ( isDefinedString( domElementId ) ) {
                 var domElement = _parameter_Document.getElementById( domElementId );
 
                 if ( isDefined( domElement ) ) {
-                    _observables[ storageId ].cachedObject = domElement.innerHTML;
-                    _observables[ storageId ].originalObject = domElement.innerHTML;
+                    watch.cachedObject = domElement.outerHTML;
+                    watch.originalObject = domElement.outerHTML;
                 }
 
             } else {
-                _observables[ storageId ].cachedObject = JSON.stringify( object );
-                _observables[ storageId ].originalObject = object;
+                watch.cachedObject = JSON.stringify( object );
+                watch.originalObject = object;
             }
 
-            _observables[ storageId ].timer = setInterval( function() {
+            watch.timer = setInterval( function() {
                 var currentDateTime = new Date();
 
-                observeObject( storageId );
+                if ( !isDefinedDate( watchOptions.starts ) || currentDateTime >= watchOptions.starts ) {
+                    watchObjectForChanges( storageId );
 
-                if ( isDefinedDate( observeOptions.expires ) && currentDateTime > observeOptions.expires ) {
-                    clearTimeout( _observables[ storageId ].timer );
-                    delete _observables[ storageId ];
+                    if ( isDefinedDate( watchOptions.expires ) && currentDateTime >= watchOptions.expires ) {
+                        cancelWatchObject( storageId );
+                    }
                 }
 
-            }, observeOptions.observeTimeout );
+            }, watchOptions.timeout );
+
+            _watches[ storageId ] = watch;
         }
 
         return storageId;
     }
 
-    function observeObject( storageId ) {
-        var isDomElement = isDefinedString( _observables[ storageId ].domElementId );
-
-        if ( isDomElement ) {
-            var domElement = _parameter_Document.getElementById( _observables[ storageId ].domElementId );
-
-            if ( isDefined( domElement ) ) {
-                _observables[ storageId ].originalObject = domElement.innerHTML;
-            }
-        }
-
-        var cachedObject = _observables[ storageId ].cachedObject,
-            originalObject = _observables[ storageId ].originalObject,
-            originalObjectJson = !isDomElement ? JSON.stringify( originalObject ) : originalObject;
-
-        if ( cachedObject !== originalObjectJson ) {
-            _observables[ storageId ].cachedObject = originalObjectJson;
-
-            var options = _observables[ storageId ].options;
+    function watchObjectForChanges( storageId ) {
+        if ( _watches.hasOwnProperty( storageId ) ) {
+            var watch = _watches[ storageId ],
+                isDomElement = isDefinedString( watch.domElementId ),
+                domElement = null;
 
             if ( isDomElement ) {
-                fireCustomTrigger( options.onChange, cachedObject, originalObjectJson );
-            } else {
+                domElement = _parameter_Document.getElementById( watch.domElementId );
 
-                var oldValue = getObjectFromString( cachedObject ).result,
-                    newValue = getObjectFromString( originalObjectJson ).result;
+                if ( isDefined( domElement ) ) {
+                    watch.originalObject = domElement.outerHTML;
+                }
+            }
 
-                fireCustomTrigger( options.onChange, oldValue, newValue );
+            var cachedObject = watch.cachedObject,
+                originalObject = watch.originalObject,
+                originalObjectJson = !isDomElement ? JSON.stringify( originalObject ) : originalObject;
 
-                if ( isDefinedFunction( options.onPropertyChange ) && !isDefinedArray( oldValue ) ) {
-                    compareObservableObjectProperties( oldValue, newValue, options );
+            if ( cachedObject !== originalObjectJson ) {
+                var watchOptions = watch.options;
+
+                if ( watchOptions.reset ) {
+                    if ( isDomElement ) {
+                        domElement.outerHTML = watch.cachedObject;
+                    } else {
+                        watch.originalObject = getObjectFromString( cachedObject ).result;
+                    }
+
+                } else {
+                    watch.cachedObject = originalObjectJson;
+                }
+
+                if ( isDomElement ) {
+                    fireCustomTrigger( watchOptions.onChange, cachedObject, originalObjectJson );
+                } else {
+
+                    var oldValue = getObjectFromString( cachedObject ).result,
+                        newValue = getObjectFromString( originalObjectJson ).result;
+
+                    fireCustomTrigger( watchOptions.onChange, oldValue, newValue );
+
+                    if ( isDefinedFunction( watchOptions.onPropertyChange ) && !isDefinedArray( oldValue ) ) {
+                        compareWatchObjectProperties( oldValue, newValue, watchOptions );
+                    }
+                }
+
+                if ( watchOptions.cancelOnChange ) {
+                    cancelWatchObject( storageId );
+                }
+
+                watch.totalChanges++;
+
+                if ( watchOptions.maximumChangesBeforeCanceling > 0 && watch.totalChanges >= watchOptions.maximumChangesBeforeCanceling ) {
+                    cancelWatchObject( storageId );
                 }
             }
         }
     }
 
-    function compareObservableObjectProperties( oldObject, newObject, options ) {
+    function compareWatchObjectProperties( oldObject, newObject, options ) {
         for ( var propertyName in oldObject ) {
             if ( oldObject.hasOwnProperty( propertyName ) ) {
                 var propertyOldValue = oldObject[ propertyName ],
@@ -185,7 +212,7 @@
                 }
 
                 if ( isDefinedObject( propertyOldValue ) && isDefinedObject( propertyNewValue ) ) {
-                    compareObservableObjectProperties( propertyOldValue, propertyNewValue, options );
+                    compareWatchObjectProperties( propertyOldValue, propertyNewValue, options );
                 } else {
 
                     if ( JSON.stringify( propertyOldValue ) !== JSON.stringify( propertyNewValue ) ) {
@@ -196,20 +223,43 @@
         }
     }
 
+    function cancelWatchObject( storageId ) {
+        if ( _watches.hasOwnProperty( storageId ) ) {
+            var watchOptions = _watches[ storageId ].options;
+
+            fireCustomTrigger( watchOptions.onCancel, storageId );
+
+            clearTimeout( _watches[ storageId ].timer );
+            delete _watches[ storageId ];
+        }
+    }
+
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     * Observe Options
+     * Watch Options
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
-    function getObserveOptions( newOptions ) {
+    function getWatchOptions( newOptions ) {
         var options = !isDefinedObject( newOptions ) ? {} : newOptions;
 
-        options.observeTimeout = getDefaultNumber( options.observeTimeout, 250 );
+        options.timeout = getDefaultNumber( options.timeout, 250 );
+        options.starts = getDefaultDate( options.starts, null );
         options.expires = getDefaultDate( options.expires, null );
+        options.reset = getDefaultBoolean( options.reset, false );
+        options.cancelOnChange = getDefaultBoolean( options.cancelOnChange, false );
+        options.maximumChangesBeforeCanceling = getDefaultNumber( options.maximumChangesBeforeCanceling, 0 );
+
+        options = getWatchOptionsCustomTriggers( options );
+
+        return options;
+    }
+
+    function getWatchOptionsCustomTriggers( options ) {
         options.onChange = getDefaultFunction( options.onChange, null );
         options.onPropertyChange = getDefaultFunction( options.onPropertyChange, null );
+        options.onCancel = getDefaultFunction( options.onCancel, null );
 
         return options;
     }
@@ -374,7 +424,7 @@
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     * Public Functions:  Observables
+     * Public Functions:  Watching Objects
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
@@ -391,7 +441,7 @@
      * @returns     {string}                                                The ID that object watch is stored under.
      */
     this.watchObject = function( object, options ) {
-        return createObservableObject( object, options );
+        return createWatch( object, options );
     };
 
     /**
@@ -401,44 +451,55 @@
      * 
      * @public
      * 
-     * @param       {string}    id                                          The Id of the object being watched.
+     * @param       {string}    id                                          The Id of the object being watched, or DOM element ID being watched.
      * 
      * @returns     {boolean}                                               States if the object being watched has been canceled.
      */
     this.cancelWatch = function( id ) {
         var result = false;
 
-        if ( _observables.hasOwnProperty( id ) ) {
-            clearTimeout( _observables[ id ].timer );
-            delete _observables[ id ];
+        if ( _watches.hasOwnProperty( id ) ) {
+            cancelWatchObject( id );
 
             result = true;
+        } else {
+
+            for ( var storageId in _watches ) {
+                if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                    cancelWatchObject( storageId );
+        
+                    result = true;
+                    break;
+                }
+            }
         }
 
         return result;
     };
 
     /**
-     * cancelDomElementWatch().
+     * getWatch().
      * 
-     * Cancels the watching of a DOM element object for changes.
+     * Returns the properties for an active watch.
      * 
      * @public
      * 
-     * @param       {string}    elementId                                   The Id of the DOM element object being watched.
+     * @param       {string}    id                                          The Id of the object being watched, or DOM element ID being watched.
      * 
-     * @returns     {boolean}                                               States if the DOM element object being watched has been canceled.
+     * @returns     {Object}                                                The watch properties for an object (null if not found).
      */
-    this.cancelDomElementWatch = function( elementId ) {
-        var result = false;
+    this.getWatch = function( id ) {
+        var result = null;
 
-        for ( var storageId in _observables ) {
-            if ( _observables.hasOwnProperty( storageId ) && isDefinedString( _observables[ storageId ].domElementId ) && _observables[ storageId ].domElementId === elementId ) {
-                clearTimeout( _observables[ storageId ].timer );
-                delete _observables[ storageId ];
-    
-                result = true;
-                break;
+        if ( _watches.hasOwnProperty( id ) ) {
+            result = _watches[ id ];
+        } else {
+
+            for ( var storageId in _watches ) {
+                if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                    result = _watches[ storageId ];
+                    break;
+                }
             }
         }
 
@@ -493,7 +554,7 @@
      * @returns     {string}                                                The version number.
      */
     this.getVersion = function() {
-        return "0.1.0";
+        return "0.2.0";
     };
 
 
