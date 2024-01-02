@@ -127,7 +127,7 @@
 
                 observeObject( storageId );
 
-                if ( isDefinedDate( observeOptions.expires ) && currentDateTime > observeOptions.expires ) {
+                if ( isDefinedDate( observeOptions.expires ) && currentDateTime >= observeOptions.expires ) {
                     cancelWatchObject( storageId );
                 }
 

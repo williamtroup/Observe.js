@@ -64,7 +64,7 @@
       _observables[storageId].timer = setInterval(function() {
         var currentDateTime = new Date();
         observeObject(storageId);
-        if (isDefinedDate(observeOptions.expires) && currentDateTime > observeOptions.expires) {
+        if (isDefinedDate(observeOptions.expires) && currentDateTime >= observeOptions.expires) {
           cancelWatchObject(storageId);
         }
       }, observeOptions.observeTimeout);
