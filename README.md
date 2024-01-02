@@ -18,10 +18,11 @@ Observe.js
 
 - Zero-dependencies and extremely lightweight!
 - JS Object, and HTML DOM Element watching!
+- Cancellation support!
 - Full API available via public functions.
 - Fully configurable!
 - Fully configurable per watch!
-- Custom triggers for actions (when changes are detected, etc).
+- Custom triggers for actions (when changes are detected, on cancellation, etc).
 <br />
 <br />
 
