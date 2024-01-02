@@ -74,8 +74,9 @@
   }
   function observeObject(storageId) {
     var isDomElement = isDefinedString(_observables[storageId].domElementId);
+    var domElement = null;
     if (isDomElement) {
-      var domElement = _parameter_Document.getElementById(_observables[storageId].domElementId);
+      domElement = _parameter_Document.getElementById(_observables[storageId].domElementId);
       if (isDefined(domElement)) {
         _observables[storageId].originalObject = domElement.innerHTML;
       }
@@ -84,8 +85,16 @@
     var originalObject = _observables[storageId].originalObject;
     var originalObjectJson = !isDomElement ? JSON.stringify(originalObject) : originalObject;
     if (cachedObject !== originalObjectJson) {
-      _observables[storageId].cachedObject = originalObjectJson;
       var options = _observables[storageId].options;
+      if (options.reset) {
+        if (isDomElement) {
+          domElement.innerHTML = _observables[storageId].cachedObject;
+        } else {
+          _observables[storageId].originalObject = getObjectFromString(cachedObject).result;
+        }
+      } else {
+        _observables[storageId].cachedObject = originalObjectJson;
+      }
       if (isDomElement) {
         fireCustomTrigger(options.onChange, cachedObject, originalObjectJson);
       } else {
@@ -121,6 +130,11 @@
     var options = !isDefinedObject(newOptions) ? {} : newOptions;
     options.observeTimeout = getDefaultNumber(options.observeTimeout, 250);
     options.expires = getDefaultDate(options.expires, null);
+    options.reset = getDefaultBoolean(options.reset, false);
+    options = getObserveOptionsCustomTriggers(options);
+    return options;
+  }
+  function getObserveOptionsCustomTriggers(options) {
     options.onChange = getDefaultFunction(options.onChange, null);
     options.onPropertyChange = getDefaultFunction(options.onPropertyChange, null);
     return options;
