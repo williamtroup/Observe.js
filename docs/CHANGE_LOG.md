@@ -13,6 +13,7 @@
 - Added a new binding/option called "cancelOnChange", which states if a watch should be canceled when the first change is detected (defaults to false).
 - Added a new binding/option called "maximumChangesBeforeCanceling", which states the total number of changes allowed before a watch is canceled (defaults to 0, which for off).
 - Added a new binding/option called "starts", which states the date/time a watch should start (defaults to null).
+- Renamed the binding/option "observeTimeout" to "timeout".
 
 #### **Binding Options / Function Options - Custom Triggers:**
 - Added a new binding/option custom trigger called "onCancel", which states an event that should be triggered when a watch is canceled.

@@ -10,7 +10,7 @@ Below is a list of all the options supported in the "data-observe-options" bindi
 
 | Type: | Name: | Description: |
 | --- | --- | --- |
-| *number* | observeTimeout | States the delay that should be waited before checking the object for changes (defaults to 250 milliseconds). |
+| *number* | timeout | States the delay that should be waited before checking the object for changes (defaults to 250 milliseconds). |
 | *date* | starts | States a date/time when the watch should start (defaults to null). |
 | *date* | expires | States a date/time when the watch should expire (defaults to null). |
 | *boolean* | reset | States if the original value of the object should be reset back to its original value when a change is detected (defaults to false). |
@@ -23,7 +23,7 @@ Below is a list of all the options supported in the "data-observe-options" bindi
 <br/>
 
 ```markdown
-<div data-observe-options="{ 'observeTimeout': 1000 }">
+<div data-observe-options="{ 'timeout': 1000 }">
     Your HTML.
 </div>
 ```
@@ -37,7 +37,7 @@ Below is a list of all the options supported in the "data-observe-options" bindi
 ```markdown
 <script> 
     var id = $observe.watchObject( yourObject, {
-        observeTimeout: 1000
+        timeout: 1000
     } );
 </script>
 ```

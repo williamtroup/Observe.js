@@ -134,7 +134,7 @@
                     }
                 }
 
-            }, watchOptions.observeTimeout );
+            }, watchOptions.timeout );
 
             _watches[ storageId ] = watch;
         }
@@ -244,7 +244,7 @@
     function getWatchOptions( newOptions ) {
         var options = !isDefinedObject( newOptions ) ? {} : newOptions;
 
-        options.observeTimeout = getDefaultNumber( options.observeTimeout, 250 );
+        options.timeout = getDefaultNumber( options.timeout, 250 );
         options.starts = getDefaultDate( options.starts, null );
         options.expires = getDefaultDate( options.expires, null );
         options.reset = getDefaultBoolean( options.reset, false );
