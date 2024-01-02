@@ -15,7 +15,8 @@
 - Zero-dependencies and extremely lightweight!
 - JS Object, and HTML DOM Element watching!
 - Full API available via public functions.
-- Full configurable!
+- Fully configurable!
+- Fully configurable per watch!
 - Custom triggers for actions (when changes are detected, etc).
 
 
