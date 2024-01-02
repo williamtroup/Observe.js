@@ -128,8 +128,7 @@
                 observeObject( storageId );
 
                 if ( isDefinedDate( observeOptions.expires ) && currentDateTime > observeOptions.expires ) {
-                    clearTimeout( _observables[ storageId ].timer );
-                    delete _observables[ storageId ];
+                    cancelWatchObject( storageId );
                 }
 
             }, observeOptions.observeTimeout );
@@ -181,6 +180,10 @@
                     compareObservableObjectProperties( oldValue, newValue, options );
                 }
             }
+
+            if ( options.cancelOnChange ) {
+                cancelWatchObject( storageId );
+            }
         }
     }
 
@@ -206,6 +209,11 @@
         }
     }
 
+    function cancelWatchObject( storageId ) {
+        clearTimeout( _observables[ storageId ].timer );
+        delete _observables[ storageId ];
+    }
+
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -219,6 +227,7 @@
         options.observeTimeout = getDefaultNumber( options.observeTimeout, 250 );
         options.expires = getDefaultDate( options.expires, null );
         options.reset = getDefaultBoolean( options.reset, false );
+        options.cancelOnChange = getDefaultBoolean( options.cancelOnChange, false );
 
         options = getObserveOptionsCustomTriggers( options );
 
@@ -427,8 +436,7 @@
         var result = false;
 
         if ( _observables.hasOwnProperty( id ) ) {
-            clearTimeout( _observables[ id ].timer );
-            delete _observables[ id ];
+            cancelWatchObject( id );
 
             result = true;
         }
@@ -452,8 +460,7 @@
 
         for ( var storageId in _observables ) {
             if ( _observables.hasOwnProperty( storageId ) && isDefinedString( _observables[ storageId ].domElementId ) && _observables[ storageId ].domElementId === elementId ) {
-                clearTimeout( _observables[ storageId ].timer );
-                delete _observables[ storageId ];
+                cancelWatchObject( storageId );
     
                 result = true;
                 break;
