@@ -19,6 +19,7 @@
 
 #### **Public Functions:**
 - Added new public function "getWatch()", which is used to return all the watch properties for an object being watched.
+- Removed the public function "cancelDomElementWatch()", as "cancelWatch()" will now do it for you.
 
 #### **Watching:**
 - Changes are now detected for HTML DOM element objects when attributes are updated.
@@ -31,7 +32,7 @@
 
 #### **Fixes:**
 - Fixed the "expires" binding/option not accurately checking the expired date and time.
-- Fixed a script error that occurred sometimes when a watch is canceled using the public functions "cancelWatch()" and "cancelDomElementWatch()".
+- Fixed a script error that occurred sometimes when a watch is canceled using the public function "cancelWatch()".
 
 <br>
 

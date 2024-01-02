@@ -20,23 +20,15 @@ Adds an object that should be watched for changes.
 ### **cancelWatch( *id* )**:
 Cancels the watching of an object for changes.
 <br>
-***Parameter: id***: '*string*' - The Id of the object being watched.
+***Parameter: id***: '*string*' - The Id of the object being watched, or DOM element ID being watched.
 <br>
 ***Returns***: '*boolean*' - States if the object being watched has been canceled.
-<br>
-
-### **cancelDomElementWatch( *elementId* )**:
-Cancels the watching of a DOM element object for changes.
-<br>
-***Parameter: elementId***: '*string*' - The Id of the DOM element object being watched. 
-<br>
-***Returns***: '*boolean*' - States if the DOM element object being watched has been canceled.
 <br>
 
 ### **getWatch( *id* )**:
 Returns the properties for an active watch.
 <br>
-***Parameter: id***: '*string*' - The Id of the object being watched.
+***Parameter: id***: '*string*' - The Id of the object being watched, or DOM element ID being watched.
 <br>
 ***Returns***: '*Object*' - The watch properties for an object (null if not found).
 <br>

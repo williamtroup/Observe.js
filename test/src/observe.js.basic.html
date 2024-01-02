@@ -28,7 +28,7 @@
             <h2>Watch Object:</h2>
             <button onclick="watchNewObject();">Watch Object</button>
             <button onclick="$observe.cancelWatch( watchObjectId );">Cancel Watch Object</button>
-            <button onclick="$observe.cancelDomElementWatch( 'domElementWatch1' );">Cancel DOM Element Watch</button>
+            <button onclick="$observe.cancelWatch( 'domElementWatch1' );">Cancel DOM Element Watch</button>
             <br />
 
             <h2>Change Object Values:</h2>
@@ -42,6 +42,7 @@
 
             <h2>Get Watch Object:</h2>
             <button onclick="console.log( $observe.getWatch( watchObjectId ) );">Get Watch Object - 1</button>
+            <button onclick="console.log( $observe.getWatch( 'domElementWatch1' ) );">Get Watch Object - 2 (DOM)</button>
             <br />
 
             <h2>Configuration:</h2>

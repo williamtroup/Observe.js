@@ -277,17 +277,14 @@
     if (_watches.hasOwnProperty(id)) {
       cancelWatchObject(id);
       result = true;
-    }
-    return result;
-  };
-  this.cancelDomElementWatch = function(elementId) {
-    var result = false;
-    var storageId;
-    for (storageId in _watches) {
-      if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === elementId) {
-        cancelWatchObject(storageId);
-        result = true;
-        break;
+    } else {
+      var storageId;
+      for (storageId in _watches) {
+        if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
+          cancelWatchObject(storageId);
+          result = true;
+          break;
+        }
       }
     }
     return result;
@@ -296,6 +293,14 @@
     var result = null;
     if (_watches.hasOwnProperty(id)) {
       result = _watches[id];
+    } else {
+      var storageId;
+      for (storageId in _watches) {
+        if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
+          result = _watches[storageId];
+          break;
+        }
+      }
     }
     return result;
   };

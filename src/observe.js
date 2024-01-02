@@ -451,7 +451,7 @@
      * 
      * @public
      * 
-     * @param       {string}    id                                          The Id of the object being watched.
+     * @param       {string}    id                                          The Id of the object being watched, or DOM element ID being watched.
      * 
      * @returns     {boolean}                                               States if the object being watched has been canceled.
      */
@@ -462,31 +462,15 @@
             cancelWatchObject( id );
 
             result = true;
-        }
+        } else {
 
-        return result;
-    };
-
-    /**
-     * cancelDomElementWatch().
-     * 
-     * Cancels the watching of a DOM element object for changes.
-     * 
-     * @public
-     * 
-     * @param       {string}    elementId                                   The Id of the DOM element object being watched.
-     * 
-     * @returns     {boolean}                                               States if the DOM element object being watched has been canceled.
-     */
-    this.cancelDomElementWatch = function( elementId ) {
-        var result = false;
-
-        for ( var storageId in _watches ) {
-            if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === elementId ) {
-                cancelWatchObject( storageId );
-    
-                result = true;
-                break;
+            for ( var storageId in _watches ) {
+                if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                    cancelWatchObject( storageId );
+        
+                    result = true;
+                    break;
+                }
             }
         }
 
@@ -500,7 +484,7 @@
      * 
      * @public
      * 
-     * @param       {string}    id                                          The Id of the object being watched.
+     * @param       {string}    id                                          The Id of the object being watched, or DOM element ID being watched.
      * 
      * @returns     {Object}                                                The watch properties for an object (null if not found).
      */
@@ -509,6 +493,14 @@
 
         if ( _watches.hasOwnProperty( id ) ) {
             result = _watches[ id ];
+        } else {
+
+            for ( var storageId in _watches ) {
+                if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                    result = _watches[ storageId ];
+                    break;
+                }
+            }
         }
 
         return result;
