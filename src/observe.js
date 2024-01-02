@@ -113,8 +113,8 @@
                 var domElement = _parameter_Document.getElementById( domElementId );
 
                 if ( isDefined( domElement ) ) {
-                    _observables[ storageId ].cachedObject = domElement.innerHTML;
-                    _observables[ storageId ].originalObject = domElement.innerHTML;
+                    _observables[ storageId ].cachedObject = domElement.outerHTML;
+                    _observables[ storageId ].originalObject = domElement.outerHTML;
                 }
 
             } else {
@@ -145,7 +145,7 @@
             domElement = _parameter_Document.getElementById( _observables[ storageId ].domElementId );
 
             if ( isDefined( domElement ) ) {
-                _observables[ storageId ].originalObject = domElement.innerHTML;
+                _observables[ storageId ].originalObject = domElement.outerHTML;
             }
         }
 
@@ -158,7 +158,7 @@
 
             if ( options.reset ) {
                 if ( isDomElement ) {
-                    domElement.innerHTML = _observables[ storageId ].cachedObject;
+                    domElement.outerHTML = _observables[ storageId ].cachedObject;
                 } else {
                     _observables[ storageId ].originalObject = getObjectFromString( cachedObject ).result;
                 }

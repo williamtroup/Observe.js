@@ -10,6 +10,9 @@
 - Added a new binding/option called "reset", which states if an object should be reset back to its original value when a change is detected (defaults to false).
 - Added a new binding/option called "cancelOnChange", which states if a watch should be canceled when the first change is detected (defaults to false).
 
+#### **Watching:**
+- Changes are now detected for HTML DOM element objects when attributes are updated.
+
 <br>
 
 

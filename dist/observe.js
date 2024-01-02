@@ -54,8 +54,8 @@
       if (isDefinedString(domElementId)) {
         var domElement = _parameter_Document.getElementById(domElementId);
         if (isDefined(domElement)) {
-          _observables[storageId].cachedObject = domElement.innerHTML;
-          _observables[storageId].originalObject = domElement.innerHTML;
+          _observables[storageId].cachedObject = domElement.outerHTML;
+          _observables[storageId].originalObject = domElement.outerHTML;
         }
       } else {
         _observables[storageId].cachedObject = JSON.stringify(object);
@@ -77,7 +77,7 @@
     if (isDomElement) {
       domElement = _parameter_Document.getElementById(_observables[storageId].domElementId);
       if (isDefined(domElement)) {
-        _observables[storageId].originalObject = domElement.innerHTML;
+        _observables[storageId].originalObject = domElement.outerHTML;
       }
     }
     var cachedObject = _observables[storageId].cachedObject;
@@ -87,7 +87,7 @@
       var options = _observables[storageId].options;
       if (options.reset) {
         if (isDomElement) {
-          domElement.innerHTML = _observables[storageId].cachedObject;
+          domElement.outerHTML = _observables[storageId].cachedObject;
         } else {
           _observables[storageId].originalObject = getObjectFromString(cachedObject).result;
         }
