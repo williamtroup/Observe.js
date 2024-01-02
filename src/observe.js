@@ -70,7 +70,7 @@
                         element.id = newGuid();
                     }
 
-                    createObservableObject( element, bindingOptions, element.id );
+                    createWatch( element, bindingOptions, element.id );
 
                 } else {
                     if ( !_configuration.safeMode ) {
@@ -93,11 +93,11 @@
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     * Observable Object Creation / Handling
+     * Observable Watch Object Creation / Handling
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
-    function createObservableObject( object, options, domElementId ) {
+    function createWatch( object, options, domElementId ) {
         var storageId = null;
 
         if ( isDefinedObject( object ) ) {
@@ -126,10 +126,12 @@
             _observables[ storageId ].timer = setInterval( function() {
                 var currentDateTime = new Date();
 
-                observeObject( storageId );
+                if ( !isDefinedDate( observeOptions.starts ) || currentDateTime >= observeOptions.starts ) {
+                    watchObjectForChanges( storageId );
 
-                if ( isDefinedDate( observeOptions.expires ) && currentDateTime >= observeOptions.expires ) {
-                    cancelWatchObject( storageId );
+                    if ( isDefinedDate( observeOptions.expires ) && currentDateTime >= observeOptions.expires ) {
+                        cancelWatchObject( storageId );
+                    }
                 }
 
             }, observeOptions.observeTimeout );
@@ -138,7 +140,7 @@
         return storageId;
     }
 
-    function observeObject( storageId ) {
+    function watchObjectForChanges( storageId ) {
         if ( _observables.hasOwnProperty( storageId ) ) {
             var isDomElement = isDefinedString( _observables[ storageId ].domElementId ),
                 domElement = null;
@@ -179,7 +181,7 @@
                     fireCustomTrigger( options.onChange, oldValue, newValue );
 
                     if ( isDefinedFunction( options.onPropertyChange ) && !isDefinedArray( oldValue ) ) {
-                        compareObservableObjectProperties( oldValue, newValue, options );
+                        compareWatchObjectProperties( oldValue, newValue, options );
                     }
                 }
 
@@ -196,7 +198,7 @@
         }
     }
 
-    function compareObservableObjectProperties( oldObject, newObject, options ) {
+    function compareWatchObjectProperties( oldObject, newObject, options ) {
         for ( var propertyName in oldObject ) {
             if ( oldObject.hasOwnProperty( propertyName ) ) {
                 var propertyOldValue = oldObject[ propertyName ],
@@ -207,7 +209,7 @@
                 }
 
                 if ( isDefinedObject( propertyOldValue ) && isDefinedObject( propertyNewValue ) ) {
-                    compareObservableObjectProperties( propertyOldValue, propertyNewValue, options );
+                    compareWatchObjectProperties( propertyOldValue, propertyNewValue, options );
                 } else {
 
                     if ( JSON.stringify( propertyOldValue ) !== JSON.stringify( propertyNewValue ) ) {
@@ -240,6 +242,7 @@
         var options = !isDefinedObject( newOptions ) ? {} : newOptions;
 
         options.observeTimeout = getDefaultNumber( options.observeTimeout, 250 );
+        options.starts = getDefaultDate( options.starts, null );
         options.expires = getDefaultDate( options.expires, null );
         options.reset = getDefaultBoolean( options.reset, false );
         options.cancelOnChange = getDefaultBoolean( options.cancelOnChange, false );
@@ -435,7 +438,7 @@
      * @returns     {string}                                                The ID that object watch is stored under.
      */
     this.watchObject = function( object, options ) {
-        return createObservableObject( object, options );
+        return createWatch( object, options );
     };
 
     /**

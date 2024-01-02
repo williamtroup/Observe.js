@@ -27,7 +27,7 @@
           if (!isDefinedString(element.id)) {
             element.id = newGuid();
           }
-          createObservableObject(element, bindingOptions, element.id);
+          createWatch(element, bindingOptions, element.id);
         } else {
           if (!_configuration.safeMode) {
             console.error("The attribute '" + _attribute_Name_Options + "' is not a valid object.");
@@ -43,7 +43,7 @@
     }
     return result;
   }
-  function createObservableObject(object, options, domElementId) {
+  function createWatch(object, options, domElementId) {
     var storageId = null;
     if (isDefinedObject(object)) {
       storageId = newGuid();
@@ -64,15 +64,17 @@
       }
       _observables[storageId].timer = setInterval(function() {
         var currentDateTime = new Date();
-        observeObject(storageId);
-        if (isDefinedDate(observeOptions.expires) && currentDateTime >= observeOptions.expires) {
-          cancelWatchObject(storageId);
+        if (!isDefinedDate(observeOptions.starts) || currentDateTime >= observeOptions.starts) {
+          watchObjectForChanges(storageId);
+          if (isDefinedDate(observeOptions.expires) && currentDateTime >= observeOptions.expires) {
+            cancelWatchObject(storageId);
+          }
         }
       }, observeOptions.observeTimeout);
     }
     return storageId;
   }
-  function observeObject(storageId) {
+  function watchObjectForChanges(storageId) {
     if (_observables.hasOwnProperty(storageId)) {
       var isDomElement = isDefinedString(_observables[storageId].domElementId);
       var domElement = null;
@@ -103,7 +105,7 @@
           var newValue = getObjectFromString(originalObjectJson).result;
           fireCustomTrigger(options.onChange, oldValue, newValue);
           if (isDefinedFunction(options.onPropertyChange) && !isDefinedArray(oldValue)) {
-            compareObservableObjectProperties(oldValue, newValue, options);
+            compareWatchObjectProperties(oldValue, newValue, options);
           }
         }
         if (options.cancelOnChange) {
@@ -116,7 +118,7 @@
       }
     }
   }
-  function compareObservableObjectProperties(oldObject, newObject, options) {
+  function compareWatchObjectProperties(oldObject, newObject, options) {
     var propertyName;
     for (propertyName in oldObject) {
       if (oldObject.hasOwnProperty(propertyName)) {
@@ -126,7 +128,7 @@
           propertyNewValue = newObject[propertyName];
         }
         if (isDefinedObject(propertyOldValue) && isDefinedObject(propertyNewValue)) {
-          compareObservableObjectProperties(propertyOldValue, propertyNewValue, options);
+          compareWatchObjectProperties(propertyOldValue, propertyNewValue, options);
         } else {
           if (JSON.stringify(propertyOldValue) !== JSON.stringify(propertyNewValue)) {
             fireCustomTrigger(options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue);
@@ -146,6 +148,7 @@
   function getObserveOptions(newOptions) {
     var options = !isDefinedObject(newOptions) ? {} : newOptions;
     options.observeTimeout = getDefaultNumber(options.observeTimeout, 250);
+    options.starts = getDefaultDate(options.starts, null);
     options.expires = getDefaultDate(options.expires, null);
     options.reset = getDefaultBoolean(options.reset, false);
     options.cancelOnChange = getDefaultBoolean(options.cancelOnChange, false);
@@ -265,7 +268,7 @@
   var _configuration = {};
   var _attribute_Name_Options = "data-observe-options";
   this.watchObject = function(object, options) {
-    return createObservableObject(object, options);
+    return createWatch(object, options);
   };
   this.cancelWatch = function(id) {
     var result = false;
