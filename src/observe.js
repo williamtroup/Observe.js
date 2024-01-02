@@ -493,6 +493,27 @@
         return result;
     };
 
+    /**
+     * getWatch().
+     * 
+     * Returns the properties for an active watch.
+     * 
+     * @public
+     * 
+     * @param       {string}    id                                          The Id of the object being watched.
+     * 
+     * @returns     {Object}                                                The watch properties for an object (null if not found).
+     */
+    this.getWatch = function( id ) {
+        var result = null;
+
+        if ( _watches.hasOwnProperty( id ) ) {
+            result = _watches[ id ];
+        }
+
+        return result;
+    };
+
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------

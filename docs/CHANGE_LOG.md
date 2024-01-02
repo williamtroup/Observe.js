@@ -17,6 +17,9 @@
 #### **Binding Options / Function Options - Custom Triggers:**
 - Added a new binding/option custom trigger called "onCancel", which states an event that should be triggered when a watch is canceled.
 
+#### **Public Functions:**
+- Added new public function "getWatch()", which is used to return all the watch properties for an object being watched.
+
 #### **Watching:**
 - Changes are now detected for HTML DOM element objects when attributes are updated.
 

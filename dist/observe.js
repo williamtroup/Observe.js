@@ -292,6 +292,13 @@
     }
     return result;
   };
+  this.getWatch = function(id) {
+    var result = null;
+    if (_watches.hasOwnProperty(id)) {
+      result = _watches[id];
+    }
+    return result;
+  };
   this.setConfiguration = function(newOptions) {
     _configuration = !isDefinedObject(newOptions) ? {} : newOptions;
     buildDefaultConfiguration();

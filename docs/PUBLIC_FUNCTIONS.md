@@ -32,6 +32,14 @@ Cancels the watching of a DOM element object for changes.
 <br>
 ***Returns***: '*boolean*' - States if the DOM element object being watched has been canceled.
 <br>
+
+### **getWatch( *id* )**:
+Returns the properties for an active watch.
+<br>
+***Parameter: id***: '*string*' - The Id of the object being watched.
+<br>
+***Returns***: '*Object*' - The watch properties for an object (null if not found).
+<br>
 <br>
 
 
