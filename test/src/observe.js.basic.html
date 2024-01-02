@@ -15,11 +15,11 @@
         </div>
 
         <div class="contents">
-            <div id="domElementWatch1" data-observe-options="{ 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange }">
+            <div id="domElementWatch1" data-observe-options="{ 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange, 'onCancel': onCancelWatch }">
                 When changed, this element should fire a custom trigger.
             </div>
 
-            <div id="domElementWatch2" data-observe-options="{ 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange, 'reset': true }">
+            <div id="domElementWatch2" data-observe-options="{ 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange, 'onCancel': onCancelWatch, 'reset': true }">
                 When changed, this element should fire a custom trigger (and reset its value back to the original).
             </div>
         </div>
@@ -63,7 +63,8 @@
         function watchNewObject() {
             watchObjectId = $observe.watchObject( window.observeObject, {
                 onChange: onObservableObjectChange,
-                onPropertyChange: onObservableObjectPropertyChange
+                onPropertyChange: onObservableObjectPropertyChange,
+                onCancel: onCancelWatch
             } );
         }
 
@@ -83,6 +84,11 @@
             console.log( "Property Name: " + propertyName );
             console.log( "Old Value: " + JSON.stringify( oldValue ) );
             console.log( "New Value: " + JSON.stringify( newValue ) );
+            console.log( "" );
+        }
+
+        function onCancelWatch( id ) {
+            console.log( "Watch " + id + " canceled." );
             console.log( "" );
         }
     </script>

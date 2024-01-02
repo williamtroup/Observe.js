@@ -12,6 +12,9 @@
 - Added a new binding/option called "cancelOnChange", which states if a watch should be canceled when the first change is detected (defaults to false).
 - Added a new binding/option called "maximumChangesBeforeCanceling", which states the total number of changes allowed before a watch is canceled (defaults to 0, which for off).
 
+#### **Binding Options / Function Options - Custom Triggers:**
+- Added a new binding/option custom trigger called "onCancel", which states an event that should be triggered when a watch is canceled.
+
 #### **Watching:**
 - Changes are now detected for HTML DOM element objects when attributes are updated.
 

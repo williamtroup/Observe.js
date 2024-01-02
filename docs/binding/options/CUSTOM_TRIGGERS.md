@@ -23,6 +23,11 @@ Fires when a change has been detected in an object (states which property change
 <br>
 ***Parameter:*** newValue: '*object*' - The new value.
 
+### options.onCancel( *id* ):
+Fires when a watch has been canceled.
+<br>
+***Parameter:*** id: '*string*' - The ID of the watch that has been canceled.
+
 <br>
 
 

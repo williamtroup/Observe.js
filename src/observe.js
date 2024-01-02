@@ -218,6 +218,10 @@
 
     function cancelWatchObject( storageId ) {
         if ( _observables.hasOwnProperty( storageId ) ) {
+            var options = _observables[ storageId ].options;
+
+            fireCustomTrigger( options.onCancel, storageId );
+
             clearTimeout( _observables[ storageId ].timer );
             delete _observables[ storageId ];
         }
@@ -247,6 +251,7 @@
     function getObserveOptionsCustomTriggers( options ) {
         options.onChange = getDefaultFunction( options.onChange, null );
         options.onPropertyChange = getDefaultFunction( options.onPropertyChange, null );
+        options.onCancel = getDefaultFunction( options.onCancel, null );
 
         return options;
     }
