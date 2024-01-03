@@ -13,6 +13,9 @@
 - Added new public function "getWatches()", which is used to return all the watches currently running, or paused.
 - Added new public function "pauseWatch()", which is used to pause a running watch for a specific number of milliseconds.
 
+#### **General Improvements:**
+- When the page is unloaded, all active watches are now canceled.
+
 #### **Documentation:**
 - Fixed some of the documentation spelling/grammar mistakes.
 

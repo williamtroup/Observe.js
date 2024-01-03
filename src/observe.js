@@ -227,6 +227,14 @@
         }
     }
 
+    function cancelWatchesForObjects() {
+        for ( var storageId in _watches ) {
+            if ( _watches.hasOwnProperty( storageId ) ) {
+                cancelWatchObject( storageId );
+            }
+        }
+    }
+
     function cancelWatchObject( storageId ) {
         if ( _watches.hasOwnProperty( storageId ) ) {
             var watchOptions = _watches[ storageId ].options;
@@ -507,11 +515,7 @@
      * @returns     {Object}                                                The Observe.js class instance.
      */
     this.cancelWatches = function() {
-        for ( var storageId in _watches ) {
-            if ( _watches.hasOwnProperty( storageId ) ) {
-                cancelWatchObject( storageId );
-            }
-        }
+        cancelWatchesForObjects();
 
         return this;
     };
@@ -654,6 +658,10 @@
 
         _parameter_Document.addEventListener( "DOMContentLoaded", function() {
             collectDOMObjects();
+        } );
+
+        _parameter_Window.addEventListener( "beforeunload", function() {
+            cancelWatchesForObjects();
         } );
 
         if ( !isDefined( _parameter_Window.$observe ) ) {

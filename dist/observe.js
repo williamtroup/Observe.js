@@ -142,6 +142,14 @@
       }
     }
   }
+  function cancelWatchesForObjects() {
+    var storageId;
+    for (storageId in _watches) {
+      if (_watches.hasOwnProperty(storageId)) {
+        cancelWatchObject(storageId);
+      }
+    }
+  }
   function cancelWatchObject(storageId) {
     if (_watches.hasOwnProperty(storageId)) {
       var watchOptions = _watches[storageId].options;
@@ -304,12 +312,7 @@
     return result;
   };
   this.cancelWatches = function() {
-    var storageId;
-    for (storageId in _watches) {
-      if (_watches.hasOwnProperty(storageId)) {
-        cancelWatchObject(storageId);
-      }
-    }
+    cancelWatchesForObjects();
     return this;
   };
   this.getWatch = function(id) {
@@ -359,6 +362,9 @@
     buildDefaultConfiguration();
     _parameter_Document.addEventListener("DOMContentLoaded", function() {
       collectDOMObjects();
+    });
+    _parameter_Window.addEventListener("beforeunload", function() {
+      cancelWatchesForObjects();
     });
     if (!isDefined(_parameter_Window.$observe)) {
       _parameter_Window.$observe = this;
