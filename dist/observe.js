@@ -363,7 +363,7 @@
     _parameter_Document.addEventListener("DOMContentLoaded", function() {
       collectDOMObjects();
     });
-    _parameter_Window.addEventListener("beforeunload", function() {
+    _parameter_Window.addEventListener("unload", function() {
       cancelWatchesForObjects();
     });
     if (!isDefined(_parameter_Window.$observe)) {

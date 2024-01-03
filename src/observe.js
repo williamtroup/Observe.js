@@ -660,7 +660,7 @@
             collectDOMObjects();
         } );
 
-        _parameter_Window.addEventListener( "beforeunload", function() {
+        _parameter_Window.addEventListener( "unload", function() {
             cancelWatchesForObjects();
         } );
 
