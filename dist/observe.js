@@ -27,6 +27,7 @@
           if (!isDefinedString(element.id)) {
             element.id = newGuid();
           }
+          element.removeAttribute(_attribute_Name_Watch_Options);
           createWatch(element, bindingOptions, element.id);
         } else {
           if (!_configuration.safeMode) {

@@ -8,6 +8,9 @@
 #### **BREAKING CHANGES:**
 - Renamed the DOM attribute "data-observe-options" to "data-observe-watch-options".
 
+#### **Fixes:**
+- Fixed a fault that prevented the binding attribute from being removed from the DOM elements.
+
 <br>
 
 

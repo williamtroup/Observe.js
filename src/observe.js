@@ -70,6 +70,8 @@
                         element.id = newGuid();
                     }
 
+                    element.removeAttribute( _attribute_Name_Watch_Options );
+
                     createWatch( element, bindingOptions, element.id );
 
                 } else {
