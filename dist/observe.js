@@ -294,7 +294,7 @@
     }
     return result;
   };
-  this.cancelAllWatches = function() {
+  this.cancelWatches = function() {
     var storageId;
     for (storageId in _watches) {
       if (_watches.hasOwnProperty(storageId)) {
@@ -317,6 +317,9 @@
       }
     }
     return result;
+  };
+  this.getWatches = function() {
+    return _watches;
   };
   this.setConfiguration = function(newOptions) {
     _configuration = !isDefinedObject(newOptions) ? {} : newOptions;

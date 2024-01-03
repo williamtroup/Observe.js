@@ -484,7 +484,7 @@
     };
 
     /**
-     * cancelAllWatches().
+     * cancelWatches().
      * 
      * Cancels all the watches currently running, or paused.
      * 
@@ -492,7 +492,7 @@
      * 
      * @returns     {Object}                                                The Observe.js class instance.
      */
-    this.cancelAllWatches = function() {
+    this.cancelWatches = function() {
         for ( var storageId in _watches ) {
             if ( _watches.hasOwnProperty( storageId ) ) {
                 cancelWatchObject( storageId );
@@ -505,7 +505,7 @@
     /**
      * getWatch().
      * 
-     * Returns the properties for an active watch.
+     * Returns the properties for a running, or paused, watch.
      * 
      * @public
      * 
@@ -529,6 +529,19 @@
         }
 
         return result;
+    };
+
+    /**
+     * getWatches().
+     * 
+     * Returns all the watches currently running, or paused.
+     * 
+     * @public
+     * 
+     * @returns     {Object}                                                The object of watches currently running, or paused.
+     */
+    this.getWatches = function() {
+        return _watches;
     };
 
 

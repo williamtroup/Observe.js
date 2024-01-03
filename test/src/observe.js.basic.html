@@ -25,17 +25,26 @@
         </div>
 
         <div class="contents">
-            <h2>Watch Objects:</h2>
-            <button onclick="watchNewObject();">Watch Object</button>
+            <h2>Watch:</h2>
+            <button onclick="watchNewObject();">Watch</button>
             <br />
 
-            <h2>Cancel Watch Objects:</h2>
-            <button onclick="$observe.cancelWatch( watchObjectId );">Cancel Watch Object</button>
-            <button onclick="$observe.cancelWatch( 'domElementWatch1' );">Cancel DOM Element Watch</button>
+            <h2>Cancel Watch:</h2>
+            <button onclick="$observe.cancelWatch( watchObjectId );">Cancel Watch</button>
+            <button onclick="$observe.cancelWatch( 'domElementWatch1' );">Cancel Watch - DOM Element</button>
             <br />
 
-            <h2>Cancel All Watch Objects:</h2>
-            <button onclick="$observe.cancelAllWatches();">Cancel All Watches</button>
+            <h2>Cancel Watches:</h2>
+            <button onclick="$observe.cancelWatches();">Cancel Watches</button>
+            <br />
+
+            <h2>Get Watch:</h2>
+            <button onclick="console.log( $observe.getWatch( watchObjectId ) );">Get Watch - 1</button>
+            <button onclick="console.log( $observe.getWatch( 'domElementWatch1' ) );">Get Watch - 2 (DOM)</button>
+            <br />
+
+            <h2>Get Watches:</h2>
+            <button onclick="console.log( $observe.getWatches() );">Get Watches</button>
             <br />
 
             <h2>Change Object Values:</h2>
@@ -45,11 +54,6 @@
             <br />
             <button onclick="document.getElementById( 'domElementWatch1' ).innerHTML = 'This has been changed.'">Change DOM Element 1</button>
             <button onclick="document.getElementById( 'domElementWatch2' ).innerHTML = 'This has been changed.'">Change DOM Element 2</button>
-            <br />
-
-            <h2>Get Watch Object:</h2>
-            <button onclick="console.log( $observe.getWatch( watchObjectId ) );">Get Watch Object - 1</button>
-            <button onclick="console.log( $observe.getWatch( 'domElementWatch1' ) );">Get Watch Object - 2 (DOM)</button>
             <br />
 
             <h2>Configuration:</h2>
