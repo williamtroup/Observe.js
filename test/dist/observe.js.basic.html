@@ -19,7 +19,7 @@
                 When changed, this element should fire a custom trigger.
             </div>
 
-            <div id="domElementWatch2" data-observe-options="{ 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange, 'onCancel': onCancelWatch, 'reset': true }">
+            <div id="domElementWatch2" data-observe-options="{ 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange, 'onCancel': onCancelWatch, 'reset': true, 'pauseTimeoutOnChange': 10000 }">
                 When changed, this element should fire a custom trigger (and reset its value back to the original).
             </div>
         </div>

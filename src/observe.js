@@ -188,6 +188,11 @@
                     }
                 }
 
+                if ( watchOptions.pauseTimeoutOnChange > 0 ) {
+                    watchOptions.starts = new Date();
+                    watchOptions.starts.setMilliseconds( watchOptions.starts.getMilliseconds() + watchOptions.pauseTimeoutOnChange );
+                }
+
                 if ( watchOptions.cancelOnChange ) {
                     cancelWatchObject( storageId );
                 }
@@ -250,6 +255,7 @@
         options.reset = getDefaultBoolean( options.reset, false );
         options.cancelOnChange = getDefaultBoolean( options.cancelOnChange, false );
         options.maximumChangesBeforeCanceling = getDefaultNumber( options.maximumChangesBeforeCanceling, 0 );
+        options.pauseTimeoutOnChange = getDefaultNumber( options.pauseTimeoutOnChange, 0 );
 
         options = getWatchOptionsCustomTriggers( options );
 

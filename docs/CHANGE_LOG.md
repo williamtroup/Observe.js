@@ -2,6 +2,12 @@
 
 ## Version 0.3.0:
 
+#### **New Features:**
+- Added "Pause Timeout On Change" support, which will force the watch to wait a specific number of milliseconds before detecting changes again when a change is detected.
+
+#### **Binding Options / Function Options:**
+- Added a new binding/option called "pauseTimeoutOnChange", which states the milliseconds to wait for new changes to be detected when a change is detected (defaults to 0, which is off).
+
 #### **Documentation:**
 - Fixed some of the documentation spelling/grammar mistakes.
 
