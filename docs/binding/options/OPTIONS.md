@@ -1,6 +1,6 @@
 # Observe.js - Binding Options:
 
-Below is a list of all the options supported in the "data-observe-watch-options" binding attribute for DOM elements.  These options are also supported when calling the public function "watchObject()".
+Below is a list of all the options supported in the "data-observe-watch-options" binding attribute for DOM elements.  These options are also supported when calling the public function "watch()".
 <br>
 <br>
 
@@ -32,12 +32,12 @@ Below is a list of all the options supported in the "data-observe-watch-options"
 <br/>
 
 
-## "watchObject()" Example:
+## "watch()" Example:
 <br/>
 
 ```markdown
 <script> 
-    var id = $observe.watchObject( yourObject, {
+    var id = $observe.watch( yourObject, {
         timeout: 1000
     } );
 </script>

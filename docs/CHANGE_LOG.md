@@ -7,6 +7,7 @@
 
 #### **BREAKING CHANGES:**
 - Renamed the DOM attribute "data-observe-options" to "data-observe-watch-options".
+- Renamed the public function "watchObject()" to "watch()".
 
 #### **General Improvements:**
 - Minor internal refactoring to make things a little clearer.

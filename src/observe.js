@@ -460,7 +460,7 @@
      */
 
     /**
-     * watchObject().
+     * watch().
      * 
      * Adds an object that should be watched for changes.
      * 
@@ -471,7 +471,7 @@
      * 
      * @returns     {string}                                                The ID that object watch is stored under.
      */
-    this.watchObject = function( object, options ) {
+    this.watch = function( object, options ) {
         return createWatch( object, options );
     };
 

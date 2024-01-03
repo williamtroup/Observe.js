@@ -30,7 +30,7 @@
             <br />
 
             <h2>Cancel Watch:</h2>
-            <button onclick="$observe.cancelWatch( watchObjectId );">Cancel Watch</button>
+            <button onclick="$observe.cancelWatch( watchId );">Cancel Watch</button>
             <button onclick="$observe.cancelWatch( 'domElementWatch1' );">Cancel Watch - DOM Element</button>
             <br />
 
@@ -39,12 +39,12 @@
             <br />
 
             <h2>Pause Watch:</h2>
-            <button onclick="$observe.pauseWatch( watchObjectId, 10000 );">Pause Watch</button>
+            <button onclick="$observe.pauseWatch( watchId, 10000 );">Pause Watch</button>
             <button onclick="$observe.pauseWatch( 'domElementWatch1', 10000 );">Pause Watch - DOM Element</button>
             <br />
 
             <h2>Get Watch:</h2>
-            <button onclick="console.log( $observe.getWatch( watchObjectId ) );">Get Watch - 1</button>
+            <button onclick="console.log( $observe.getWatch( watchId ) );">Get Watch - 1</button>
             <button onclick="console.log( $observe.getWatch( 'domElementWatch1' ) );">Get Watch - 2 (DOM)</button>
             <br />
 
@@ -74,7 +74,7 @@
         document.title += " v" + $observe.getVersion();
         document.getElementById( "header" ).innerText += " - v" + $observe.getVersion();
 
-        var watchObjectId = null;
+        var watchId = null;
 
         window.observeObject = {};
         window.observeObject.bool = true;
@@ -82,7 +82,7 @@
         window.observeObject.str = "This is a string";
 
         function watchNewObject() {
-            watchObjectId = $observe.watchObject( window.observeObject, {
+            watchId = $observe.watch( window.observeObject, {
                 onChange: onObservableObjectChange,
                 onPropertyChange: onObservableObjectPropertyChange,
                 onCancel: onCancelWatch

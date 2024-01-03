@@ -1,6 +1,6 @@
 # Observe.js - Binding Options - Custom Triggers:
 
-Below is a list of all the custom triggers supported in the "data-observe-watch-options" binding attribute for DOM elements.  These options are also supported when calling the public function "watchObject()".
+Below is a list of all the custom triggers supported in the "data-observe-watch-options" binding attribute for DOM elements.  These options are also supported when calling the public function "watch()".
 <br>
 <br>
 
@@ -43,12 +43,12 @@ Fires when a watch has been cancelled.
 <br/>
 
 
-## "watchObject()" Example:
+## "watch()" Example:
 <br/>
 
 ```markdown
 <script> 
-    var version = $observe.watchObject( yourObject, {
+    var version = $observe.watch( yourObject, {
         onChange: yourCustomJsFunction
     } );
 </script>

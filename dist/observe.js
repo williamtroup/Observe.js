@@ -295,7 +295,7 @@
   var _watches = {};
   var _configuration = {};
   var _attribute_Name_Watch_Options = "data-observe-watch-options";
-  this.watchObject = function(object, options) {
+  this.watch = function(object, options) {
     return createWatch(object, options);
   };
   this.cancelWatch = function(id) {

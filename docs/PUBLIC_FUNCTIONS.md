@@ -7,7 +7,7 @@ Below is a list of all the public functions that can be called from the Observe.
 
 ## Watching Objects:
 
-### **watchObject( *object*, *options* )**:
+### **watch( *object*, *options* )**:
 Adds an object that should be watched for changes.
 <br>
 ***Parameter: object***: '*Object*' - The object that should be watched. 

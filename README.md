@@ -70,15 +70,15 @@ Make sure you include the "DOCTYPE html" tag at the top of your HTML, as follows
 
 ```markdown
 <script> 
-    var id = $observe.watchObject( yourObject, {
+    var id = $observe.watch( yourObject, {
         onChange: yourCustomJsFunction
     } );
 </script>
 ```
 
-To see a list of all the available binding options you can use for "data-observe-watch-options", and "watchObject()", click [here](docs/binding/options/OPTIONS.md).
+To see a list of all the available binding options you can use for "data-observe-watch-options", and "watch()", click [here](docs/binding/options/OPTIONS.md).
 
-To see a list of all the available custom triggers you can use for "data-observe-watch-options", and "watchObject()", click [here](docs/binding/options/CUSTOM_TRIGGERS.md).
+To see a list of all the available custom triggers you can use for "data-observe-watch-options", and "watch()", click [here](docs/binding/options/CUSTOM_TRIGGERS.md).
 
 <br>
 
