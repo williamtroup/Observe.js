@@ -7,7 +7,7 @@ Below is a list of all the public functions that can be called from the Observe.
 
 ## Watching Objects:
 
-### **watchObject( *object*, *options* )**:
+### **watch( *object*, *options* )**:
 Adds an object that should be watched for changes.
 <br>
 ***Parameter: object***: '*Object*' - The object that should be watched. 
@@ -53,6 +53,12 @@ Pauses the watching of an object for changes for a specific number of millisecon
 ***Parameter: milliseconds***: '*number*' - The milliseconds to pause the watch for.
 <br>
 ***Returns***: '*boolean*' - States if the object being watched has been paused.
+<br>
+
+### **searchDomForNewWatches()**:
+Searches the DOM for new elements to watch, and adds them.
+<br>
+***Returns***: '*Object*' - The Observe.js class instance.
 <br>
 <br>
 

@@ -1,5 +1,25 @@
 # Observe.js - Change Log:
 
+## Version 0.4.0:
+
+#### **Public Functions:**
+- Added new public function "searchDomForNewWatches()", which is used to search the DOM for new elements to watch, then adds them.
+
+#### **BREAKING CHANGES:**
+- Renamed the DOM attribute "data-observe-options" to "data-observe-watch-options".
+- Renamed the public function "watchObject()" to "watch()".
+
+#### **General Improvements:**
+- Minor internal refactoring to make things a little clearer.
+
+#### **Fixes:**
+- Fixed a fault that prevented the binding attribute from being removed from the DOM elements.
+- Fixed a fault that prevented changes from being detected when a DOM element is removed from the DOM.
+- Fixed some properties being assigned to internal watches when not required.
+
+<br>
+
+
 ## Version 0.3.0:
 
 #### **New Features:**

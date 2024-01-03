@@ -1,4 +1,4 @@
-/*! Observe.js v0.3.0 | (c) Bunoon | MIT License */
+/*! Observe.js v0.4.0 | (c) Bunoon | MIT License */
 (function() {
   function collectDOMObjects() {
     var tagTypes = _configuration.domElementTypes;
@@ -18,8 +18,8 @@
   }
   function collectDOMObject(element) {
     var result = true;
-    if (isDefined(element) && element.hasAttribute(_attribute_Name_Options)) {
-      var bindingOptionsData = element.getAttribute(_attribute_Name_Options);
+    if (isDefined(element) && element.hasAttribute(_attribute_Name_Watch_Options)) {
+      var bindingOptionsData = element.getAttribute(_attribute_Name_Watch_Options);
       if (isDefinedString(bindingOptionsData)) {
         var bindingOptions = getObjectFromString(bindingOptionsData);
         if (bindingOptions.parsed && isDefinedObject(bindingOptions.result)) {
@@ -27,16 +27,17 @@
           if (!isDefinedString(element.id)) {
             element.id = newGuid();
           }
+          element.removeAttribute(_attribute_Name_Watch_Options);
           createWatch(element, bindingOptions, element.id);
         } else {
           if (!_configuration.safeMode) {
-            console.error("The attribute '" + _attribute_Name_Options + "' is not a valid object.");
+            console.error("The attribute '" + _attribute_Name_Watch_Options + "' is not a valid object.");
             result = false;
           }
         }
       } else {
         if (!_configuration.safeMode) {
-          console.error("The attribute '" + _attribute_Name_Options + "' has not been set correctly.");
+          console.error("The attribute '" + _attribute_Name_Watch_Options + "' has not been set correctly.");
           result = false;
         }
       }
@@ -50,11 +51,11 @@
       var watchOptions = getWatchOptions(options);
       var watch = {};
       watch.options = watchOptions;
-      watch.domElementId = domElementId;
       watch.totalChanges = 0;
       if (isDefinedString(domElementId)) {
         var domElement = _parameter_Document.getElementById(domElementId);
         if (isDefined(domElement)) {
+          watch.domElementId = domElementId;
           watch.cachedObject = domElement.outerHTML;
           watch.originalObject = domElement.outerHTML;
         }
@@ -63,17 +64,20 @@
         watch.originalObject = object;
       }
       watch.timer = setInterval(function() {
-        var currentDateTime = new Date();
-        if (!isDefinedDate(watchOptions.starts) || currentDateTime >= watchOptions.starts) {
-          watchObjectForChanges(storageId);
-          if (isDefinedDate(watchOptions.expires) && currentDateTime >= watchOptions.expires) {
-            cancelWatchObject(storageId);
-          }
-        }
+        watchTimer(watchOptions, storageId);
       }, watchOptions.timeout);
       _watches[storageId] = watch;
     }
     return storageId;
+  }
+  function watchTimer(watchOptions, storageId) {
+    var currentDateTime = new Date();
+    if (!isDefinedDate(watchOptions.starts) || currentDateTime >= watchOptions.starts) {
+      watchObjectForChanges(storageId);
+      if (isDefinedDate(watchOptions.expires) && currentDateTime >= watchOptions.expires) {
+        cancelWatchObject(storageId);
+      }
+    }
   }
   function watchObjectForChanges(storageId) {
     if (_watches.hasOwnProperty(storageId)) {
@@ -84,14 +88,15 @@
         domElement = _parameter_Document.getElementById(watch.domElementId);
         if (isDefined(domElement)) {
           watch.originalObject = domElement.outerHTML;
+        } else {
+          watch.originalObject = _string.empty;
         }
       }
       var cachedObject = watch.cachedObject;
       var originalObject = watch.originalObject;
       var originalObjectJson = !isDomElement ? JSON.stringify(originalObject) : originalObject;
       if (cachedObject !== originalObjectJson) {
-        var watchOptions = watch.options;
-        if (watchOptions.reset) {
+        if (watch.options.reset) {
           if (isDomElement) {
             domElement.outerHTML = watch.cachedObject;
           } else {
@@ -101,23 +106,23 @@
           watch.cachedObject = originalObjectJson;
         }
         if (isDomElement) {
-          fireCustomTrigger(watchOptions.onChange, cachedObject, originalObjectJson);
+          fireCustomTrigger(watch.options.onChange, cachedObject, originalObjectJson);
         } else {
           var oldValue = getObjectFromString(cachedObject).result;
           var newValue = getObjectFromString(originalObjectJson).result;
-          fireCustomTrigger(watchOptions.onChange, oldValue, newValue);
-          if (isDefinedFunction(watchOptions.onPropertyChange) && !isDefinedArray(oldValue)) {
-            compareWatchObjectProperties(oldValue, newValue, watchOptions);
+          fireCustomTrigger(watch.options.onChange, oldValue, newValue);
+          if (isDefinedFunction(watch.options.onPropertyChange) && !isDefinedArray(oldValue)) {
+            compareWatchObjectProperties(oldValue, newValue, watch.options);
           }
         }
-        if (watchOptions.pauseTimeoutOnChange > 0) {
-          pauseWatchObject(storageId, watchOptions.pauseTimeoutOnChange);
+        if (watch.options.pauseTimeoutOnChange > 0) {
+          pauseWatchObject(storageId, watch.options.pauseTimeoutOnChange);
         }
-        if (watchOptions.cancelOnChange) {
+        if (watch.options.cancelOnChange) {
           cancelWatchObject(storageId);
         }
         watch.totalChanges++;
-        if (watchOptions.maximumChangesBeforeCanceling > 0 && watch.totalChanges >= watchOptions.maximumChangesBeforeCanceling) {
+        if (watch.options.maximumChangesBeforeCanceling > 0 && watch.totalChanges >= watch.options.maximumChangesBeforeCanceling) {
           cancelWatchObject(storageId);
         }
       }
@@ -152,8 +157,7 @@
   }
   function cancelWatchObject(storageId) {
     if (_watches.hasOwnProperty(storageId)) {
-      var watchOptions = _watches[storageId].options;
-      fireCustomTrigger(watchOptions.onCancel, storageId);
+      fireCustomTrigger(_watches[storageId].options.onCancel, storageId);
       clearTimeout(_watches[storageId].timer);
       delete _watches[storageId];
     }
@@ -290,8 +294,8 @@
   var _string = {empty:""};
   var _watches = {};
   var _configuration = {};
-  var _attribute_Name_Options = "data-observe-options";
-  this.watchObject = function(object, options) {
+  var _attribute_Name_Watch_Options = "data-observe-watch-options";
+  this.watch = function(object, options) {
     return createWatch(object, options);
   };
   this.cancelWatch = function(id) {
@@ -348,13 +352,17 @@
     }
     return result;
   };
+  this.searchDomForNewWatches = function() {
+    collectDOMObjects();
+    return this;
+  };
   this.setConfiguration = function(newOptions) {
     _configuration = !isDefinedObject(newOptions) ? {} : newOptions;
     buildDefaultConfiguration();
     return this;
   };
   this.getVersion = function() {
-    return "0.3.0";
+    return "0.4.0";
   };
   (function(documentObject, windowObject) {
     _parameter_Document = documentObject;
