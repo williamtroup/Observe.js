@@ -3,7 +3,7 @@
 ## Version 0.4.0:
 
 #### **Public Functions:**
-- Added new public function "searchDomForNewWatches()", which is used to search the DOM for new elements to watch, and adds them.
+- Added new public function "searchDomForNewWatches()", which is used to search the DOM for new elements to watch, then adds them.
 
 #### **BREAKING CHANGES:**
 - Renamed the DOM attribute "data-observe-options" to "data-observe-watch-options".
