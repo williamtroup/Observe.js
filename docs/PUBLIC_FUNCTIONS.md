@@ -14,23 +14,45 @@ Adds an object that should be watched for changes.
 <br>
 ***Parameter: options***: '*Object*' - All the options that should be used (refer to ["Configuration Options"](binding/options/OPTIONS.md) documentation for properties).
 <br>
-***Returns***: '*string*' - The ID that object watch is stored under.
+***Returns***: '*string*' - The ID that the object watch is stored under.
 <br>
 
 ### **cancelWatch( *id* )**:
 Cancels the watching of an object for changes.
 <br>
-***Parameter: id***: '*string*' - The Id of the object being watched, or DOM element ID being watched.
+***Parameter: id***: '*string*' - The ID of the object being watched, or DOM element ID being watched.
 <br>
-***Returns***: '*boolean*' - States if the object being watched has been canceled.
+***Returns***: '*boolean*' - States if the object being watched has been cancelled.
+<br>
+
+### **cancelWatches()**:
+Cancels all the watches currently running, or paused.
+<br>
+***Returns***: '*Object*' - The Observe.js class instance.
 <br>
 
 ### **getWatch( *id* )**:
-Returns the properties for an active watch.
+Returns the properties for a running, or paused, watch.
 <br>
-***Parameter: id***: '*string*' - The Id of the object being watched, or DOM element ID being watched.
+***Parameter: id***: '*string*' - The ID of the object being watched, or DOM element ID being watched.
 <br>
 ***Returns***: '*Object*' - The watch properties for an object (null if not found).
+<br>
+
+### **getWatches()**:
+Returns all the watches currently running, or paused.
+<br>
+***Returns***: '*Object*' - The object of watches currently running, or paused.
+<br>
+
+### **pauseWatch( *id*, *milliseconds* )**:
+Pauses the watching of an object for changes for a specific number of milliseconds.
+<br>
+***Parameter: id***: '*string*' - The ID of the object being watched, or DOM element ID being watched.
+<br>
+***Parameter: milliseconds***: '*number*' - The milliseconds to pause the watch for.
+<br>
+***Returns***: '*boolean*' - States if the object being watched has been paused.
 <br>
 <br>
 

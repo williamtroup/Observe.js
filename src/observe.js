@@ -4,7 +4,7 @@
  * A lightweight, and easy-to-use, JavaScript library for observing any kind of JS object, or HTML DOM element, to detect changes.
  * 
  * @file        observe.js
- * @version     v0.2.0
+ * @version     v0.3.0
  * @author      Bunoon
  * @license     MIT License
  * @copyright   Bunoon 2023
@@ -188,6 +188,10 @@
                     }
                 }
 
+                if ( watchOptions.pauseTimeoutOnChange > 0 ) {
+                    pauseWatchObject( storageId, watchOptions.pauseTimeoutOnChange );
+                }
+
                 if ( watchOptions.cancelOnChange ) {
                     cancelWatchObject( storageId );
                 }
@@ -223,6 +227,14 @@
         }
     }
 
+    function cancelWatchesForObjects() {
+        for ( var storageId in _watches ) {
+            if ( _watches.hasOwnProperty( storageId ) ) {
+                cancelWatchObject( storageId );
+            }
+        }
+    }
+
     function cancelWatchObject( storageId ) {
         if ( _watches.hasOwnProperty( storageId ) ) {
             var watchOptions = _watches[ storageId ].options;
@@ -232,6 +244,21 @@
             clearTimeout( _watches[ storageId ].timer );
             delete _watches[ storageId ];
         }
+    }
+
+    function pauseWatchObject( storageId, milliseconds ) {
+        var result = false;
+
+        if ( _watches.hasOwnProperty( storageId ) ) {
+            var watchOptions = _watches[ storageId ].options;
+
+            watchOptions.starts = new Date();
+            watchOptions.starts.setMilliseconds( watchOptions.starts.getMilliseconds() + milliseconds );
+
+            result = true;
+        }
+
+        return result;
     }
 
 
@@ -250,6 +277,7 @@
         options.reset = getDefaultBoolean( options.reset, false );
         options.cancelOnChange = getDefaultBoolean( options.cancelOnChange, false );
         options.maximumChangesBeforeCanceling = getDefaultNumber( options.maximumChangesBeforeCanceling, 0 );
+        options.pauseTimeoutOnChange = getDefaultNumber( options.pauseTimeoutOnChange, 0 );
 
         options = getWatchOptionsCustomTriggers( options );
 
@@ -453,7 +481,7 @@
      * 
      * @param       {string}    id                                          The Id of the object being watched, or DOM element ID being watched.
      * 
-     * @returns     {boolean}                                               States if the object being watched has been canceled.
+     * @returns     {boolean}                                               States if the object being watched has been cancelled.
      */
     this.cancelWatch = function( id ) {
         var result = false;
@@ -478,9 +506,24 @@
     };
 
     /**
+     * cancelWatches().
+     * 
+     * Cancels all the watches currently running, or paused.
+     * 
+     * @public
+     * 
+     * @returns     {Object}                                                The Observe.js class instance.
+     */
+    this.cancelWatches = function() {
+        cancelWatchesForObjects();
+
+        return this;
+    };
+
+    /**
      * getWatch().
      * 
-     * Returns the properties for an active watch.
+     * Returns the properties for a running, or paused, watch.
      * 
      * @public
      * 
@@ -498,6 +541,49 @@
             for ( var storageId in _watches ) {
                 if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
                     result = _watches[ storageId ];
+                    break;
+                }
+            }
+        }
+
+        return result;
+    };
+
+    /**
+     * getWatches().
+     * 
+     * Returns all the watches currently running, or paused.
+     * 
+     * @public
+     * 
+     * @returns     {Object}                                                The object of watches currently running, or paused.
+     */
+    this.getWatches = function() {
+        return _watches;
+    };
+
+    /**
+     * pauseWatch().
+     * 
+     * Pauses the watching of an object for changes for a specific number of milliseconds.
+     * 
+     * @public
+     * 
+     * @param       {string}    id                                          The Id of the object being watched, or DOM element ID being watched.
+     * @param       {number}    milliseconds                                The milliseconds to pause the watch for.
+     * 
+     * @returns     {boolean}                                               States if the object being watched has been paused.
+     */
+    this.pauseWatch = function( id, milliseconds ) {
+        var result = false;
+
+        if ( _watches.hasOwnProperty( id ) ) {
+            result = pauseWatchObject( id, milliseconds );
+        } else {
+
+            for ( var storageId in _watches ) {
+                if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                    result = pauseWatchObject( storageId, milliseconds );
                     break;
                 }
             }
@@ -554,7 +640,7 @@
      * @returns     {string}                                                The version number.
      */
     this.getVersion = function() {
-        return "0.2.0";
+        return "0.3.0";
     };
 
 
@@ -572,6 +658,10 @@
 
         _parameter_Document.addEventListener( "DOMContentLoaded", function() {
             collectDOMObjects();
+        } );
+
+        _parameter_Window.addEventListener( "unload", function() {
+            cancelWatchesForObjects();
         } );
 
         if ( !isDefined( _parameter_Window.$observe ) ) {

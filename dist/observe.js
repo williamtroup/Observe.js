@@ -1,4 +1,4 @@
-/*! Observe.js v0.2.0 | (c) Bunoon | MIT License */
+/*! Observe.js v0.3.0 | (c) Bunoon | MIT License */
 (function() {
   function collectDOMObjects() {
     var tagTypes = _configuration.domElementTypes;
@@ -110,6 +110,9 @@
             compareWatchObjectProperties(oldValue, newValue, watchOptions);
           }
         }
+        if (watchOptions.pauseTimeoutOnChange > 0) {
+          pauseWatchObject(storageId, watchOptions.pauseTimeoutOnChange);
+        }
         if (watchOptions.cancelOnChange) {
           cancelWatchObject(storageId);
         }
@@ -139,6 +142,14 @@
       }
     }
   }
+  function cancelWatchesForObjects() {
+    var storageId;
+    for (storageId in _watches) {
+      if (_watches.hasOwnProperty(storageId)) {
+        cancelWatchObject(storageId);
+      }
+    }
+  }
   function cancelWatchObject(storageId) {
     if (_watches.hasOwnProperty(storageId)) {
       var watchOptions = _watches[storageId].options;
@@ -146,6 +157,16 @@
       clearTimeout(_watches[storageId].timer);
       delete _watches[storageId];
     }
+  }
+  function pauseWatchObject(storageId, milliseconds) {
+    var result = false;
+    if (_watches.hasOwnProperty(storageId)) {
+      var watchOptions = _watches[storageId].options;
+      watchOptions.starts = new Date();
+      watchOptions.starts.setMilliseconds(watchOptions.starts.getMilliseconds() + milliseconds);
+      result = true;
+    }
+    return result;
   }
   function getWatchOptions(newOptions) {
     var options = !isDefinedObject(newOptions) ? {} : newOptions;
@@ -155,6 +176,7 @@
     options.reset = getDefaultBoolean(options.reset, false);
     options.cancelOnChange = getDefaultBoolean(options.cancelOnChange, false);
     options.maximumChangesBeforeCanceling = getDefaultNumber(options.maximumChangesBeforeCanceling, 0);
+    options.pauseTimeoutOnChange = getDefaultNumber(options.pauseTimeoutOnChange, 0);
     options = getWatchOptionsCustomTriggers(options);
     return options;
   }
@@ -289,6 +311,10 @@
     }
     return result;
   };
+  this.cancelWatches = function() {
+    cancelWatchesForObjects();
+    return this;
+  };
   this.getWatch = function(id) {
     var result = null;
     if (_watches.hasOwnProperty(id)) {
@@ -304,13 +330,31 @@
     }
     return result;
   };
+  this.getWatches = function() {
+    return _watches;
+  };
+  this.pauseWatch = function(id, milliseconds) {
+    var result = false;
+    if (_watches.hasOwnProperty(id)) {
+      result = pauseWatchObject(id, milliseconds);
+    } else {
+      var storageId;
+      for (storageId in _watches) {
+        if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
+          result = pauseWatchObject(storageId, milliseconds);
+          break;
+        }
+      }
+    }
+    return result;
+  };
   this.setConfiguration = function(newOptions) {
     _configuration = !isDefinedObject(newOptions) ? {} : newOptions;
     buildDefaultConfiguration();
     return this;
   };
   this.getVersion = function() {
-    return "0.2.0";
+    return "0.3.0";
   };
   (function(documentObject, windowObject) {
     _parameter_Document = documentObject;
@@ -318,6 +362,9 @@
     buildDefaultConfiguration();
     _parameter_Document.addEventListener("DOMContentLoaded", function() {
       collectDOMObjects();
+    });
+    _parameter_Window.addEventListener("unload", function() {
+      cancelWatchesForObjects();
     });
     if (!isDefined(_parameter_Window.$observe)) {
       _parameter_Window.$observe = this;
