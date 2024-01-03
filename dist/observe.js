@@ -51,11 +51,11 @@
       var watchOptions = getWatchOptions(options);
       var watch = {};
       watch.options = watchOptions;
-      watch.domElementId = domElementId;
       watch.totalChanges = 0;
       if (isDefinedString(domElementId)) {
         var domElement = _parameter_Document.getElementById(domElementId);
         if (isDefined(domElement)) {
+          watch.domElementId = domElementId;
           watch.cachedObject = domElement.outerHTML;
           watch.originalObject = domElement.outerHTML;
         }
@@ -64,17 +64,20 @@
         watch.originalObject = object;
       }
       watch.timer = setInterval(function() {
-        var currentDateTime = new Date();
-        if (!isDefinedDate(watchOptions.starts) || currentDateTime >= watchOptions.starts) {
-          watchObjectForChanges(storageId);
-          if (isDefinedDate(watchOptions.expires) && currentDateTime >= watchOptions.expires) {
-            cancelWatchObject(storageId);
-          }
-        }
+        watchTimer(watchOptions, storageId);
       }, watchOptions.timeout);
       _watches[storageId] = watch;
     }
     return storageId;
+  }
+  function watchTimer(watchOptions, storageId) {
+    var currentDateTime = new Date();
+    if (!isDefinedDate(watchOptions.starts) || currentDateTime >= watchOptions.starts) {
+      watchObjectForChanges(storageId);
+      if (isDefinedDate(watchOptions.expires) && currentDateTime >= watchOptions.expires) {
+        cancelWatchObject(storageId);
+      }
+    }
   }
   function watchObjectForChanges(storageId) {
     if (_watches.hasOwnProperty(storageId)) {
