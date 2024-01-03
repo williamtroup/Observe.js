@@ -13,7 +13,7 @@
 ## What features does Observe.js have?
 
 - Zero-dependencies and extremely lightweight!
-- JS Object, and HTML DOM Element watching!
+- JS Object and HTML DOM Element watching!
 - Cancellation and Pausing support!
 - Full API available via public functions.
 - Fully configurable!

@@ -14,7 +14,7 @@
 - Added new public function "pauseWatch()", which is used to pause a running watch for a specific number of milliseconds.
 
 #### **General Improvements:**
-- When the page is unloaded, all active watches are now canceled.
+- When the page is unloaded, all active watches are now cancelled.
 
 #### **Documentation:**
 - Fixed some of the documentation spelling/grammar mistakes.
