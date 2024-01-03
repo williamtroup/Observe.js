@@ -481,7 +481,7 @@
      * 
      * @param       {string}    id                                          The Id of the object being watched, or DOM element ID being watched.
      * 
-     * @returns     {boolean}                                               States if the object being watched has been canceled.
+     * @returns     {boolean}                                               States if the object being watched has been cancelled.
      */
     this.cancelWatch = function( id ) {
         var result = false;
