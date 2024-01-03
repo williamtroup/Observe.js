@@ -1,7 +1,9 @@
 # Observe.js - Change Log:
 
 ## Version 0.3.0:
-- 
+
+#### **Documentation:**
+- Fixed some of the documentation spelling/grammar mistakes.
 
 <br>
 
