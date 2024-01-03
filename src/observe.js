@@ -592,6 +592,21 @@
         return result;
     };
 
+    /**
+     * searchDomForNewWatches().
+     * 
+     * Searches the DOM for new elements to watch, and adds them.
+     * 
+     * @public
+     * 
+     * @returns     {Object}                                                The Observe.js class instance.
+     */
+    this.searchDomForNewWatches = function() {
+        collectDOMObjects();
+
+        return this;
+    };
+
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------

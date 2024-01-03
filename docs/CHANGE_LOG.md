@@ -1,7 +1,9 @@
 # Observe.js - Change Log:
 
 ## Version 0.4.0:
-- 
+
+#### **Public Functions:**
+- Added new public function "searchDomForNewWatches()", which is used to search the DOM for new elements to watch, and adds them.
 
 <br>
 

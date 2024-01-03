@@ -54,6 +54,12 @@ Pauses the watching of an object for changes for a specific number of millisecon
 <br>
 ***Returns***: '*boolean*' - States if the object being watched has been paused.
 <br>
+
+### **searchDomForNewWatches()**:
+Searches the DOM for new elements to watch, and adds them.
+<br>
+***Returns***: '*Object*' - The Observe.js class instance.
+<br>
 <br>
 
 

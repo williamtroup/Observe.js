@@ -348,6 +348,10 @@
     }
     return result;
   };
+  this.searchDomForNewWatches = function() {
+    collectDOMObjects();
+    return this;
+  };
   this.setConfiguration = function(newOptions) {
     _configuration = !isDefinedObject(newOptions) ? {} : newOptions;
     buildDefaultConfiguration();
