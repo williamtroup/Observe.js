@@ -189,8 +189,7 @@
                 }
 
                 if ( watchOptions.pauseTimeoutOnChange > 0 ) {
-                    watchOptions.starts = new Date();
-                    watchOptions.starts.setMilliseconds( watchOptions.starts.getMilliseconds() + watchOptions.pauseTimeoutOnChange );
+                    pauseWatchObject( storageId, watchOptions.pauseTimeoutOnChange );
                 }
 
                 if ( watchOptions.cancelOnChange ) {
@@ -237,6 +236,21 @@
             clearTimeout( _watches[ storageId ].timer );
             delete _watches[ storageId ];
         }
+    }
+
+    function pauseWatchObject( storageId, milliseconds ) {
+        var result = false;
+
+        if ( _watches.hasOwnProperty( storageId ) ) {
+            var watchOptions = _watches[ storageId ].options;
+
+            watchOptions.starts = new Date();
+            watchOptions.starts.setMilliseconds( watchOptions.starts.getMilliseconds() + milliseconds );
+
+            result = true;
+        }
+
+        return result;
     }
 
 
@@ -542,6 +556,36 @@
      */
     this.getWatches = function() {
         return _watches;
+    };
+
+    /**
+     * pauseWatch().
+     * 
+     * Pauses the watching of an object for changes for a specific number of milliseconds.
+     * 
+     * @public
+     * 
+     * @param       {string}    id                                          The Id of the object being watched, or DOM element ID being watched.
+     * @param       {number}    milliseconds                                The milliseconds to pause the watch for.
+     * 
+     * @returns     {boolean}                                               States if the object being watched has been paused.
+     */
+    this.pauseWatch = function( id, milliseconds ) {
+        var result = false;
+
+        if ( _watches.hasOwnProperty( id ) ) {
+            result = pauseWatchObject( id, milliseconds );
+        } else {
+
+            for ( var storageId in _watches ) {
+                if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                    result = pauseWatchObject( storageId, milliseconds );
+                    break;
+                }
+            }
+        }
+
+        return result;
     };
 
 

@@ -44,6 +44,16 @@ Returns all the watches currently running, or paused.
 <br>
 ***Returns***: '*Object*' - The object of watches currently running, or paused.
 <br>
+
+### **pauseWatch( *id*, *milliseconds* )**:
+Pauses the watching of an object for changes for a specific number of milliseconds.
+<br>
+***Parameter: id***: '*string*' - The Id of the object being watched, or DOM element ID being watched.
+<br>
+***Parameter: milliseconds***: '*number*' - The milliseconds to pause the watch for.
+<br>
+***Returns***: '*boolean*' - States if the object being watched has been paused.
+<br>
 <br>
 
 

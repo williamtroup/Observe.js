@@ -38,6 +38,11 @@
             <button onclick="$observe.cancelWatches();">Cancel Watches</button>
             <br />
 
+            <h2>Pause Watch:</h2>
+            <button onclick="$observe.pauseWatch( watchObjectId, 10000 );">Pause Watch</button>
+            <button onclick="$observe.pauseWatch( 'domElementWatch1', 10000 );">Pause Watch - DOM Element</button>
+            <br />
+
             <h2>Get Watch:</h2>
             <button onclick="console.log( $observe.getWatch( watchObjectId ) );">Get Watch - 1</button>
             <button onclick="console.log( $observe.getWatch( 'domElementWatch1' ) );">Get Watch - 2 (DOM)</button>

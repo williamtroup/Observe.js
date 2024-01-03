@@ -111,8 +111,7 @@
           }
         }
         if (watchOptions.pauseTimeoutOnChange > 0) {
-          watchOptions.starts = new Date();
-          watchOptions.starts.setMilliseconds(watchOptions.starts.getMilliseconds() + watchOptions.pauseTimeoutOnChange);
+          pauseWatchObject(storageId, watchOptions.pauseTimeoutOnChange);
         }
         if (watchOptions.cancelOnChange) {
           cancelWatchObject(storageId);
@@ -150,6 +149,16 @@
       clearTimeout(_watches[storageId].timer);
       delete _watches[storageId];
     }
+  }
+  function pauseWatchObject(storageId, milliseconds) {
+    var result = false;
+    if (_watches.hasOwnProperty(storageId)) {
+      var watchOptions = _watches[storageId].options;
+      watchOptions.starts = new Date();
+      watchOptions.starts.setMilliseconds(watchOptions.starts.getMilliseconds() + milliseconds);
+      result = true;
+    }
+    return result;
   }
   function getWatchOptions(newOptions) {
     var options = !isDefinedObject(newOptions) ? {} : newOptions;
@@ -320,6 +329,21 @@
   };
   this.getWatches = function() {
     return _watches;
+  };
+  this.pauseWatch = function(id, milliseconds) {
+    var result = false;
+    if (_watches.hasOwnProperty(id)) {
+      result = pauseWatchObject(id, milliseconds);
+    } else {
+      var storageId;
+      for (storageId in _watches) {
+        if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
+          result = pauseWatchObject(storageId, milliseconds);
+          break;
+        }
+      }
+    }
+    return result;
   };
   this.setConfiguration = function(newOptions) {
     _configuration = !isDefinedObject(newOptions) ? {} : newOptions;
