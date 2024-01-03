@@ -294,6 +294,15 @@
     }
     return result;
   };
+  this.cancelAllWatches = function() {
+    var storageId;
+    for (storageId in _watches) {
+      if (_watches.hasOwnProperty(storageId)) {
+        cancelWatchObject(storageId);
+      }
+    }
+    return this;
+  };
   this.getWatch = function(id) {
     var result = null;
     if (_watches.hasOwnProperty(id)) {

@@ -8,6 +8,9 @@
 #### **Binding Options / Function Options:**
 - Added a new binding/option called "pauseTimeoutOnChange", which states the milliseconds to wait for new changes to be detected when a change is detected (defaults to 0, which is off).
 
+#### **Public Functions:**
+- Added new public function "cancelAllWatches()", which is used to cancel all the watches currently running, or paused.
+
 #### **Documentation:**
 - Fixed some of the documentation spelling/grammar mistakes.
 

@@ -25,6 +25,12 @@ Cancels the watching of an object for changes.
 ***Returns***: '*boolean*' - States if the object being watched has been canceled.
 <br>
 
+### **cancelAllWatches()**:
+Cancels all the watches currently running, or paused.
+<br>
+***Returns***: '*Object*' - The Observe.js class instance.
+<br>
+
 ### **getWatch( *id* )**:
 Returns the properties for an active watch.
 <br>
