@@ -85,6 +85,8 @@
         domElement = _parameter_Document.getElementById(watch.domElementId);
         if (isDefined(domElement)) {
           watch.originalObject = domElement.outerHTML;
+        } else {
+          watch.originalObject = _string.empty;
         }
       }
       var cachedObject = watch.cachedObject;

@@ -155,6 +155,8 @@
 
                 if ( isDefined( domElement ) ) {
                     watch.originalObject = domElement.outerHTML;
+                } else {
+                    watch.originalObject = _string.empty;
                 }
             }
 

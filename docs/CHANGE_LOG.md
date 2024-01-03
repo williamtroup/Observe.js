@@ -10,6 +10,7 @@
 
 #### **Fixes:**
 - Fixed a fault that prevented the binding attribute from being removed from the DOM elements.
+- Fixed a fault that prevented changes from being detected when a DOM element is removed from the DOM.
 
 <br>
 
