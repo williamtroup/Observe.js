@@ -18,8 +18,8 @@
   }
   function collectDOMObject(element) {
     var result = true;
-    if (isDefined(element) && element.hasAttribute(_attribute_Name_Options)) {
-      var bindingOptionsData = element.getAttribute(_attribute_Name_Options);
+    if (isDefined(element) && element.hasAttribute(_attribute_Name_Watch_Options)) {
+      var bindingOptionsData = element.getAttribute(_attribute_Name_Watch_Options);
       if (isDefinedString(bindingOptionsData)) {
         var bindingOptions = getObjectFromString(bindingOptionsData);
         if (bindingOptions.parsed && isDefinedObject(bindingOptions.result)) {
@@ -30,13 +30,13 @@
           createWatch(element, bindingOptions, element.id);
         } else {
           if (!_configuration.safeMode) {
-            console.error("The attribute '" + _attribute_Name_Options + "' is not a valid object.");
+            console.error("The attribute '" + _attribute_Name_Watch_Options + "' is not a valid object.");
             result = false;
           }
         }
       } else {
         if (!_configuration.safeMode) {
-          console.error("The attribute '" + _attribute_Name_Options + "' has not been set correctly.");
+          console.error("The attribute '" + _attribute_Name_Watch_Options + "' has not been set correctly.");
           result = false;
         }
       }
@@ -290,7 +290,7 @@
   var _string = {empty:""};
   var _watches = {};
   var _configuration = {};
-  var _attribute_Name_Options = "data-observe-options";
+  var _attribute_Name_Watch_Options = "data-observe-watch-options";
   this.watchObject = function(object, options) {
     return createWatch(object, options);
   };
