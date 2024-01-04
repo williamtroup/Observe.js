@@ -86,7 +86,6 @@ Returns the version of Observe.js.
 
 
 ## Example:
-<br/>
 
 ```markdown
 <script> 

@@ -32,7 +32,6 @@ Fires when a watch has been cancelled.
 
 
 ## Binding Example:
-<br/>
 
 ```markdown
 <div data-observe-watch-options="{ 'onChange': yourCustomJsFunction }">
@@ -44,7 +43,6 @@ Fires when a watch has been cancelled.
 
 
 ## "watch()" Example:
-<br/>
 
 ```markdown
 <script> 
