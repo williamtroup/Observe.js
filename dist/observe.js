@@ -90,6 +90,7 @@
           watch.originalObject = domElement.outerHTML;
         } else {
           watch.originalObject = _string.empty;
+          fireCustomTrigger(watch.options.onRemove, watch.domElementId);
         }
       }
       var cachedObject = watch.cachedObject;
@@ -188,6 +189,7 @@
     options.onChange = getDefaultFunction(options.onChange, null);
     options.onPropertyChange = getDefaultFunction(options.onPropertyChange, null);
     options.onCancel = getDefaultFunction(options.onCancel, null);
+    options.onRemove = getDefaultFunction(options.onRemove, null);
     return options;
   }
   function fireCustomTrigger(triggerFunction) {

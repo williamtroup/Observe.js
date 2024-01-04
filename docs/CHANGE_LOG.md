@@ -1,7 +1,12 @@
 # Observe.js - Change Log:
 
 ## Version 0.5.0:
-- 
+
+#### **Binding Options / Function Options - Custom Triggers:**
+- Added a new binding/option custom trigger called "onRemove", which states an event that should be triggered when a DOM element is removed.
+
+#### **Documentation:**
+- Fixed some of the documentation mistakes.
 
 <br>
 

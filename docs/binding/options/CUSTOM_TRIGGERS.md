@@ -28,6 +28,11 @@ Fires when a watch has been cancelled.
 <br>
 ***Parameter:*** id: '*string*' - The ID of the watch that has been cancelled.
 
+### options.onRemove( *id* ):
+Fires when a DOM element is no longer available in the DOM.
+<br>
+***Parameter:*** id: '*string*' - The ID of the DOM element.
+
 <br>
 
 
