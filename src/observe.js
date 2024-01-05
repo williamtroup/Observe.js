@@ -1,10 +1,10 @@
 /**
  * Observe.js
  * 
- * A lightweight, and easy-to-use, JavaScript library for observing any kind of JS object, or HTML DOM element, to detect changes.
+ * A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.
  * 
  * @file        observe.js
- * @version     v0.5.0
+ * @version     v0.5.1
  * @author      Bunoon
  * @license     MIT License
  * @copyright   Bunoon 2023
@@ -194,8 +194,13 @@
                         if ( isDefinedFunction( watch.options.onPropertyChange ) ) {
                             compareWatchObjectProperties( oldValue, newValue, watch );
                         }
+                        
+                    } else {
+                        fireCustomTrigger( watch.options.onChange, oldValue, newValue );
                     }
                 }
+
+                watch.totalChanges++;
 
                 if ( watch.options.pauseTimeoutOnChange > 0 ) {
                     pauseWatchObject( storageId, watch.options.pauseTimeoutOnChange );
@@ -204,8 +209,6 @@
                 if ( watch.options.cancelOnChange ) {
                     cancelWatchObject( storageId );
                 }
-
-                watch.totalChanges++;
 
                 if ( watch.options.maximumChangesBeforeCanceling > 0 && watch.totalChanges >= watch.options.maximumChangesBeforeCanceling ) {
                     cancelWatchObject( storageId );
@@ -717,7 +720,7 @@
      * @returns     {string}                                                The version number.
      */
     this.getVersion = function() {
-        return "0.5.0";
+        return "0.5.1";
     };
 
 

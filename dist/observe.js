@@ -1,4 +1,4 @@
-/*! Observe.js v0.5.0 | (c) Bunoon | MIT License */
+/*! Observe.js v0.5.1 | (c) Bunoon | MIT License */
 (function() {
   function collectDOMObjects() {
     var tagTypes = _configuration.domElementTypes;
@@ -116,15 +116,17 @@
             if (isDefinedFunction(watch.options.onPropertyChange)) {
               compareWatchObjectProperties(oldValue, newValue, watch);
             }
+          } else {
+            fireCustomTrigger(watch.options.onChange, oldValue, newValue);
           }
         }
+        watch.totalChanges++;
         if (watch.options.pauseTimeoutOnChange > 0) {
           pauseWatchObject(storageId, watch.options.pauseTimeoutOnChange);
         }
         if (watch.options.cancelOnChange) {
           cancelWatchObject(storageId);
         }
-        watch.totalChanges++;
         if (watch.options.maximumChangesBeforeCanceling > 0 && watch.totalChanges >= watch.options.maximumChangesBeforeCanceling) {
           cancelWatchObject(storageId);
         }
@@ -402,7 +404,7 @@
     return this;
   };
   this.getVersion = function() {
-    return "0.5.0";
+    return "0.5.1";
   };
   (function(documentObject, windowObject) {
     _parameter_Document = documentObject;

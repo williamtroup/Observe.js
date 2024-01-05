@@ -1,5 +1,14 @@
 # Observe.js - Change Log:
 
+## Version 0.5.1:
+- Project description update.
+- Minor documentation updates.
+- Fixed a small fault that prevented the total changes from being handled correctly when a watch was stopped.
+- Added support to watch array objects for changes.
+
+<br>
+
+
 ## Version 0.5.0:
 
 #### **New Features:**

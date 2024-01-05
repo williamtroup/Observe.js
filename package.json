@@ -1,8 +1,8 @@
 {
     "name": "jobserve.js",
     "title": "Observe.js",
-    "description": "A lightweight, and easy-to-use, JavaScript library for observing any kind of JS object, or HTML DOM element, to detect changes.",
-    "version": "0.5.0",
+    "description": "A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.",
+    "version": "0.5.1",
     "main": "dist/observe.js",
     "author": {
       "name": "Bunoon"
