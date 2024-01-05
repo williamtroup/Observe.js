@@ -3,7 +3,7 @@
 ## Version 0.5.0:
 
 #### **New Features:**
-- Added specific properties watch support! This will only watch for changes on specific properties on an object, instead of all of them by default.
+- Added specific properties watch support! This will only watch for changes in specific properties on an object, instead of all of them by default.
 
 #### **Binding Options / Function Options:**
 - Added a new binding/option called "propertyNames", which states the property names that should be watched for changes (defaults to all).
