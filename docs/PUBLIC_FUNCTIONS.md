@@ -55,6 +55,14 @@ Pauses the watching of an object for changes for a specific number of millisecon
 ***Returns***: '*boolean*' - States if the object being watched has been paused.
 <br>
 
+### **resumeWatch( *id* )**:
+Resumes the watching of an object for changes after it was paused.
+<br>
+***Parameter: id***: '*string*' - The ID of the object being watched, or DOM element ID being watched.
+<br>
+***Returns***: '*boolean*' - States if the watching of an object has been resumed
+<br>
+
 ### **searchDomForNewWatches()**:
 Searches the DOM for new elements to watch, and adds them.
 <br>

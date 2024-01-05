@@ -354,6 +354,23 @@
     }
     return result;
   };
+  this.resumeWatch = function(id) {
+    var result = false;
+    if (_watches.hasOwnProperty(id)) {
+      _watches[id].options.starts = null;
+      result = true;
+    } else {
+      var storageId;
+      for (storageId in _watches) {
+        if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
+          _watches[storageId].options.starts = null;
+          result = true;
+          break;
+        }
+      }
+    }
+    return result;
+  };
   this.searchDomForNewWatches = function() {
     collectDOMObjects();
     return this;

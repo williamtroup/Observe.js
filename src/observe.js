@@ -599,6 +599,37 @@
     };
 
     /**
+     * resumeWatch().
+     * 
+     * Resumes the watching of an object for changes after it was paused.
+     * 
+     * @public
+     * 
+     * @param       {string}    id                                          The Id of the object being watched, or DOM element ID being watched.
+     * 
+     * @returns     {boolean}                                               States if the watching of an object has been resumed
+     */
+    this.resumeWatch = function( id ) {
+        var result = false;
+
+        if ( _watches.hasOwnProperty( id ) ) {
+            _watches[ id ].options.starts = null;
+            result = true;
+        } else {
+
+            for ( var storageId in _watches ) {
+                if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                    _watches[ storageId ].options.starts = null;
+                    result = true;
+                    break;
+                }
+            }
+        }
+
+        return result;
+    };
+
+    /**
      * searchDomForNewWatches().
      * 
      * Searches the DOM for new elements to watch, and adds them.

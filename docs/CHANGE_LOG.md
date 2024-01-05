@@ -5,6 +5,9 @@
 #### **Binding Options / Function Options - Custom Triggers:**
 - Added a new binding/option custom trigger called "onRemove", which states an event that should be triggered when a DOM element is removed.
 
+#### **Public Functions:**
+- Added new public function "resumeWatch()", which is used to resume a watch that has been paused.
+
 #### **Documentation:**
 - Fixed some of the documentation mistakes.
 
