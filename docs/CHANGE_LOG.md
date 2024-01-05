@@ -1,5 +1,11 @@
 # Observe.js - Change Log:
 
+## Version 0.5.1:
+- Project description update.
+
+<br>
+
+
 ## Version 0.5.0:
 
 #### **New Features:**
