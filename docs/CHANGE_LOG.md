@@ -1,5 +1,28 @@
 # Observe.js - Change Log:
 
+## Version 0.5.0:
+
+#### **New Features:**
+- Added specific properties watch support! This will only watch for changes in specific properties on an object, instead of all of them by default.
+
+#### **Binding Options / Function Options:**
+- Added a new binding/option called "propertyNames", which states the property names that should be watched for changes (defaults to all).
+
+#### **Binding Options / Function Options - Custom Triggers:**
+- Added a new binding/option custom trigger called "onRemove", which states an event that should be triggered when a DOM element is removed.
+
+#### **Public Functions:**
+- Added new public function "resumeWatch()", which is used to resume a watch that has been paused.
+
+#### **Fixes:**
+- Fixed a fault that allowed comparisons between arrays and objects (was causing some script errors).
+
+#### **Documentation:**
+- Fixed some of the documentation mistakes.
+
+<br>
+
+
 ## Version 0.4.0:
 
 #### **Public Functions:**

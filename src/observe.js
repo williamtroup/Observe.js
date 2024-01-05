@@ -4,7 +4,7 @@
  * A lightweight, and easy-to-use, JavaScript library for observing any kind of JS object, or HTML DOM element, to detect changes.
  * 
  * @file        observe.js
- * @version     v0.4.0
+ * @version     v0.5.0
  * @author      Bunoon
  * @license     MIT License
  * @copyright   Bunoon 2023
@@ -160,6 +160,8 @@
                     watch.originalObject = domElement.outerHTML;
                 } else {
                     watch.originalObject = _string.empty;
+
+                    fireCustomTrigger( watch.options.onRemove, watch.domElementId );
                 }
             }
 
@@ -186,10 +188,12 @@
                     var oldValue = getObjectFromString( cachedObject ).result,
                         newValue = getObjectFromString( originalObjectJson ).result;
 
-                    fireCustomTrigger( watch.options.onChange, oldValue, newValue );
+                    if ( !isDefinedArray( oldValue ) && !isDefinedArray( newValue ) ) {
+                        compareWatchObject( oldValue, newValue, watch );
 
-                    if ( isDefinedFunction( watch.options.onPropertyChange ) && !isDefinedArray( oldValue ) ) {
-                        compareWatchObjectProperties( oldValue, newValue, watch.options );
+                        if ( isDefinedFunction( watch.options.onPropertyChange ) ) {
+                            compareWatchObjectProperties( oldValue, newValue, watch );
+                        }
                     }
                 }
 
@@ -210,7 +214,27 @@
         }
     }
 
-    function compareWatchObjectProperties( oldObject, newObject, options ) {
+    function compareWatchObject( oldObject, newObject, watch ) {
+        if ( isDefinedArray( watch.options.propertyNames ) ) {
+            var propertyNamesLength = watch.options.propertyNames.length;
+
+            for ( var propertyNameIndex = 0; propertyNameIndex < propertyNamesLength; propertyNameIndex++ ) {
+                var propertyName = watch.options.propertyNames[ propertyNameIndex ];
+
+                if ( oldObject[ propertyName ] !== newObject[ propertyName ] ) {
+                    fireCustomTrigger( watch.options.onChange, oldObject, newObject );
+                    break;
+                }
+            }
+
+        } else {
+            fireCustomTrigger( watch.options.onChange, oldObject, newObject );
+        }
+    }
+
+    function compareWatchObjectProperties( oldObject, newObject, watch ) {
+        var options = watch.options;
+
         for ( var propertyName in oldObject ) {
             if ( oldObject.hasOwnProperty( propertyName ) ) {
                 var propertyOldValue = oldObject[ propertyName ],
@@ -224,8 +248,10 @@
                     compareWatchObjectProperties( propertyOldValue, propertyNewValue, options );
                 } else {
 
-                    if ( JSON.stringify( propertyOldValue ) !== JSON.stringify( propertyNewValue ) ) {
-                        fireCustomTrigger( options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue );
+                    if ( !isDefinedArray( watch.options.propertyNames ) || watch.options.propertyNames.indexOf( propertyName ) > -1 ) {
+                        if ( JSON.stringify( propertyOldValue ) !== JSON.stringify( propertyNewValue ) ) {
+                            fireCustomTrigger( options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue );
+                        }
                     }
                 }
             }
@@ -281,7 +307,8 @@
         options.cancelOnChange = getDefaultBoolean( options.cancelOnChange, false );
         options.maximumChangesBeforeCanceling = getDefaultNumber( options.maximumChangesBeforeCanceling, 0 );
         options.pauseTimeoutOnChange = getDefaultNumber( options.pauseTimeoutOnChange, 0 );
-
+        options.propertyNames = getDefaultArray( options.propertyNames, null );
+        
         options = getWatchOptionsCustomTriggers( options );
 
         return options;
@@ -291,6 +318,7 @@
         options.onChange = getDefaultFunction( options.onChange, null );
         options.onPropertyChange = getDefaultFunction( options.onPropertyChange, null );
         options.onCancel = getDefaultFunction( options.onCancel, null );
+        options.onRemove = getDefaultFunction( options.onRemove, null );
 
         return options;
     }
@@ -596,6 +624,37 @@
     };
 
     /**
+     * resumeWatch().
+     * 
+     * Resumes the watching of an object for changes after it was paused.
+     * 
+     * @public
+     * 
+     * @param       {string}    id                                          The Id of the object being watched, or DOM element ID being watched.
+     * 
+     * @returns     {boolean}                                               States if the watching of an object has been resumed
+     */
+    this.resumeWatch = function( id ) {
+        var result = false;
+
+        if ( _watches.hasOwnProperty( id ) ) {
+            _watches[ id ].options.starts = null;
+            result = true;
+        } else {
+
+            for ( var storageId in _watches ) {
+                if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                    _watches[ storageId ].options.starts = null;
+                    result = true;
+                    break;
+                }
+            }
+        }
+
+        return result;
+    };
+
+    /**
      * searchDomForNewWatches().
      * 
      * Searches the DOM for new elements to watch, and adds them.
@@ -658,7 +717,7 @@
      * @returns     {string}                                                The version number.
      */
     this.getVersion = function() {
-        return "0.4.0";
+        return "0.5.0";
     };
 
 

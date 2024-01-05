@@ -6,7 +6,6 @@ Below is a list of all the options supported in the "data-observe-watch-options"
 
 
 ## Standard Options:
-<br/>
 
 | Type: | Name: | Description: |
 | --- | --- | --- |
@@ -17,11 +16,12 @@ Below is a list of all the options supported in the "data-observe-watch-options"
 | *boolean* | cancelOnChange | States if the watch should be cancelled when the first change is detected (defaults to false). |
 | *number* | maximumChangesBeforeCanceling | States the total number of changes that are allowed before the watch is cancelled (defaults to 0, which is off) |
 | *number* | pauseTimeoutOnChange | States the delay (in milliseconds) that should be used before checking for changes again after a change is detected (defaults to 0, which is off) |
+| *string[]* | propertyNames | States the property names that should be watched for changes (defaults to all). |
+
 <br/>
 
 
 ## Binding Example:
-<br/>
 
 ```markdown
 <div data-observe-watch-options="{ 'timeout': 1000 }">
@@ -33,7 +33,6 @@ Below is a list of all the options supported in the "data-observe-watch-options"
 
 
 ## "watch()" Example:
-<br/>
 
 ```markdown
 <script> 
