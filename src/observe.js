@@ -197,6 +197,8 @@
                     }
                 }
 
+                watch.totalChanges++;
+
                 if ( watch.options.pauseTimeoutOnChange > 0 ) {
                     pauseWatchObject( storageId, watch.options.pauseTimeoutOnChange );
                 }
@@ -204,8 +206,6 @@
                 if ( watch.options.cancelOnChange ) {
                     cancelWatchObject( storageId );
                 }
-
-                watch.totalChanges++;
 
                 if ( watch.options.maximumChangesBeforeCanceling > 0 && watch.totalChanges >= watch.options.maximumChangesBeforeCanceling ) {
                     cancelWatchObject( storageId );

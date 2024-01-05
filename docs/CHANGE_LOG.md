@@ -3,6 +3,8 @@
 ## Version 0.5.1:
 - Project description update.
 - Minor documentation updates.
+- Fixed a small fault that prevented the total changes being handled correctly when a watch is stopped.
+- 
 
 <br>
 
