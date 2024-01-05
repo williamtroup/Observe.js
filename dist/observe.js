@@ -116,6 +116,8 @@
             if (isDefinedFunction(watch.options.onPropertyChange)) {
               compareWatchObjectProperties(oldValue, newValue, watch);
             }
+          } else {
+            fireCustomTrigger(watch.options.onChange, oldValue, newValue);
           }
         }
         watch.totalChanges++;

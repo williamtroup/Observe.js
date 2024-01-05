@@ -4,7 +4,7 @@
 - Project description update.
 - Minor documentation updates.
 - Fixed a small fault that prevented the total changes being handled correctly when a watch is stopped.
-- 
+- Added support to watch array objects for changes.
 
 <br>
 
