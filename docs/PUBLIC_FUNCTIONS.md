@@ -14,6 +14,8 @@ Adds an object that should be watched for changes.
 <br>
 ***Parameter: options***: '*Object*' - All the options that should be used (refer to ["Configuration Options"](binding/options/OPTIONS.md) documentation for properties).
 <br>
+***Parameter: propertyNames***: '*string[]*' - The property name that should be watched for changes (defaults to all).
+<br>
 ***Returns***: '*string*' - The ID that the object watch is stored under.
 <br>
 

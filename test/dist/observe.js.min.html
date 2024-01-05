@@ -91,7 +91,7 @@
                 onChange: onObservableObjectChange,
                 onPropertyChange: onObservableObjectPropertyChange,
                 onCancel: onCancelWatch
-            } );
+            }, [ "bool", "num" ] );
         }
 
         function setupConfiguration() {

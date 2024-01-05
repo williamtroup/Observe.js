@@ -99,7 +99,7 @@
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
-    function createWatch( object, options, domElementId ) {
+    function createWatch( object, options, domElementId, propertyNames ) {
         var storageId = null;
 
         if ( isDefinedObject( object ) ) {
@@ -123,6 +123,7 @@
             } else {
                 watch.cachedObject = JSON.stringify( object );
                 watch.originalObject = object;
+                watch.propertyNames = propertyNames;
             }
 
             watch.timer = setInterval( function() {
@@ -188,10 +189,10 @@
                     var oldValue = getObjectFromString( cachedObject ).result,
                         newValue = getObjectFromString( originalObjectJson ).result;
 
-                    fireCustomTrigger( watch.options.onChange, oldValue, newValue );
+                    compareWatchObject( oldValue, newValue, watch );
 
                     if ( isDefinedFunction( watch.options.onPropertyChange ) && !isDefinedArray( oldValue ) ) {
-                        compareWatchObjectProperties( oldValue, newValue, watch.options );
+                        compareWatchObjectProperties( oldValue, newValue, watch );
                     }
                 }
 
@@ -212,7 +213,27 @@
         }
     }
 
-    function compareWatchObjectProperties( oldObject, newObject, options ) {
+    function compareWatchObject( oldObject, newObject, watch ) {
+        if ( isDefinedArray( watch.propertyNames ) ) {
+            var propertyNamesLength = watch.propertyNames.length;
+
+            for ( var propertyNameIndex = 0; propertyNameIndex < propertyNamesLength; propertyNameIndex++ ) {
+                var propertyName = watch.propertyNames[ propertyNameIndex ];
+
+                if ( oldObject[ propertyName ] !== newObject[ propertyName ] ) {
+                    fireCustomTrigger( watch.options.onChange, oldObject, newObject );
+                    break;
+                }
+            }
+
+        } else {
+            fireCustomTrigger( watch.options.onChange, oldObject, newObject );
+        }
+    }
+
+    function compareWatchObjectProperties( oldObject, newObject, watch ) {
+        var options = watch.options;
+
         for ( var propertyName in oldObject ) {
             if ( oldObject.hasOwnProperty( propertyName ) ) {
                 var propertyOldValue = oldObject[ propertyName ],
@@ -226,8 +247,10 @@
                     compareWatchObjectProperties( propertyOldValue, propertyNewValue, options );
                 } else {
 
-                    if ( JSON.stringify( propertyOldValue ) !== JSON.stringify( propertyNewValue ) ) {
-                        fireCustomTrigger( options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue );
+                    if ( !isDefinedArray( watch.propertyNames ) || watch.propertyNames.indexOf( propertyName ) > -1 ) {
+                        if ( JSON.stringify( propertyOldValue ) !== JSON.stringify( propertyNewValue ) ) {
+                            fireCustomTrigger( options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue );
+                        }
                     }
                 }
             }
@@ -471,11 +494,12 @@
      * 
      * @param       {Object}    object                                      The object that should be watched. 
      * @param       {Object}    options                                     All the options that should be used.
+     * @param       {string[]}  [propertyNames]                             The property name that should be watched for changes (defaults to all).
      * 
      * @returns     {string}                                                The ID that object watch is stored under.
      */
-    this.watch = function( object, options ) {
-        return createWatch( object, options );
+    this.watch = function( object, options, propertyNames ) {
+        return createWatch( object, options, null, propertyNames );
     };
 
     /**

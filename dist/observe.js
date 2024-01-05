@@ -44,7 +44,7 @@
     }
     return result;
   }
-  function createWatch(object, options, domElementId) {
+  function createWatch(object, options, domElementId, propertyNames) {
     var storageId = null;
     if (isDefinedObject(object)) {
       storageId = newGuid();
@@ -62,6 +62,7 @@
       } else {
         watch.cachedObject = JSON.stringify(object);
         watch.originalObject = object;
+        watch.propertyNames = propertyNames;
       }
       watch.timer = setInterval(function() {
         watchTimer(watchOptions, storageId);
@@ -111,9 +112,9 @@
         } else {
           var oldValue = getObjectFromString(cachedObject).result;
           var newValue = getObjectFromString(originalObjectJson).result;
-          fireCustomTrigger(watch.options.onChange, oldValue, newValue);
+          compareWatchObject(oldValue, newValue, watch);
           if (isDefinedFunction(watch.options.onPropertyChange) && !isDefinedArray(oldValue)) {
-            compareWatchObjectProperties(oldValue, newValue, watch.options);
+            compareWatchObjectProperties(oldValue, newValue, watch);
           }
         }
         if (watch.options.pauseTimeoutOnChange > 0) {
@@ -129,7 +130,23 @@
       }
     }
   }
-  function compareWatchObjectProperties(oldObject, newObject, options) {
+  function compareWatchObject(oldObject, newObject, watch) {
+    if (isDefinedArray(watch.propertyNames)) {
+      var propertyNamesLength = watch.propertyNames.length;
+      var propertyNameIndex = 0;
+      for (; propertyNameIndex < propertyNamesLength; propertyNameIndex++) {
+        var propertyName = watch.propertyNames[propertyNameIndex];
+        if (oldObject[propertyName] !== newObject[propertyName]) {
+          fireCustomTrigger(watch.options.onChange, oldObject, newObject);
+          break;
+        }
+      }
+    } else {
+      fireCustomTrigger(watch.options.onChange, oldObject, newObject);
+    }
+  }
+  function compareWatchObjectProperties(oldObject, newObject, watch) {
+    var options = watch.options;
     var propertyName;
     for (propertyName in oldObject) {
       if (oldObject.hasOwnProperty(propertyName)) {
@@ -141,8 +158,10 @@
         if (isDefinedObject(propertyOldValue) && isDefinedObject(propertyNewValue)) {
           compareWatchObjectProperties(propertyOldValue, propertyNewValue, options);
         } else {
-          if (JSON.stringify(propertyOldValue) !== JSON.stringify(propertyNewValue)) {
-            fireCustomTrigger(options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue);
+          if (!isDefinedArray(watch.propertyNames) || watch.propertyNames.indexOf(propertyName) > -1) {
+            if (JSON.stringify(propertyOldValue) !== JSON.stringify(propertyNewValue)) {
+              fireCustomTrigger(options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue);
+            }
           }
         }
       }
@@ -297,8 +316,8 @@
   var _watches = {};
   var _configuration = {};
   var _attribute_Name_Watch_Options = "data-observe-watch-options";
-  this.watch = function(object, options) {
-    return createWatch(object, options);
+  this.watch = function(object, options, propertyNames) {
+    return createWatch(object, options, null, propertyNames);
   };
   this.cancelWatch = function(id) {
     var result = false;
