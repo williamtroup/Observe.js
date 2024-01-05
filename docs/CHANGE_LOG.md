@@ -12,6 +12,9 @@
 - Added new public function "resumeWatch()", which is used to resume a watch that has been paused.
 - Added new parameter "propertyNames" to the "watch()" public function, which states the property names to watch changes for (defaults to all).
 
+#### **Fixes:**
+- Fixed a fault that allowed comparisons between arrays and objects (was causing some script errors).
+
 #### **Documentation:**
 - Fixed some of the documentation mistakes.
 

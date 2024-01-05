@@ -112,9 +112,11 @@
         } else {
           var oldValue = getObjectFromString(cachedObject).result;
           var newValue = getObjectFromString(originalObjectJson).result;
-          compareWatchObject(oldValue, newValue, watch);
-          if (isDefinedFunction(watch.options.onPropertyChange) && !isDefinedArray(oldValue)) {
-            compareWatchObjectProperties(oldValue, newValue, watch);
+          if (!isDefinedArray(oldValue) && !isDefinedArray(newValue)) {
+            compareWatchObject(oldValue, newValue, watch);
+            if (isDefinedFunction(watch.options.onPropertyChange)) {
+              compareWatchObjectProperties(oldValue, newValue, watch);
+            }
           }
         }
         if (watch.options.pauseTimeoutOnChange > 0) {
