@@ -2,6 +2,7 @@
 
 ## Version 0.5.1:
 - Project description update.
+- Minor documentation updates.
 
 <br>
 
