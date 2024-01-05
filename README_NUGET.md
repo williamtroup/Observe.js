@@ -14,6 +14,7 @@
 
 - Zero-dependencies and extremely lightweight!
 - JS Object and HTML DOM Element watching!
+- Watch for specific property changes!
 - Cancellation and Pausing support!
 - Full API available via public functions.
 - Fully configurable!
