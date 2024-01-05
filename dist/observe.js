@@ -44,7 +44,7 @@
     }
     return result;
   }
-  function createWatch(object, options, domElementId, propertyNames) {
+  function createWatch(object, options, domElementId) {
     var storageId = null;
     if (isDefinedObject(object)) {
       storageId = newGuid();
@@ -62,7 +62,6 @@
       } else {
         watch.cachedObject = JSON.stringify(object);
         watch.originalObject = object;
-        watch.propertyNames = propertyNames;
       }
       watch.timer = setInterval(function() {
         watchTimer(watchOptions, storageId);
@@ -133,11 +132,11 @@
     }
   }
   function compareWatchObject(oldObject, newObject, watch) {
-    if (isDefinedArray(watch.propertyNames)) {
-      var propertyNamesLength = watch.propertyNames.length;
+    if (isDefinedArray(watch.options.propertyNames)) {
+      var propertyNamesLength = watch.options.propertyNames.length;
       var propertyNameIndex = 0;
       for (; propertyNameIndex < propertyNamesLength; propertyNameIndex++) {
-        var propertyName = watch.propertyNames[propertyNameIndex];
+        var propertyName = watch.options.propertyNames[propertyNameIndex];
         if (oldObject[propertyName] !== newObject[propertyName]) {
           fireCustomTrigger(watch.options.onChange, oldObject, newObject);
           break;
@@ -160,7 +159,7 @@
         if (isDefinedObject(propertyOldValue) && isDefinedObject(propertyNewValue)) {
           compareWatchObjectProperties(propertyOldValue, propertyNewValue, options);
         } else {
-          if (!isDefinedArray(watch.propertyNames) || watch.propertyNames.indexOf(propertyName) > -1) {
+          if (!isDefinedArray(watch.options.propertyNames) || watch.options.propertyNames.indexOf(propertyName) > -1) {
             if (JSON.stringify(propertyOldValue) !== JSON.stringify(propertyNewValue)) {
               fireCustomTrigger(options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue);
             }
@@ -203,6 +202,7 @@
     options.cancelOnChange = getDefaultBoolean(options.cancelOnChange, false);
     options.maximumChangesBeforeCanceling = getDefaultNumber(options.maximumChangesBeforeCanceling, 0);
     options.pauseTimeoutOnChange = getDefaultNumber(options.pauseTimeoutOnChange, 0);
+    options.propertyNames = getDefaultArray(options.propertyNames, null);
     options = getWatchOptionsCustomTriggers(options);
     return options;
   }
@@ -318,8 +318,8 @@
   var _watches = {};
   var _configuration = {};
   var _attribute_Name_Watch_Options = "data-observe-watch-options";
-  this.watch = function(object, options, propertyNames) {
-    return createWatch(object, options, null, propertyNames);
+  this.watch = function(object, options) {
+    return createWatch(object, options);
   };
   this.cancelWatch = function(id) {
     var result = false;

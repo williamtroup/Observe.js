@@ -99,7 +99,7 @@
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
-    function createWatch( object, options, domElementId, propertyNames ) {
+    function createWatch( object, options, domElementId ) {
         var storageId = null;
 
         if ( isDefinedObject( object ) ) {
@@ -123,7 +123,6 @@
             } else {
                 watch.cachedObject = JSON.stringify( object );
                 watch.originalObject = object;
-                watch.propertyNames = propertyNames;
             }
 
             watch.timer = setInterval( function() {
@@ -216,11 +215,11 @@
     }
 
     function compareWatchObject( oldObject, newObject, watch ) {
-        if ( isDefinedArray( watch.propertyNames ) ) {
-            var propertyNamesLength = watch.propertyNames.length;
+        if ( isDefinedArray( watch.options.propertyNames ) ) {
+            var propertyNamesLength = watch.options.propertyNames.length;
 
             for ( var propertyNameIndex = 0; propertyNameIndex < propertyNamesLength; propertyNameIndex++ ) {
-                var propertyName = watch.propertyNames[ propertyNameIndex ];
+                var propertyName = watch.options.propertyNames[ propertyNameIndex ];
 
                 if ( oldObject[ propertyName ] !== newObject[ propertyName ] ) {
                     fireCustomTrigger( watch.options.onChange, oldObject, newObject );
@@ -249,7 +248,7 @@
                     compareWatchObjectProperties( propertyOldValue, propertyNewValue, options );
                 } else {
 
-                    if ( !isDefinedArray( watch.propertyNames ) || watch.propertyNames.indexOf( propertyName ) > -1 ) {
+                    if ( !isDefinedArray( watch.options.propertyNames ) || watch.options.propertyNames.indexOf( propertyName ) > -1 ) {
                         if ( JSON.stringify( propertyOldValue ) !== JSON.stringify( propertyNewValue ) ) {
                             fireCustomTrigger( options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue );
                         }
@@ -308,7 +307,8 @@
         options.cancelOnChange = getDefaultBoolean( options.cancelOnChange, false );
         options.maximumChangesBeforeCanceling = getDefaultNumber( options.maximumChangesBeforeCanceling, 0 );
         options.pauseTimeoutOnChange = getDefaultNumber( options.pauseTimeoutOnChange, 0 );
-
+        options.propertyNames = getDefaultArray( options.propertyNames, null );
+        
         options = getWatchOptionsCustomTriggers( options );
 
         return options;
@@ -496,12 +496,11 @@
      * 
      * @param       {Object}    object                                      The object that should be watched. 
      * @param       {Object}    options                                     All the options that should be used.
-     * @param       {string[]}  [propertyNames]                             The property name that should be watched for changes (defaults to all).
      * 
      * @returns     {string}                                                The ID that object watch is stored under.
      */
-    this.watch = function( object, options, propertyNames ) {
-        return createWatch( object, options, null, propertyNames );
+    this.watch = function( object, options ) {
+        return createWatch( object, options );
     };
 
     /**

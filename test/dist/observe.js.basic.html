@@ -90,8 +90,9 @@
             watchId = $observe.watch( window.observeObject, {
                 onChange: onObservableObjectChange,
                 onPropertyChange: onObservableObjectPropertyChange,
-                onCancel: onCancelWatch
-            }, [ "bool", "num" ] );
+                onCancel: onCancelWatch,
+                propertyNames: [ "bool", "num" ]
+            } );
         }
 
         function setupConfiguration() {
