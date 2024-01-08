@@ -3,7 +3,7 @@
 ## Version 0.6.0:
 
 #### **Binding Options / Function Options:**
-- Added a new binding/option called "allowCanceling", which states the watch can be canceled (defaults to true).
+- Added a new binding/option called "allowCanceling", which states the watch can be cancelled (defaults to true).
 - Added a new binding/option called "allowPausing", which states the watch can be paused (defaults to true).
 
 #### **Public Functions:**

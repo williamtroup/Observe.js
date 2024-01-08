@@ -64,7 +64,7 @@ Pauses all the watches for a specific number of milliseconds.
 <br>
 
 ### **resumeWatch( *id* )**:
-Resumes the all the watches that are currently paused.
+Resumes all the watches that are currently paused.
 <br>
 ***Parameter: id***: '*string*' - The ID of the object being watched, or DOM element ID being watched.
 <br>

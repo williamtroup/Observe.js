@@ -688,7 +688,7 @@
     /**
      * resumeWatches().
      * 
-     * Resumes the all the watches that are currently paused.
+     * Resumes all the watches that are currently paused.
      * 
      * @public
      * 
