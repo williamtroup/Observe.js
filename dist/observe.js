@@ -1,4 +1,4 @@
-/*! Observe.js v0.6.0 | (c) Bunoon | MIT License */
+/*! Observe.js v0.6.0 | (c) Bunoon 2024 | MIT License */
 (function() {
   function collectDOMObjects() {
     var tagTypes = _configuration.domElementTypes;
