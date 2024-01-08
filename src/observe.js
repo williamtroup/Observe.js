@@ -23,6 +23,7 @@
 
         // Variables: Watches
         _watches = {},
+        _watches_Cancel = false,
 
         // Variables: Configuration
         _configuration = {},
@@ -269,10 +270,14 @@
 
     function cancelWatchObject( storageId ) {
         if ( _watches.hasOwnProperty( storageId ) ) {
-            fireCustomTrigger( _watches[ storageId ].options.onCancel, storageId );
-            clearTimeout( _watches[ storageId ].timer );
-            
-            delete _watches[ storageId ];
+            var watchOptions = _watches[ storageId ].options;
+
+            if ( watchOptions.allowCanceling || _watches_Cancel ) {
+                fireCustomTrigger( watchOptions.onCancel, storageId );
+                clearTimeout( _watches[ storageId ].timer );
+                
+                delete _watches[ storageId ];
+            }
         }
     }
 
@@ -282,10 +287,12 @@
         if ( _watches.hasOwnProperty( storageId ) ) {
             var watchOptions = _watches[ storageId ].options;
 
-            watchOptions.starts = new Date();
-            watchOptions.starts.setMilliseconds( watchOptions.starts.getMilliseconds() + milliseconds );
-
-            result = true;
+            if ( watchOptions.allowPausing ) {
+                watchOptions.starts = new Date();
+                watchOptions.starts.setMilliseconds( watchOptions.starts.getMilliseconds() + milliseconds );
+    
+                result = true;
+            }
         }
 
         return result;
@@ -309,7 +316,9 @@
         options.maximumChangesBeforeCanceling = getDefaultNumber( options.maximumChangesBeforeCanceling, 0 );
         options.pauseTimeoutOnChange = getDefaultNumber( options.pauseTimeoutOnChange, 0 );
         options.propertyNames = getDefaultArray( options.propertyNames, null );
-        
+        options.allowCanceling = getDefaultBoolean( options.allowCanceling, true );
+        options.allowPausing = getDefaultBoolean( options.allowPausing, null );
+
         options = getWatchOptionsCustomTriggers( options );
 
         return options;
@@ -779,6 +788,8 @@
         } );
 
         _parameter_Window.addEventListener( "unload", function() {
+            _watches_Cancel = true;
+
             cancelWatchesForObjects();
         } );
 

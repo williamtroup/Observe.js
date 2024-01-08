@@ -17,6 +17,8 @@ Below is a list of all the options supported in the "data-observe-watch-options"
 | *number* | maximumChangesBeforeCanceling | States the total number of changes that are allowed before the watch is cancelled (defaults to 0, which is off) |
 | *number* | pauseTimeoutOnChange | States the delay (in milliseconds) that should be used before checking for changes again after a change is detected (defaults to 0, which is off) |
 | *string[]* | propertyNames | States the property names that should be watched for changes (defaults to all). |
+| *boolean* | allowCanceling | States if the watch can be canceled (defaults to true). |
+| *boolean* | allowPausing | States if the watch can be paused (defaults to true). |
 
 <br/>
 
