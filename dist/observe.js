@@ -1,4 +1,4 @@
-/*! Observe.js v0.5.1 | (c) Bunoon | MIT License */
+/*! Observe.js v0.6.0 | (c) Bunoon 2024 | MIT License */
 (function() {
   function collectDOMObjects() {
     var tagTypes = _configuration.domElementTypes;
@@ -149,7 +149,6 @@
     }
   }
   function compareWatchObjectProperties(oldObject, newObject, watch) {
-    var options = watch.options;
     var propertyName;
     for (propertyName in oldObject) {
       if (oldObject.hasOwnProperty(propertyName)) {
@@ -159,11 +158,11 @@
           propertyNewValue = newObject[propertyName];
         }
         if (isDefinedObject(propertyOldValue) && isDefinedObject(propertyNewValue)) {
-          compareWatchObjectProperties(propertyOldValue, propertyNewValue, options);
+          compareWatchObjectProperties(propertyOldValue, propertyNewValue, watch.options);
         } else {
           if (!isDefinedArray(watch.options.propertyNames) || watch.options.propertyNames.indexOf(propertyName) > -1) {
             if (JSON.stringify(propertyOldValue) !== JSON.stringify(propertyNewValue)) {
-              fireCustomTrigger(options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue);
+              fireCustomTrigger(watch.options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue);
             }
           }
         }
@@ -180,18 +179,23 @@
   }
   function cancelWatchObject(storageId) {
     if (_watches.hasOwnProperty(storageId)) {
-      fireCustomTrigger(_watches[storageId].options.onCancel, storageId);
-      clearTimeout(_watches[storageId].timer);
-      delete _watches[storageId];
+      var watchOptions = _watches[storageId].options;
+      if (watchOptions.allowCanceling || _watches_Cancel) {
+        fireCustomTrigger(watchOptions.onCancel, storageId);
+        clearTimeout(_watches[storageId].timer);
+        delete _watches[storageId];
+      }
     }
   }
   function pauseWatchObject(storageId, milliseconds) {
     var result = false;
     if (_watches.hasOwnProperty(storageId)) {
       var watchOptions = _watches[storageId].options;
-      watchOptions.starts = new Date();
-      watchOptions.starts.setMilliseconds(watchOptions.starts.getMilliseconds() + milliseconds);
-      result = true;
+      if (watchOptions.allowPausing) {
+        watchOptions.starts = new Date();
+        watchOptions.starts.setMilliseconds(watchOptions.starts.getMilliseconds() + milliseconds);
+        result = true;
+      }
     }
     return result;
   }
@@ -205,6 +209,8 @@
     options.maximumChangesBeforeCanceling = getDefaultNumber(options.maximumChangesBeforeCanceling, 0);
     options.pauseTimeoutOnChange = getDefaultNumber(options.pauseTimeoutOnChange, 0);
     options.propertyNames = getDefaultArray(options.propertyNames, null);
+    options.allowCanceling = getDefaultBoolean(options.allowCanceling, true);
+    options.allowPausing = getDefaultBoolean(options.allowPausing, null);
     options = getWatchOptionsCustomTriggers(options);
     return options;
   }
@@ -318,6 +324,7 @@
   var _parameter_Window = null;
   var _string = {empty:""};
   var _watches = {};
+  var _watches_Cancel = false;
   var _configuration = {};
   var _attribute_Name_Watch_Options = "data-observe-watch-options";
   this.watch = function(object, options) {
@@ -377,6 +384,15 @@
     }
     return result;
   };
+  this.pauseWatches = function(milliseconds) {
+    var storageId;
+    for (storageId in _watches) {
+      if (_watches.hasOwnProperty(storageId)) {
+        pauseWatchObject(storageId, milliseconds);
+      }
+    }
+    return this;
+  };
   this.resumeWatch = function(id) {
     var result = false;
     if (_watches.hasOwnProperty(id)) {
@@ -394,6 +410,15 @@
     }
     return result;
   };
+  this.resumeWatches = function() {
+    var storageId;
+    for (storageId in _watches) {
+      if (_watches.hasOwnProperty(storageId)) {
+        _watches[storageId].options.starts = null;
+      }
+    }
+    return this;
+  };
   this.searchDomForNewWatches = function() {
     collectDOMObjects();
     return this;
@@ -404,7 +429,7 @@
     return this;
   };
   this.getVersion = function() {
-    return "0.5.1";
+    return "0.6.0";
   };
   (function(documentObject, windowObject) {
     _parameter_Document = documentObject;
@@ -414,6 +439,7 @@
       collectDOMObjects();
     });
     _parameter_Window.addEventListener("unload", function() {
+      _watches_Cancel = true;
       cancelWatchesForObjects();
     });
     if (!isDefined(_parameter_Window.$observe)) {

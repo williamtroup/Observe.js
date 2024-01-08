@@ -43,9 +43,17 @@
             <button onclick="$observe.pauseWatch( 'domElementWatch1', 10000 );">Pause Watch - DOM Element</button>
             <br />
 
+            <h2>Pause Watches:</h2>
+            <button onclick="$observe.pauseWatches( 10000 );">Pause Watches</button>
+            <br />
+
             <h2>Resume Watch:</h2>
-            <button onclick="$observe.resumeWatch( watchId, 10000 );">Resume Watch</button>
+            <button onclick="$observe.resumeWatch( watchId );">Resume Watch</button>
             <button onclick="$observe.resumeWatch( 'domElementWatch1' );">Resume Watch - DOM Element</button>
+            <br />
+
+            <h2>Resume Watches:</h2>
+            <button onclick="$observe.resumeWatches();">Resume Watches</button>
             <br />
 
             <h2>Get Watch:</h2>

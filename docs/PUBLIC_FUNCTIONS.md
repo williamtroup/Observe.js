@@ -55,12 +55,26 @@ Pauses the watching of an object for changes for a specific number of millisecon
 ***Returns***: '*boolean*' - States if the object being watched has been paused.
 <br>
 
+### **pauseWatches( *milliseconds* )**:
+Pauses all the watches for a specific number of milliseconds.
+<br>
+***Parameter: milliseconds***: '*number*' - The milliseconds to pause the watches for.
+<br>
+***Returns***: '*Object*' - The Observe.js class instance.
+<br>
+
 ### **resumeWatch( *id* )**:
-Resumes the watching of an object for changes after it was paused.
+Resumes all the watches that are currently paused.
 <br>
 ***Parameter: id***: '*string*' - The ID of the object being watched, or DOM element ID being watched.
 <br>
-***Returns***: '*boolean*' - States if the watching of an object has been resumed
+***Returns***: '*boolean*' - States if the watching of an object has been resumed.
+<br>
+
+### **resumeWatches()**:
+Resumes the watching of all objects for changes after they were paused.
+<br>
+***Returns***: '*Object*' - The Observe.js class instance.
 <br>
 
 ### **searchDomForNewWatches()**:

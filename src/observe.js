@@ -4,10 +4,10 @@
  * A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.
  * 
  * @file        observe.js
- * @version     v0.5.1
+ * @version     v0.6.0
  * @author      Bunoon
  * @license     MIT License
- * @copyright   Bunoon 2023
+ * @copyright   Bunoon 2024
  */
 
 
@@ -23,6 +23,7 @@
 
         // Variables: Watches
         _watches = {},
+        _watches_Cancel = false,
 
         // Variables: Configuration
         _configuration = {},
@@ -236,8 +237,6 @@
     }
 
     function compareWatchObjectProperties( oldObject, newObject, watch ) {
-        var options = watch.options;
-
         for ( var propertyName in oldObject ) {
             if ( oldObject.hasOwnProperty( propertyName ) ) {
                 var propertyOldValue = oldObject[ propertyName ],
@@ -248,12 +247,12 @@
                 }
 
                 if ( isDefinedObject( propertyOldValue ) && isDefinedObject( propertyNewValue ) ) {
-                    compareWatchObjectProperties( propertyOldValue, propertyNewValue, options );
+                    compareWatchObjectProperties( propertyOldValue, propertyNewValue, watch.options );
                 } else {
 
                     if ( !isDefinedArray( watch.options.propertyNames ) || watch.options.propertyNames.indexOf( propertyName ) > -1 ) {
                         if ( JSON.stringify( propertyOldValue ) !== JSON.stringify( propertyNewValue ) ) {
-                            fireCustomTrigger( options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue );
+                            fireCustomTrigger( watch.options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue );
                         }
                     }
                 }
@@ -271,10 +270,14 @@
 
     function cancelWatchObject( storageId ) {
         if ( _watches.hasOwnProperty( storageId ) ) {
-            fireCustomTrigger( _watches[ storageId ].options.onCancel, storageId );
-            clearTimeout( _watches[ storageId ].timer );
-            
-            delete _watches[ storageId ];
+            var watchOptions = _watches[ storageId ].options;
+
+            if ( watchOptions.allowCanceling || _watches_Cancel ) {
+                fireCustomTrigger( watchOptions.onCancel, storageId );
+                clearTimeout( _watches[ storageId ].timer );
+                
+                delete _watches[ storageId ];
+            }
         }
     }
 
@@ -284,10 +287,12 @@
         if ( _watches.hasOwnProperty( storageId ) ) {
             var watchOptions = _watches[ storageId ].options;
 
-            watchOptions.starts = new Date();
-            watchOptions.starts.setMilliseconds( watchOptions.starts.getMilliseconds() + milliseconds );
-
-            result = true;
+            if ( watchOptions.allowPausing ) {
+                watchOptions.starts = new Date();
+                watchOptions.starts.setMilliseconds( watchOptions.starts.getMilliseconds() + milliseconds );
+    
+                result = true;
+            }
         }
 
         return result;
@@ -311,7 +316,9 @@
         options.maximumChangesBeforeCanceling = getDefaultNumber( options.maximumChangesBeforeCanceling, 0 );
         options.pauseTimeoutOnChange = getDefaultNumber( options.pauseTimeoutOnChange, 0 );
         options.propertyNames = getDefaultArray( options.propertyNames, null );
-        
+        options.allowCanceling = getDefaultBoolean( options.allowCanceling, true );
+        options.allowPausing = getDefaultBoolean( options.allowPausing, null );
+
         options = getWatchOptionsCustomTriggers( options );
 
         return options;
@@ -627,6 +634,27 @@
     };
 
     /**
+     * pauseWatches().
+     * 
+     * Pauses all the watches for a specific number of milliseconds.
+     * 
+     * @public
+     * 
+     * @param       {number}    milliseconds                                The milliseconds to pause the watches for.
+     * 
+     * @returns     {Object}                                                The Observe.js class instance.
+     */
+    this.pauseWatches = function( milliseconds ) {
+        for ( var storageId in _watches ) {
+            if ( _watches.hasOwnProperty( storageId ) ) {
+                pauseWatchObject( storageId, milliseconds );
+            }
+        }
+
+        return this;
+    };
+
+    /**
      * resumeWatch().
      * 
      * Resumes the watching of an object for changes after it was paused.
@@ -655,6 +683,25 @@
         }
 
         return result;
+    };
+
+    /**
+     * resumeWatches().
+     * 
+     * Resumes all the watches that are currently paused.
+     * 
+     * @public
+     * 
+     * @returns     {Object}                                                The Observe.js class instance.
+     */
+    this.resumeWatches = function() {
+        for ( var storageId in _watches ) {
+            if ( _watches.hasOwnProperty( storageId ) ) {
+                _watches[ storageId ].options.starts = null;
+            }
+        }
+
+        return this;
     };
 
     /**
@@ -720,7 +767,7 @@
      * @returns     {string}                                                The version number.
      */
     this.getVersion = function() {
-        return "0.5.1";
+        return "0.6.0";
     };
 
 
@@ -741,6 +788,8 @@
         } );
 
         _parameter_Window.addEventListener( "unload", function() {
+            _watches_Cancel = true;
+
             cancelWatchesForObjects();
         } );
 

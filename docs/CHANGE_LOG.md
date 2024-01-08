@@ -1,5 +1,24 @@
 # Observe.js - Change Log:
 
+## Version 0.6.0:
+
+#### **Binding Options / Function Options:**
+- Added a new binding/option called "allowCanceling", which states the watch can be cancelled (defaults to true).
+- Added a new binding/option called "allowPausing", which states the watch can be paused (defaults to true).
+
+#### **Public Functions:**
+- Added new public function "pauseWatches()", which is used to pause all the watches for a specific number of milliseconds.
+- Added new public function "resumeWatches()", which is used to resume all the watches currently paused.
+
+#### **General Improvements:**
+- Minor internal refactoring to make things a little clearer.
+
+#### **Fixes:**
+- Fixed some errors in HTML files when calling the public functions.
+
+<br>
+
+
 ## Version 0.5.1:
 - Project description update.
 - Minor documentation updates.
