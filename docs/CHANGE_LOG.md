@@ -1,7 +1,9 @@
 # Observe.js - Change Log:
 
 ## Version 0.6.0:
-- 
+
+#### **General Improvements:**
+- Minor internal refactoring to make things a little clearer.
 
 <br>
 

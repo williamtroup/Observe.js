@@ -236,8 +236,6 @@
     }
 
     function compareWatchObjectProperties( oldObject, newObject, watch ) {
-        var options = watch.options;
-
         for ( var propertyName in oldObject ) {
             if ( oldObject.hasOwnProperty( propertyName ) ) {
                 var propertyOldValue = oldObject[ propertyName ],
@@ -248,12 +246,12 @@
                 }
 
                 if ( isDefinedObject( propertyOldValue ) && isDefinedObject( propertyNewValue ) ) {
-                    compareWatchObjectProperties( propertyOldValue, propertyNewValue, options );
+                    compareWatchObjectProperties( propertyOldValue, propertyNewValue, watch.options );
                 } else {
 
                     if ( !isDefinedArray( watch.options.propertyNames ) || watch.options.propertyNames.indexOf( propertyName ) > -1 ) {
                         if ( JSON.stringify( propertyOldValue ) !== JSON.stringify( propertyNewValue ) ) {
-                            fireCustomTrigger( options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue );
+                            fireCustomTrigger( watch.options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue );
                         }
                     }
                 }
