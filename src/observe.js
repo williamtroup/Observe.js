@@ -625,6 +625,27 @@
     };
 
     /**
+     * pauseWatches().
+     * 
+     * Pauses all the watches for a specific number of milliseconds.
+     * 
+     * @public
+     * 
+     * @param       {number}    milliseconds                                The milliseconds to pause the watches for.
+     * 
+     * @returns     {Object}                                                The Observe.js class instance.
+     */
+    this.pauseWatches = function( milliseconds ) {
+        for ( var storageId in _watches ) {
+            if ( _watches.hasOwnProperty( storageId ) ) {
+                pauseWatchObject( storageId, milliseconds );
+            }
+        }
+
+        return this;
+    };
+
+    /**
      * resumeWatch().
      * 
      * Resumes the watching of an object for changes after it was paused.
@@ -653,6 +674,25 @@
         }
 
         return result;
+    };
+
+    /**
+     * resumeWatches().
+     * 
+     * Resumes the all the watches that are currently paused.
+     * 
+     * @public
+     * 
+     * @returns     {Object}                                                The Observe.js class instance.
+     */
+    this.resumeWatches = function() {
+        for ( var storageId in _watches ) {
+            if ( _watches.hasOwnProperty( storageId ) ) {
+                _watches[ storageId ].options.starts = null;
+            }
+        }
+
+        return this;
     };
 
     /**

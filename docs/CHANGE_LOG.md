@@ -2,6 +2,10 @@
 
 ## Version 0.6.0:
 
+#### **Public Functions:**
+- Added new public function "pauseWatches()", which is used to pause all the watches for a specific number of milliseconds.
+- Added new public function "resumeWatches()", which is used to resume all the watches currently paused.
+
 #### **General Improvements:**
 - Minor internal refactoring to make things a little clearer.
 

@@ -376,6 +376,15 @@
     }
     return result;
   };
+  this.pauseWatches = function(milliseconds) {
+    var storageId;
+    for (storageId in _watches) {
+      if (_watches.hasOwnProperty(storageId)) {
+        pauseWatchObject(storageId, milliseconds);
+      }
+    }
+    return this;
+  };
   this.resumeWatch = function(id) {
     var result = false;
     if (_watches.hasOwnProperty(id)) {
@@ -392,6 +401,15 @@
       }
     }
     return result;
+  };
+  this.resumeWatches = function() {
+    var storageId;
+    for (storageId in _watches) {
+      if (_watches.hasOwnProperty(storageId)) {
+        _watches[storageId].options.starts = null;
+      }
+    }
+    return this;
   };
   this.searchDomForNewWatches = function() {
     collectDOMObjects();
