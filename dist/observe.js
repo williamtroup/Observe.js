@@ -1,4 +1,4 @@
-/*! Observe.js v0.5.1 | (c) Bunoon | MIT License */
+/*! Observe.js v0.6.0 | (c) Bunoon | MIT License */
 (function() {
   function collectDOMObjects() {
     var tagTypes = _configuration.domElementTypes;
@@ -404,7 +404,7 @@
     return this;
   };
   this.getVersion = function() {
-    return "0.5.1";
+    return "0.6.0";
   };
   (function(documentObject, windowObject) {
     _parameter_Document = documentObject;
