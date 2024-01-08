@@ -9,6 +9,9 @@
 #### **General Improvements:**
 - Minor internal refactoring to make things a little clearer.
 
+#### **Fixes:**
+- Fixed some errors in HTML files when calling the public functions.
+
 <br>
 
 
