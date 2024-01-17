@@ -1,7 +1,9 @@
 # Observe.js - Change Log:
 
 ## Version 0.7.0:
-- 
+
+#### **General Improvements:**
+- Updated project homepage URL.
 
 <br>
 
