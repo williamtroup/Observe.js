@@ -4,7 +4,7 @@
  * A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.
  * 
  * @file        observe.js
- * @version     v0.6.0
+ * @version     v0.7.0
  * @author      Bunoon
  * @license     MIT License
  * @copyright   Bunoon 2024
@@ -767,7 +767,7 @@
      * @returns     {string}                                                The version number.
      */
     this.getVersion = function() {
-        return "0.6.0";
+        return "0.7.0";
     };
 
 
