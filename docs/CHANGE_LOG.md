@@ -5,6 +5,9 @@
 #### **General Improvements:**
 - Updated project homepage URL.
 
+#### **Fixes:**
+- Fixed the binding property "allowPausing" defaulting to "null" instead of "true" when not manually set.
+
 <br>
 
 

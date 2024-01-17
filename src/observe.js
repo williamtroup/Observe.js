@@ -317,7 +317,7 @@
         options.pauseTimeoutOnChange = getDefaultNumber( options.pauseTimeoutOnChange, 0 );
         options.propertyNames = getDefaultArray( options.propertyNames, null );
         options.allowCanceling = getDefaultBoolean( options.allowCanceling, true );
-        options.allowPausing = getDefaultBoolean( options.allowPausing, null );
+        options.allowPausing = getDefaultBoolean( options.allowPausing, true );
 
         options = getWatchOptionsCustomTriggers( options );
 
