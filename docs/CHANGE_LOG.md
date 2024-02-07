@@ -5,7 +5,7 @@
 #### **General Improvements:**
 - Added Math injection directly into the main instance.
 - Added JSON injection directly into the main instance.
-- Improved keywords in the documentation.
+- Improved keywords in the package files.
 
 #### **Documentation:**
 - Added install instructions into the main README files.

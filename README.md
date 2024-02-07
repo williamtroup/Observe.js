@@ -6,7 +6,7 @@ Observe.js
 [![nuget](https://img.shields.io/badge/nuget-v0.7.0-purple)](https://www.nuget.org/packages/jObserve.js/)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://github.com/williamtroup/Observe.js/blob/main/LICENSE.txt)
 [![discussions Welcome](https://img.shields.io/badge/discussions-Welcome-red)](https://github.com/williamtroup/Observe.js/discussions)
-[![coded by William Troup](https://img.shields.io/badge/coded_by-William_Troup-yellow)](https://github.com/williamtroup)
+[![coded by William Troup](https://img.shields.io/badge/coded_by-William_Troup-yellow)](https://www.william-troup.com/)
 </h1>
 
 > <p align="center">A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.</p>
