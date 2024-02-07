@@ -1,4 +1,4 @@
-/*! Observe.js v0.6.1 | (c) Bunoon 2024 | MIT License */
+/*! Observe.js v0.7.0 | (c) Bunoon 2024 | MIT License */
 (function() {
   function I() {
     for (var a = q.domElementTypes, b = a.length, c = 0; c < b; c++) {
@@ -278,7 +278,7 @@
     return this;
   };
   this.getVersion = function() {
-    return "0.6.1";
+    return "0.7.0";
   };
   (function(a, b) {
     y = a;

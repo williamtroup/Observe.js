@@ -1,5 +1,11 @@
 # Observe.js - Change Log:
 
+## Version 0.7.0:
+- 
+
+<br>
+
+
 ## Version 0.6.1:
 - Updated project homepage URL.
 - Fixed the binding property "allowPausing" defaulting to "null" instead of "true" when not manually set.
