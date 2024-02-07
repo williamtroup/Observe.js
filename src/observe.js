@@ -109,7 +109,8 @@
             storageId = newGuid();
 
             var watchOptions = getWatchOptions( options ),
-                watch = {};
+                watch = {},
+                startWatchObject;
 
             watch.options = watchOptions;
             watch.totalChanges = 0;
@@ -121,18 +122,26 @@
                     watch.domElementId = domElementId;
                     watch.cachedObject = domElement.outerHTML;
                     watch.originalObject = domElement.outerHTML;
+
+                    startWatchObject = domElement.outerHTML;
                 }
 
             } else {
                 watch.cachedObject = _parameter_Json.stringify( object );
                 watch.originalObject = object;
+
+                startWatchObject = object;
             }
 
-            watch.timer = setInterval( function() {
-                watchTimer( watchOptions, storageId );
-            }, watchOptions.timeout );
+            if ( isDefined( watch.cachedObject ) ) {
+                fireCustomTrigger( watch.options.onStart, startWatchObject );
 
-            _watches[ storageId ] = watch;
+                watch.timer = setInterval( function() {
+                    watchTimer( watchOptions, storageId );
+                }, watchOptions.timeout );
+    
+                _watches[ storageId ] = watch;
+            }
         }
 
         return storageId;
@@ -331,6 +340,7 @@
         options.onPropertyChange = getDefaultFunction( options.onPropertyChange, null );
         options.onCancel = getDefaultFunction( options.onCancel, null );
         options.onRemove = getDefaultFunction( options.onRemove, null );
+        options.onStart = getDefaultFunction( options.onStart, null );
 
         return options;
     }
