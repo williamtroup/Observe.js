@@ -5,6 +5,9 @@
 #### **General Improvements:**
 - Added install instructions into the main README files.
 
+#### **Fixes:**
+- Fixed the "observe.js.nuspec" file including the ".github" folder when NuGet PACK is called.
+
 <br>
 
 
