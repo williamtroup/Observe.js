@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>jObserve.js</id>
-        <version>0.6.1</version>
+        <version>0.7.0</version>
         <title>Observe.js</title>
         <description>A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.</description>
         <authors>William Troup</authors>
@@ -10,11 +10,11 @@
         <repository type="git" url="https://github.com/williamtroup/Observe.js" branch="main" />
         <readme>README_NUGET.md</readme>
         <license type="expression">MIT</license>
-        <tags>javascript css observe.js observe observable watcher object changes watch</tags>
+        <tags>javascript css observe.js observe observable watcher object changes watch event events trigger triggers handler</tags>
         <icon>docs\images\icon.png</icon>
         <copyright>William Troup</copyright>
     </metadata>
     <files>
-        <file src="**" target="/" exclude=".git\**;.vscode\**" />
+        <file src="**" target="/" exclude=".git\**;.github\**;.vscode\**" />
     </files>
 </package>

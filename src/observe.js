@@ -4,7 +4,7 @@
  * A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.
  * 
  * @file        observe.js
- * @version     v0.6.1
+ * @version     v0.7.0
  * @author      Bunoon
  * @license     MIT License
  * @copyright   Bunoon 2024
@@ -15,6 +15,8 @@
     var // Variables: Constructor Parameters
         _parameter_Document = null,
         _parameter_Window = null,
+        _parameter_Math = null,
+        _parameter_Json = null,
 
         // Variables: Strings
         _string = {
@@ -107,7 +109,8 @@
             storageId = newGuid();
 
             var watchOptions = getWatchOptions( options ),
-                watch = {};
+                watch = {},
+                startWatchObject;
 
             watch.options = watchOptions;
             watch.totalChanges = 0;
@@ -119,18 +122,26 @@
                     watch.domElementId = domElementId;
                     watch.cachedObject = domElement.outerHTML;
                     watch.originalObject = domElement.outerHTML;
+
+                    startWatchObject = domElement.outerHTML;
                 }
 
             } else {
-                watch.cachedObject = JSON.stringify( object );
+                watch.cachedObject = _parameter_Json.stringify( object );
                 watch.originalObject = object;
+
+                startWatchObject = object;
             }
 
-            watch.timer = setInterval( function() {
-                watchTimer( watchOptions, storageId );
-            }, watchOptions.timeout );
+            if ( isDefined( watch.cachedObject ) ) {
+                fireCustomTrigger( watch.options.onStart, startWatchObject );
 
-            _watches[ storageId ] = watch;
+                watch.timer = setInterval( function() {
+                    watchTimer( watchOptions, storageId );
+                }, watchOptions.timeout );
+    
+                _watches[ storageId ] = watch;
+            }
         }
 
         return storageId;
@@ -168,7 +179,7 @@
 
             var cachedObject = watch.cachedObject,
                 originalObject = watch.originalObject,
-                originalObjectJson = !isDomElement ? JSON.stringify( originalObject ) : originalObject;
+                originalObjectJson = !isDomElement ? _parameter_Json.stringify( originalObject ) : originalObject;
 
             if ( cachedObject !== originalObjectJson ) {
                 if ( watch.options.reset ) {
@@ -251,7 +262,7 @@
                 } else {
 
                     if ( !isDefinedArray( watch.options.propertyNames ) || watch.options.propertyNames.indexOf( propertyName ) > -1 ) {
-                        if ( JSON.stringify( propertyOldValue ) !== JSON.stringify( propertyNewValue ) ) {
+                        if ( _parameter_Json.stringify( propertyOldValue ) !== _parameter_Json.stringify( propertyNewValue ) ) {
                             fireCustomTrigger( watch.options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue );
                         }
                     }
@@ -329,6 +340,7 @@
         options.onPropertyChange = getDefaultFunction( options.onPropertyChange, null );
         options.onCancel = getDefaultFunction( options.onCancel, null );
         options.onRemove = getDefaultFunction( options.onRemove, null );
+        options.onStart = getDefaultFunction( options.onStart, null );
 
         return options;
     }
@@ -361,7 +373,7 @@
                 result.push( "-" );
             }
 
-            var character = Math.floor( Math.random() * 16 ).toString( 16 );
+            var character = _parameter_Math.floor( _parameter_Math.random() * 16 ).toString( 16 );
             result.push( character );
         }
 
@@ -455,7 +467,7 @@
 
         try {
             if ( isDefinedString( objectString ) ) {
-                result = JSON.parse( objectString );
+                result = _parameter_Json.parse( objectString );
             }
 
         } catch ( e1 ) {
@@ -767,7 +779,7 @@
      * @returns     {string}                                                The version number.
      */
     this.getVersion = function() {
-        return "0.6.1";
+        return "0.7.0";
     };
 
 
@@ -777,9 +789,11 @@
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
-    ( function ( documentObject, windowObject ) {
+    ( function ( documentObject, windowObject, mathObject, jsonObject ) {
         _parameter_Document = documentObject;
         _parameter_Window = windowObject;
+        _parameter_Math = mathObject;
+        _parameter_Json = jsonObject;
 
         buildDefaultConfiguration();
 
@@ -797,5 +811,5 @@
             _parameter_Window.$observe = this;
         }
 
-    } ) ( document, window );
+    } ) ( document, window, Math, JSON );
 } )();

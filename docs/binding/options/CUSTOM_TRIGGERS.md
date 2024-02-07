@@ -33,6 +33,11 @@ Fires when a DOM element is no longer available in the DOM.
 <br>
 ***Parameter:*** id: '*string*' - The ID of the DOM element.
 
+### options.onStart( *originalValue* ):
+Fires when a watch is started.
+<br>
+***Parameter:*** id: '*object*' - The object that the watch as started for.
+
 <br>
 
 

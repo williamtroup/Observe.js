@@ -15,7 +15,7 @@
         </div>
 
         <div class="contents">
-            <div id="domElementWatch1" data-observe-watch-options="{ 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange, 'onCancel': onCancelWatch }">
+            <div id="domElementWatch1" data-observe-watch-options="{ 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange, 'onCancel': onCancelWatch, 'onStart': onStartWatch }">
                 When changed, this element should fire a custom trigger.
             </div>
 
@@ -99,7 +99,8 @@
                 onChange: onObservableObjectChange,
                 onPropertyChange: onObservableObjectPropertyChange,
                 onCancel: onCancelWatch,
-                propertyNames: [ "bool", "num" ]
+                propertyNames: [ "bool", "num" ],
+                onStart: onStartWatch
             } );
         }
 
@@ -124,6 +125,11 @@
 
         function onCancelWatch( id ) {
             console.log( "Watch " + id + " canceled." );
+            console.log( "" );
+        }
+
+        function onStartWatch( object ) {
+            console.log( "Watch started for: " + JSON.stringify( object ) );
             console.log( "" );
         }
     </script>

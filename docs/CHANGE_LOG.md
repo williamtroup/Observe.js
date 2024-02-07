@@ -1,5 +1,28 @@
 # Observe.js - Change Log:
 
+## Version 0.7.0:
+
+#### **Rules:**
+- Watches will now only start if an object can be found (is not null, or the DOM element exists).
+
+#### **Binding Options / Function Options - Custom Triggers:**
+- Added a new binding/option custom trigger called "onStart", which states an event that should be triggered when a watch is started.
+
+#### **General Improvements:**
+- Added Math injection directly into the main instance.
+- Added JSON injection directly into the main instance.
+- Improved keywords in the package files.
+
+#### **Documentation:**
+- Added install instructions into the main README files.
+- Added documentation that states how issues and new feature requests should be raised.
+
+#### **Fixes:**
+- Fixed the "observe.js.nuspec" file including the ".github" folder when NuGet PACK is called.
+
+<br>
+
+
 ## Version 0.6.1:
 - Updated project homepage URL.
 - Fixed the binding property "allowPausing" defaulting to "null" instead of "true" when not manually set.
