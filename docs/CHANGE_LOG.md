@@ -4,6 +4,8 @@
 
 #### **General Improvements:**
 - Added install instructions into the main README files.
+- Added Math injection directly into the main instance.
+- Added JSON injection directly into the main instance.
 
 #### **Fixes:**
 - Fixed the "observe.js.nuspec" file including the ".github" folder when NuGet PACK is called.

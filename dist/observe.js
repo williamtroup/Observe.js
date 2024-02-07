@@ -1,296 +1,453 @@
 /*! Observe.js v0.7.0 | (c) Bunoon 2024 | MIT License */
 (function() {
-  function I() {
-    for (var a = q.domElementTypes, b = a.length, c = 0; c < b; c++) {
-      var f = y.getElementsByTagName(a[c]);
-      f = [].slice.call(f);
-      for (var k = f.length, h = 0; h < k; h++) {
-        var l = f[h], e = !0;
-        if (r(l) && l.hasAttribute("data-observe-watch-options")) {
-          var g = l.getAttribute("data-observe-watch-options");
-          p(g) ? (g = A(g), g.parsed && t(g.result) ? (g = J(g.result), p(l.id) || (l.id = K()), l.removeAttribute("data-observe-watch-options"), L(l, g, l.id)) : q.safeMode || (console.error("The attribute 'data-observe-watch-options' is not a valid object."), e = !1)) : q.safeMode || (console.error("The attribute 'data-observe-watch-options' has not been set correctly."), e = !1);
-        }
-        if (!e) {
+  function collectDOMObjects() {
+    var tagTypes = _configuration.domElementTypes;
+    var tagTypesLength = tagTypes.length;
+    var tagTypeIndex = 0;
+    for (; tagTypeIndex < tagTypesLength; tagTypeIndex++) {
+      var domElements = _parameter_Document.getElementsByTagName(tagTypes[tagTypeIndex]);
+      var elements = [].slice.call(domElements);
+      var elementsLength = elements.length;
+      var elementIndex = 0;
+      for (; elementIndex < elementsLength; elementIndex++) {
+        if (!collectDOMObject(elements[elementIndex])) {
           break;
         }
       }
     }
   }
-  function L(a, b, c) {
-    var f = null;
-    if (t(a)) {
-      f = K();
-      var k = J(b);
-      b = {};
-      b.options = k;
-      b.totalChanges = 0;
-      p(c) ? (a = y.getElementById(c), r(a) && (b.domElementId = c, b.cachedObject = a.outerHTML, b.originalObject = a.outerHTML)) : (b.cachedObject = JSON.stringify(a), b.originalObject = a);
-      b.timer = setInterval(function() {
-        var h = f, l = new Date();
-        if (!B(k.starts) || l >= k.starts) {
-          if (d.hasOwnProperty(h)) {
-            var e = d[h], g = p(e.domElementId), m = null;
-            g && (m = y.getElementById(e.domElementId), r(m) ? e.originalObject = m.outerHTML : (e.originalObject = C.empty, u(e.options.onRemove, e.domElementId)));
-            var v = e.cachedObject, n = e.originalObject;
-            n = g ? n : JSON.stringify(n);
-            if (v !== n) {
-              e.options.reset ? g ? m.outerHTML = e.cachedObject : e.originalObject = A(v).result : e.cachedObject = n;
-              if (g) {
-                u(e.options.onChange, v, n);
-              } else {
-                if (g = A(v).result, m = A(n).result, w(g) || w(m)) {
-                  u(e.options.onChange, g, m);
-                } else {
-                  if (w(e.options.propertyNames)) {
-                    for (v = e.options.propertyNames.length, n = 0; n < v; n++) {
-                      var M = e.options.propertyNames[n];
-                      if (g[M] !== m[M]) {
-                        u(e.options.onChange, g, m);
-                        break;
-                      }
-                    }
-                  } else {
-                    u(e.options.onChange, g, m);
-                  }
-                  D(e.options.onPropertyChange) && N(g, m, e);
-                }
-              }
-              e.totalChanges++;
-              0 < e.options.pauseTimeoutOnChange && E(h, e.options.pauseTimeoutOnChange);
-              e.options.cancelOnChange && x(h);
-              0 < e.options.maximumChangesBeforeCanceling && e.totalChanges >= e.options.maximumChangesBeforeCanceling && x(h);
+  function collectDOMObject(element) {
+    var result = true;
+    if (isDefined(element) && element.hasAttribute(_attribute_Name_Watch_Options)) {
+      var bindingOptionsData = element.getAttribute(_attribute_Name_Watch_Options);
+      if (isDefinedString(bindingOptionsData)) {
+        var bindingOptions = getObjectFromString(bindingOptionsData);
+        if (bindingOptions.parsed && isDefinedObject(bindingOptions.result)) {
+          bindingOptions = getWatchOptions(bindingOptions.result);
+          if (!isDefinedString(element.id)) {
+            element.id = newGuid();
+          }
+          element.removeAttribute(_attribute_Name_Watch_Options);
+          createWatch(element, bindingOptions, element.id);
+        } else {
+          if (!_configuration.safeMode) {
+            console.error("The attribute '" + _attribute_Name_Watch_Options + "' is not a valid object.");
+            result = false;
+          }
+        }
+      } else {
+        if (!_configuration.safeMode) {
+          console.error("The attribute '" + _attribute_Name_Watch_Options + "' has not been set correctly.");
+          result = false;
+        }
+      }
+    }
+    return result;
+  }
+  function createWatch(object, options, domElementId) {
+    var storageId = null;
+    if (isDefinedObject(object)) {
+      storageId = newGuid();
+      var watchOptions = getWatchOptions(options);
+      var watch = {};
+      watch.options = watchOptions;
+      watch.totalChanges = 0;
+      if (isDefinedString(domElementId)) {
+        var domElement = _parameter_Document.getElementById(domElementId);
+        if (isDefined(domElement)) {
+          watch.domElementId = domElementId;
+          watch.cachedObject = domElement.outerHTML;
+          watch.originalObject = domElement.outerHTML;
+        }
+      } else {
+        watch.cachedObject = _parameter_Json.stringify(object);
+        watch.originalObject = object;
+      }
+      watch.timer = setInterval(function() {
+        watchTimer(watchOptions, storageId);
+      }, watchOptions.timeout);
+      _watches[storageId] = watch;
+    }
+    return storageId;
+  }
+  function watchTimer(watchOptions, storageId) {
+    var currentDateTime = new Date();
+    if (!isDefinedDate(watchOptions.starts) || currentDateTime >= watchOptions.starts) {
+      watchObjectForChanges(storageId);
+      if (isDefinedDate(watchOptions.expires) && currentDateTime >= watchOptions.expires) {
+        cancelWatchObject(storageId);
+      }
+    }
+  }
+  function watchObjectForChanges(storageId) {
+    if (_watches.hasOwnProperty(storageId)) {
+      var watch = _watches[storageId];
+      var isDomElement = isDefinedString(watch.domElementId);
+      var domElement = null;
+      if (isDomElement) {
+        domElement = _parameter_Document.getElementById(watch.domElementId);
+        if (isDefined(domElement)) {
+          watch.originalObject = domElement.outerHTML;
+        } else {
+          watch.originalObject = _string.empty;
+          fireCustomTrigger(watch.options.onRemove, watch.domElementId);
+        }
+      }
+      var cachedObject = watch.cachedObject;
+      var originalObject = watch.originalObject;
+      var originalObjectJson = !isDomElement ? _parameter_Json.stringify(originalObject) : originalObject;
+      if (cachedObject !== originalObjectJson) {
+        if (watch.options.reset) {
+          if (isDomElement) {
+            domElement.outerHTML = watch.cachedObject;
+          } else {
+            watch.originalObject = getObjectFromString(cachedObject).result;
+          }
+        } else {
+          watch.cachedObject = originalObjectJson;
+        }
+        if (isDomElement) {
+          fireCustomTrigger(watch.options.onChange, cachedObject, originalObjectJson);
+        } else {
+          var oldValue = getObjectFromString(cachedObject).result;
+          var newValue = getObjectFromString(originalObjectJson).result;
+          if (!isDefinedArray(oldValue) && !isDefinedArray(newValue)) {
+            compareWatchObject(oldValue, newValue, watch);
+            if (isDefinedFunction(watch.options.onPropertyChange)) {
+              compareWatchObjectProperties(oldValue, newValue, watch);
+            }
+          } else {
+            fireCustomTrigger(watch.options.onChange, oldValue, newValue);
+          }
+        }
+        watch.totalChanges++;
+        if (watch.options.pauseTimeoutOnChange > 0) {
+          pauseWatchObject(storageId, watch.options.pauseTimeoutOnChange);
+        }
+        if (watch.options.cancelOnChange) {
+          cancelWatchObject(storageId);
+        }
+        if (watch.options.maximumChangesBeforeCanceling > 0 && watch.totalChanges >= watch.options.maximumChangesBeforeCanceling) {
+          cancelWatchObject(storageId);
+        }
+      }
+    }
+  }
+  function compareWatchObject(oldObject, newObject, watch) {
+    if (isDefinedArray(watch.options.propertyNames)) {
+      var propertyNamesLength = watch.options.propertyNames.length;
+      var propertyNameIndex = 0;
+      for (; propertyNameIndex < propertyNamesLength; propertyNameIndex++) {
+        var propertyName = watch.options.propertyNames[propertyNameIndex];
+        if (oldObject[propertyName] !== newObject[propertyName]) {
+          fireCustomTrigger(watch.options.onChange, oldObject, newObject);
+          break;
+        }
+      }
+    } else {
+      fireCustomTrigger(watch.options.onChange, oldObject, newObject);
+    }
+  }
+  function compareWatchObjectProperties(oldObject, newObject, watch) {
+    var propertyName;
+    for (propertyName in oldObject) {
+      if (oldObject.hasOwnProperty(propertyName)) {
+        var propertyOldValue = oldObject[propertyName];
+        var propertyNewValue = null;
+        if (newObject.hasOwnProperty(propertyName)) {
+          propertyNewValue = newObject[propertyName];
+        }
+        if (isDefinedObject(propertyOldValue) && isDefinedObject(propertyNewValue)) {
+          compareWatchObjectProperties(propertyOldValue, propertyNewValue, watch.options);
+        } else {
+          if (!isDefinedArray(watch.options.propertyNames) || watch.options.propertyNames.indexOf(propertyName) > -1) {
+            if (_parameter_Json.stringify(propertyOldValue) !== _parameter_Json.stringify(propertyNewValue)) {
+              fireCustomTrigger(watch.options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue);
             }
           }
-          B(k.expires) && l >= k.expires && x(h);
         }
-      }, k.timeout);
-      d[f] = b;
-    }
-    return f;
-  }
-  function N(a, b, c) {
-    for (var f in a) {
-      if (a.hasOwnProperty(f)) {
-        var k = a[f], h = null;
-        b.hasOwnProperty(f) && (h = b[f]);
-        t(k) && t(h) ? N(k, h, c.options) : (!w(c.options.propertyNames) || -1 < c.options.propertyNames.indexOf(f)) && JSON.stringify(k) !== JSON.stringify(h) && u(c.options.onPropertyChange, f, k, h);
       }
     }
   }
-  function O() {
-    for (var a in d) {
-      d.hasOwnProperty(a) && x(a);
-    }
-  }
-  function x(a) {
-    if (d.hasOwnProperty(a)) {
-      var b = d[a].options;
-      if (b.allowCanceling || P) {
-        u(b.onCancel, a), clearTimeout(d[a].timer), delete d[a];
+  function cancelWatchesForObjects() {
+    var storageId;
+    for (storageId in _watches) {
+      if (_watches.hasOwnProperty(storageId)) {
+        cancelWatchObject(storageId);
       }
     }
   }
-  function E(a, b) {
-    var c = !1;
-    if (d.hasOwnProperty(a)) {
-      var f = d[a].options;
-      f.allowPausing && (f.starts = new Date(), f.starts.setMilliseconds(f.starts.getMilliseconds() + b), c = !0);
-    }
-    return c;
-  }
-  function J(a) {
-    a = t(a) ? a : {};
-    a.timeout = H(a.timeout, 250);
-    var b = a;
-    var c = a.starts;
-    c = B(c) ? c : null;
-    b.starts = c;
-    b = a;
-    c = a.expires;
-    c = B(c) ? c : null;
-    b.expires = c;
-    a.reset = z(a.reset, !1);
-    a.cancelOnChange = z(a.cancelOnChange, !1);
-    a.maximumChangesBeforeCanceling = H(a.maximumChangesBeforeCanceling, 0);
-    a.pauseTimeoutOnChange = H(a.pauseTimeoutOnChange, 0);
-    b = a;
-    c = a.propertyNames;
-    c = w(c) ? c : null;
-    b.propertyNames = c;
-    a.allowCanceling = z(a.allowCanceling, !0);
-    a.allowPausing = z(a.allowPausing, !0);
-    a.onChange = F(a.onChange, null);
-    a.onPropertyChange = F(a.onPropertyChange, null);
-    a.onCancel = F(a.onCancel, null);
-    a.onRemove = F(a.onRemove, null);
-    return a;
-  }
-  function u(a) {
-    D(a) && a.apply(null, [].slice.call(arguments, 1));
-  }
-  function K() {
-    for (var a = [], b = 0; 32 > b; b++) {
-      8 !== b && 12 !== b && 16 !== b && 20 !== b || a.push("-");
-      var c = Math.floor(16 * Math.random()).toString(16);
-      a.push(c);
-    }
-    return a.join(C.empty);
-  }
-  function r(a) {
-    return null !== a && void 0 !== a && a !== C.empty;
-  }
-  function t(a) {
-    return r(a) && "object" === typeof a;
-  }
-  function p(a) {
-    return r(a) && "string" === typeof a;
-  }
-  function D(a) {
-    return r(a) && "function" === typeof a;
-  }
-  function w(a) {
-    return t(a) && a instanceof Array;
-  }
-  function B(a) {
-    return t(a) && a instanceof Date;
-  }
-  function z(a, b) {
-    return r(a) && "boolean" === typeof a ? a : b;
-  }
-  function F(a, b) {
-    return D(a) ? a : b;
-  }
-  function H(a, b) {
-    return r(a) && "number" === typeof a ? a : b;
-  }
-  function A(a) {
-    var b = !0, c = null;
-    try {
-      p(a) && (c = JSON.parse(a));
-    } catch (f) {
-      try {
-        c = eval("(" + a + ")"), D(c) && (c = c());
-      } catch (k) {
-        b = R("Errors in object: " + f.message + ", " + k.message), c = null;
+  function cancelWatchObject(storageId) {
+    if (_watches.hasOwnProperty(storageId)) {
+      var watchOptions = _watches[storageId].options;
+      if (watchOptions.allowCanceling || _watches_Cancel) {
+        fireCustomTrigger(watchOptions.onCancel, storageId);
+        clearTimeout(_watches[storageId].timer);
+        delete _watches[storageId];
       }
     }
-    return {parsed:b, result:c};
   }
-  function R(a) {
-    var b = !0;
-    q.safeMode || (console.error(a), b = !1);
-    return b;
+  function pauseWatchObject(storageId, milliseconds) {
+    var result = false;
+    if (_watches.hasOwnProperty(storageId)) {
+      var watchOptions = _watches[storageId].options;
+      if (watchOptions.allowPausing) {
+        watchOptions.starts = new Date();
+        watchOptions.starts.setMilliseconds(watchOptions.starts.getMilliseconds() + milliseconds);
+        result = true;
+      }
+    }
+    return result;
   }
-  function Q() {
-    q.safeMode = z(q.safeMode, !0);
-    var a = q, b = q.domElementTypes, c = ["*"];
-    p(b) ? (b = b.split(C.space), 0 === b.length && (b = c)) : b = w(b) ? b : c;
-    a.domElementTypes = b;
+  function getWatchOptions(newOptions) {
+    var options = !isDefinedObject(newOptions) ? {} : newOptions;
+    options.timeout = getDefaultNumber(options.timeout, 250);
+    options.starts = getDefaultDate(options.starts, null);
+    options.expires = getDefaultDate(options.expires, null);
+    options.reset = getDefaultBoolean(options.reset, false);
+    options.cancelOnChange = getDefaultBoolean(options.cancelOnChange, false);
+    options.maximumChangesBeforeCanceling = getDefaultNumber(options.maximumChangesBeforeCanceling, 0);
+    options.pauseTimeoutOnChange = getDefaultNumber(options.pauseTimeoutOnChange, 0);
+    options.propertyNames = getDefaultArray(options.propertyNames, null);
+    options.allowCanceling = getDefaultBoolean(options.allowCanceling, true);
+    options.allowPausing = getDefaultBoolean(options.allowPausing, true);
+    options = getWatchOptionsCustomTriggers(options);
+    return options;
   }
-  var y = null, G = null, C = {empty:""}, d = {}, P = !1, q = {};
-  this.watch = function(a, b) {
-    return L(a, b);
-  };
-  this.cancelWatch = function(a) {
-    var b = !1;
-    if (d.hasOwnProperty(a)) {
-      x(a), b = !0;
+  function getWatchOptionsCustomTriggers(options) {
+    options.onChange = getDefaultFunction(options.onChange, null);
+    options.onPropertyChange = getDefaultFunction(options.onPropertyChange, null);
+    options.onCancel = getDefaultFunction(options.onCancel, null);
+    options.onRemove = getDefaultFunction(options.onRemove, null);
+    return options;
+  }
+  function fireCustomTrigger(triggerFunction) {
+    if (isDefinedFunction(triggerFunction)) {
+      triggerFunction.apply(null, [].slice.call(arguments, 1));
+    }
+  }
+  function newGuid() {
+    var result = [];
+    var charIndex = 0;
+    for (; charIndex < 32; charIndex++) {
+      if (charIndex === 8 || charIndex === 12 || charIndex === 16 || charIndex === 20) {
+        result.push("-");
+      }
+      var character = _parameter_Math.floor(_parameter_Math.random() * 16).toString(16);
+      result.push(character);
+    }
+    return result.join(_string.empty);
+  }
+  function isDefined(value) {
+    return value !== null && value !== undefined && value !== _string.empty;
+  }
+  function isDefinedObject(object) {
+    return isDefined(object) && typeof object === "object";
+  }
+  function isDefinedBoolean(object) {
+    return isDefined(object) && typeof object === "boolean";
+  }
+  function isDefinedString(object) {
+    return isDefined(object) && typeof object === "string";
+  }
+  function isDefinedFunction(object) {
+    return isDefined(object) && typeof object === "function";
+  }
+  function isDefinedNumber(object) {
+    return isDefined(object) && typeof object === "number";
+  }
+  function isDefinedArray(object) {
+    return isDefinedObject(object) && object instanceof Array;
+  }
+  function isDefinedDate(object) {
+    return isDefinedObject(object) && object instanceof Date;
+  }
+  function getDefaultBoolean(value, defaultValue) {
+    return isDefinedBoolean(value) ? value : defaultValue;
+  }
+  function getDefaultFunction(value, defaultValue) {
+    return isDefinedFunction(value) ? value : defaultValue;
+  }
+  function getDefaultNumber(value, defaultValue) {
+    return isDefinedNumber(value) ? value : defaultValue;
+  }
+  function getDefaultDate(value, defaultValue) {
+    return isDefinedDate(value) ? value : defaultValue;
+  }
+  function getDefaultArray(value, defaultValue) {
+    return isDefinedArray(value) ? value : defaultValue;
+  }
+  function getDefaultStringOrArray(value, defaultValue) {
+    if (isDefinedString(value)) {
+      value = value.split(_string.space);
+      if (value.length === 0) {
+        value = defaultValue;
+      }
     } else {
-      for (var c in d) {
-        if (d.hasOwnProperty(c) && p(d[c].domElementId) && d[c].domElementId === a) {
-          x(c);
-          b = !0;
+      value = getDefaultArray(value, defaultValue);
+    }
+    return value;
+  }
+  function getObjectFromString(objectString) {
+    var parsed = true;
+    var result = null;
+    try {
+      if (isDefinedString(objectString)) {
+        result = _parameter_Json.parse(objectString);
+      }
+    } catch (e1) {
+      try {
+        result = eval("(" + objectString + ")");
+        if (isDefinedFunction(result)) {
+          result = result();
+        }
+      } catch (e2) {
+        parsed = logError("Errors in object: " + e1.message + ", " + e2.message);
+        result = null;
+      }
+    }
+    return {parsed:parsed, result:result};
+  }
+  function logError(error) {
+    var result = true;
+    if (!_configuration.safeMode) {
+      console.error(error);
+      result = false;
+    }
+    return result;
+  }
+  function buildDefaultConfiguration() {
+    _configuration.safeMode = getDefaultBoolean(_configuration.safeMode, true);
+    _configuration.domElementTypes = getDefaultStringOrArray(_configuration.domElementTypes, ["*"]);
+  }
+  var _parameter_Document = null;
+  var _parameter_Window = null;
+  var _parameter_Math = null;
+  var _parameter_Json = null;
+  var _string = {empty:""};
+  var _watches = {};
+  var _watches_Cancel = false;
+  var _configuration = {};
+  var _attribute_Name_Watch_Options = "data-observe-watch-options";
+  this.watch = function(object, options) {
+    return createWatch(object, options);
+  };
+  this.cancelWatch = function(id) {
+    var result = false;
+    if (_watches.hasOwnProperty(id)) {
+      cancelWatchObject(id);
+      result = true;
+    } else {
+      var storageId;
+      for (storageId in _watches) {
+        if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
+          cancelWatchObject(storageId);
+          result = true;
           break;
         }
       }
     }
-    return b;
+    return result;
   };
   this.cancelWatches = function() {
-    O();
+    cancelWatchesForObjects();
     return this;
   };
-  this.getWatch = function(a) {
-    var b = null;
-    if (d.hasOwnProperty(a)) {
-      b = d[a];
+  this.getWatch = function(id) {
+    var result = null;
+    if (_watches.hasOwnProperty(id)) {
+      result = _watches[id];
     } else {
-      for (var c in d) {
-        if (d.hasOwnProperty(c) && p(d[c].domElementId) && d[c].domElementId === a) {
-          b = d[c];
+      var storageId;
+      for (storageId in _watches) {
+        if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
+          result = _watches[storageId];
           break;
         }
       }
     }
-    return b;
+    return result;
   };
   this.getWatches = function() {
-    return d;
+    return _watches;
   };
-  this.pauseWatch = function(a, b) {
-    var c = !1;
-    if (d.hasOwnProperty(a)) {
-      c = E(a, b);
+  this.pauseWatch = function(id, milliseconds) {
+    var result = false;
+    if (_watches.hasOwnProperty(id)) {
+      result = pauseWatchObject(id, milliseconds);
     } else {
-      for (var f in d) {
-        if (d.hasOwnProperty(f) && p(d[f].domElementId) && d[f].domElementId === a) {
-          c = E(f, b);
+      var storageId;
+      for (storageId in _watches) {
+        if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
+          result = pauseWatchObject(storageId, milliseconds);
           break;
         }
       }
     }
-    return c;
+    return result;
   };
-  this.pauseWatches = function(a) {
-    for (var b in d) {
-      d.hasOwnProperty(b) && E(b, a);
+  this.pauseWatches = function(milliseconds) {
+    var storageId;
+    for (storageId in _watches) {
+      if (_watches.hasOwnProperty(storageId)) {
+        pauseWatchObject(storageId, milliseconds);
+      }
     }
     return this;
   };
-  this.resumeWatch = function(a) {
-    var b = !1;
-    if (d.hasOwnProperty(a)) {
-      d[a].options.starts = null, b = !0;
+  this.resumeWatch = function(id) {
+    var result = false;
+    if (_watches.hasOwnProperty(id)) {
+      _watches[id].options.starts = null;
+      result = true;
     } else {
-      for (var c in d) {
-        if (d.hasOwnProperty(c) && p(d[c].domElementId) && d[c].domElementId === a) {
-          d[c].options.starts = null;
-          b = !0;
+      var storageId;
+      for (storageId in _watches) {
+        if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
+          _watches[storageId].options.starts = null;
+          result = true;
           break;
         }
       }
     }
-    return b;
+    return result;
   };
   this.resumeWatches = function() {
-    for (var a in d) {
-      d.hasOwnProperty(a) && (d[a].options.starts = null);
+    var storageId;
+    for (storageId in _watches) {
+      if (_watches.hasOwnProperty(storageId)) {
+        _watches[storageId].options.starts = null;
+      }
     }
     return this;
   };
   this.searchDomForNewWatches = function() {
-    I();
+    collectDOMObjects();
     return this;
   };
-  this.setConfiguration = function(a) {
-    q = t(a) ? a : {};
-    Q();
+  this.setConfiguration = function(newOptions) {
+    _configuration = !isDefinedObject(newOptions) ? {} : newOptions;
+    buildDefaultConfiguration();
     return this;
   };
   this.getVersion = function() {
     return "0.7.0";
   };
-  (function(a, b) {
-    y = a;
-    G = b;
-    Q();
-    y.addEventListener("DOMContentLoaded", function() {
-      I();
+  (function(documentObject, windowObject, mathObject, jsonObject) {
+    _parameter_Document = documentObject;
+    _parameter_Window = windowObject;
+    _parameter_Math = mathObject;
+    _parameter_Json = jsonObject;
+    buildDefaultConfiguration();
+    _parameter_Document.addEventListener("DOMContentLoaded", function() {
+      collectDOMObjects();
     });
-    G.addEventListener("unload", function() {
-      P = !0;
-      O();
+    _parameter_Window.addEventListener("unload", function() {
+      _watches_Cancel = true;
+      cancelWatchesForObjects();
     });
-    r(G.$observe) || (G.$observe = this);
-  })(document, window);
+    if (!isDefined(_parameter_Window.$observe)) {
+      _parameter_Window.$observe = this;
+    }
+  })(document, window, Math, JSON);
 })();
