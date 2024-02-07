@@ -21,7 +21,12 @@
       "watcher",
       "object",
       "changes",
-      "watch"
+      "watch",
+      "event",
+      "events",
+      "trigger",
+      "triggers",
+      "handler"
     ],
     "bugs": {
       "url": "https://github.com/williamtroup/Observe.js/issues"
