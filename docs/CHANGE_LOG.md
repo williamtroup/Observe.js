@@ -3,7 +3,7 @@
 ## Version 0.7.0:
 
 #### **Rules:**
-- Watches will now only start if an object was able to be found (is not null, or the DOM element exists).
+- Watches will now only start if an object can be found (is not null, or the DOM element exists).
 
 #### **Binding Options / Function Options - Custom Triggers:**
 - Added a new binding/option custom trigger called "onStart", which states an event that should be triggered when a watch is started.
