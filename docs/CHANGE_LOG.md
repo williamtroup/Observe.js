@@ -1,7 +1,9 @@
 # Observe.js - Change Log:
 
 ## Version 0.7.0:
-- 
+
+#### **General Improvements:**
+- Added install instructions into the main README files.
 
 <br>
 

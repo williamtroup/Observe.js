@@ -27,17 +27,31 @@ Observe.js
 <br />
 <br />
 
+
 <h1>What browsers are supported?</h1>
 
 All modern browsers (such as Google Chrome, FireFox, and Opera) are fully supported.
 <br>
 <br>
 
+
 <h1>What are the most recent changes?</h1>
 
 To see a list of all the most recent changes, click [here](docs/CHANGE_LOG.md).
 <br>
 <br>
+
+
+<h1>How do I install Observe.js?</h1>
+
+You can install the library with npm into your local modules directory using the following command:
+
+```markdown
+npm install jobserve.js
+```
+<br>
+<br>
+
 
 <h1>How do I get started?</h1>
 
