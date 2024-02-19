@@ -285,7 +285,7 @@
 
             if ( watchOptions.allowCanceling || _watches_Cancel ) {
                 fireCustomTrigger( watchOptions.onCancel, storageId );
-                clearTimeout( _watches[ storageId ].timer );
+                clearInterval( _watches[ storageId ].timer );
                 
                 delete _watches[ storageId ];
             }
