@@ -1,5 +1,11 @@
 # Observe.js - Change Log:
 
+## Version 0.7.1:
+- 
+
+<br>
+
+
 ## Version 0.7.0:
 
 #### **Rules:**
