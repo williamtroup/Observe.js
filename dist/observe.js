@@ -1,4 +1,4 @@
-/*! Observe.js v0.7.0 | (c) Bunoon 2024 | MIT License */
+/*! Observe.js v0.7.1 | (c) Bunoon 2024 | MIT License */
 (function() {
   function collectDOMObjects() {
     var tagTypes = _configuration.domElementTypes;
@@ -188,7 +188,7 @@
       var watchOptions = _watches[storageId].options;
       if (watchOptions.allowCanceling || _watches_Cancel) {
         fireCustomTrigger(watchOptions.onCancel, storageId);
-        clearTimeout(_watches[storageId].timer);
+        clearInterval(_watches[storageId].timer);
         delete _watches[storageId];
       }
     }
@@ -438,7 +438,7 @@
     return this;
   };
   this.getVersion = function() {
-    return "0.7.0";
+    return "0.7.1";
   };
   (function(documentObject, windowObject, mathObject, jsonObject) {
     _parameter_Document = documentObject;

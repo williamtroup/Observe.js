@@ -4,7 +4,7 @@
  * A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.
  * 
  * @file        observe.js
- * @version     v0.7.0
+ * @version     v0.7.1
  * @author      Bunoon
  * @license     MIT License
  * @copyright   Bunoon 2024
@@ -285,7 +285,7 @@
 
             if ( watchOptions.allowCanceling || _watches_Cancel ) {
                 fireCustomTrigger( watchOptions.onCancel, storageId );
-                clearTimeout( _watches[ storageId ].timer );
+                clearInterval( _watches[ storageId ].timer );
                 
                 delete _watches[ storageId ];
             }
@@ -779,7 +779,7 @@
      * @returns     {string}                                                The version number.
      */
     this.getVersion = function() {
-        return "0.7.0";
+        return "0.7.1";
     };
 
 
