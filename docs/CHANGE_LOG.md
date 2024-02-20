@@ -2,7 +2,6 @@
 
 ## Version 0.7.1:
 - Fixed a fault that caused clearTimeout() to be called instead of clearInterval().
-- 
 
 <br>
 
