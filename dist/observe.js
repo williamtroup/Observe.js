@@ -206,7 +206,7 @@
     return result;
   }
   function getWatchOptions(newOptions) {
-    var options = !isDefinedObject(newOptions) ? {} : newOptions;
+    var options = getDefaultObject(newOptions, {});
     options.timeout = getDefaultNumber(options.timeout, 250);
     options.starts = getDefaultDate(options.starts, null);
     options.expires = getDefaultDate(options.expires, null);
@@ -283,6 +283,9 @@
   }
   function getDefaultArray(value, defaultValue) {
     return isDefinedArray(value) ? value : defaultValue;
+  }
+  function getDefaultObject(value, defaultValue) {
+    return isDefinedObject(value) ? value : defaultValue;
   }
   function getDefaultStringOrArray(value, defaultValue) {
     if (isDefinedString(value)) {
@@ -432,8 +435,8 @@
     collectDOMObjects();
     return this;
   };
-  this.setConfiguration = function(newOptions) {
-    _configuration = !isDefinedObject(newOptions) ? {} : newOptions;
+  this.setConfiguration = function(newConfiguration) {
+    _configuration = getDefaultObject(newConfiguration, {});
     buildDefaultConfiguration();
     return this;
   };

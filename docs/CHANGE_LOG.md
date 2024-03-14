@@ -2,6 +2,9 @@
 
 ## Version 0.8.0:
 
+#### **General Improvements:**
+- Objects are now checked and defaulted properly when invalid values are passed.
+
 #### **Documentation:**
 - Minor tweaks to the documentation.
 
