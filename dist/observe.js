@@ -31,13 +31,13 @@
           createWatch(element, bindingOptions, element.id);
         } else {
           if (!_configuration.safeMode) {
-            console.error("The attribute '" + _attribute_Name_Watch_Options + "' is not a valid object.");
+            console.error(_configuration.attributeNotValidErrorText.replace("{{attribute_name}}", _attribute_Name_Watch_Options));
             result = false;
           }
         }
       } else {
         if (!_configuration.safeMode) {
-          console.error("The attribute '" + _attribute_Name_Watch_Options + "' has not been set correctly.");
+          console.error(_configuration.attributeNotSetErrorText.replace("{{attribute_name}}", _attribute_Name_Watch_Options));
           result = false;
         }
       }
@@ -278,6 +278,9 @@
   function getDefaultNumber(value, defaultValue) {
     return isDefinedNumber(value) ? value : defaultValue;
   }
+  function getDefaultString(value, defaultValue) {
+    return isDefinedString(value) ? value : defaultValue;
+  }
   function getDefaultDate(value, defaultValue) {
     return isDefinedDate(value) ? value : defaultValue;
   }
@@ -312,7 +315,7 @@
           result = result();
         }
       } catch (e2) {
-        parsed = logError("Errors in object: " + e1.message + ", " + e2.message);
+        parsed = logError(_configuration.objectErrorText.replace("{{error_1}}", e1.message).replace("{{error_2}}", e2.message));
         result = null;
       }
     }
@@ -329,6 +332,12 @@
   function buildDefaultConfiguration() {
     _configuration.safeMode = getDefaultBoolean(_configuration.safeMode, true);
     _configuration.domElementTypes = getDefaultStringOrArray(_configuration.domElementTypes, ["*"]);
+    buildDefaultConfigurationStrings();
+  }
+  function buildDefaultConfigurationStrings() {
+    _configuration.objectErrorText = getDefaultString(_configuration.objectErrorText, "Errors in object: {{error_1}}, {{error_2}}");
+    _configuration.attributeNotValidErrorText = getDefaultString(_configuration.attributeNotValidErrorText, "The attribute '{{attribute_name}}' is not a valid object.");
+    _configuration.attributeNotSetErrorText = getDefaultString(_configuration.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly.");
   }
   var _parameter_Document = null;
   var _parameter_Window = null;
