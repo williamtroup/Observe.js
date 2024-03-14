@@ -87,10 +87,10 @@ Searches the DOM for new elements to watch, and adds them.
 
 ## Configuration:
 
-### **setConfiguration( *newOptions* )**:
+### **setConfiguration( *newConfiguration* )**:
 Sets the specific configuration options that should be used.
 <br>
-***Parameter: newOptions***: '*Options*' - All the configuration options that should be set (refer to ["Configuration Options"](configuration/OPTIONS.md) documentation for properties).
+***Parameter: newConfiguration***: '*Object*' - All the configuration options that should be set (refer to ["Configuration Options"](configuration/OPTIONS.md) documentation for properties).
 <br>
 ***Returns***: '*Object*' - The Observe.js class instance.
 <br>

@@ -1,5 +1,26 @@
 # Observe.js - Change Log:
 
+## Version 0.8.0:
+
+#### **Binding Options:**
+- Added a new binding option called "removeAttribute", which states if the binding attribute should be removed (defaults to true).
+
+#### **Configuration Options:**
+- Added a new configuration option called "objectErrorText", which states the error text that should be shown when an object error is detected (defaults to "Errors in object: {{error_1}}, {{error_2}}").
+- Added a new configuration option called "attributeNotValidErrorText", which states the error text that should be shown when a binding object isn't valid (defaults to "The attribute '{{attribute_name}}' is not a valid object.").
+- Added a new configuration option called "attributeNotSetErrorText", which states the error text that should be shown when a binding attribute isn't set (defaults to "The attribute '{{attribute_name}}' has not been set correctly.").
+
+#### **General Improvements:**
+- All console error logging now goes through the correct method.
+- Objects are now checked and defaulted properly when invalid values are passed.
+- Updated the formatting used in the "package.json" file so that it can always be parsed.
+
+#### **Documentation:**
+- Minor tweaks to the documentation.
+
+<br>
+
+
 ## Version 0.7.1:
 - Fixed a fault that caused clearTimeout() to be called instead of clearInterval().
 

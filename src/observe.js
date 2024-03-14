@@ -4,7 +4,7 @@
  * A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.
  * 
  * @file        observe.js
- * @version     v0.7.1
+ * @version     v0.8.0
  * @author      Bunoon
  * @license     MIT License
  * @copyright   Bunoon 2024
@@ -73,22 +73,20 @@
                         element.id = newGuid();
                     }
 
-                    element.removeAttribute( _attribute_Name_Watch_Options );
+                    if ( bindingOptions.removeAttribute ) {
+                        element.removeAttribute( _attribute_Name_Watch_Options );
+                    }
 
                     createWatch( element, bindingOptions, element.id );
 
                 } else {
-                    if ( !_configuration.safeMode ) {
-                        console.error( "The attribute '" + _attribute_Name_Watch_Options + "' is not a valid object." );
-                        result = false;
-                    }
+                    logError( _configuration.attributeNotValidErrorText.replace( "{{attribute_name}}", _attribute_Name_Watch_Options ) );
+                    result = false;
                 }
 
             } else {
-                if ( !_configuration.safeMode ) {
-                    console.error( "The attribute '" + _attribute_Name_Watch_Options + "' has not been set correctly." );
-                    result = false;
-                }
+                logError( _configuration.attributeNotSetErrorText.replace( "{{attribute_name}}", _attribute_Name_Watch_Options ) );
+                result = false;
             }
         }
 
@@ -317,7 +315,7 @@
      */
 
     function getWatchOptions( newOptions ) {
-        var options = !isDefinedObject( newOptions ) ? {} : newOptions;
+        var options = getDefaultObject( newOptions, {} );
 
         options.timeout = getDefaultNumber( options.timeout, 250 );
         options.starts = getDefaultDate( options.starts, null );
@@ -329,6 +327,7 @@
         options.propertyNames = getDefaultArray( options.propertyNames, null );
         options.allowCanceling = getDefaultBoolean( options.allowCanceling, true );
         options.allowPausing = getDefaultBoolean( options.allowPausing, true );
+        options.removeAttribute = getDefaultBoolean( options.removeAttribute, true );
 
         options = getWatchOptionsCustomTriggers( options );
 
@@ -438,12 +437,20 @@
         return isDefinedNumber( value ) ? value : defaultValue;
     }
 
+    function getDefaultString( value, defaultValue ) {
+        return isDefinedString( value ) ? value : defaultValue;
+    }
+
     function getDefaultDate( value, defaultValue ) {
         return isDefinedDate( value ) ? value : defaultValue;
     }
 
     function getDefaultArray( value, defaultValue ) {
         return isDefinedArray( value ) ? value : defaultValue;
+    }
+
+    function getDefaultObject( value, defaultValue ) {
+        return isDefinedObject( value ) ? value : defaultValue;
     }
 
     function getDefaultStringOrArray( value, defaultValue ) {
@@ -480,7 +487,7 @@
                 }
                 
             } catch ( e2 ) {
-                parsed = logError( "Errors in object: " + e1.message + ", " + e2.message );
+                parsed = logError( _configuration.objectErrorText.replace( "{{error_1}}",  e1.message ).replace( "{{error_2}}", e2.message ) );
                 result = null;
             }
         }
@@ -749,8 +756,8 @@
      * 
      * @returns     {Object}                                                The Observe.js class instance.
      */
-    this.setConfiguration = function( newOptions ) {
-        _configuration = !isDefinedObject( newOptions ) ? {} : newOptions;
+    this.setConfiguration = function( newConfiguration ) {
+        _configuration = getDefaultObject( newConfiguration, {} );
         
         buildDefaultConfiguration();
 
@@ -760,6 +767,14 @@
     function buildDefaultConfiguration() {
         _configuration.safeMode = getDefaultBoolean( _configuration.safeMode, true );
         _configuration.domElementTypes = getDefaultStringOrArray( _configuration.domElementTypes, [ "*" ] );
+
+        buildDefaultConfigurationStrings();
+    }
+
+    function buildDefaultConfigurationStrings() {
+        _configuration.objectErrorText = getDefaultString( _configuration.objectErrorText, "Errors in object: {{error_1}}, {{error_2}}" );
+        _configuration.attributeNotValidErrorText = getDefaultString( _configuration.attributeNotValidErrorText, "The attribute '{{attribute_name}}' is not a valid object." );
+        _configuration.attributeNotSetErrorText = getDefaultString( _configuration.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly." );        
     }
 
 
@@ -779,7 +794,7 @@
      * @returns     {string}                                                The version number.
      */
     this.getVersion = function() {
-        return "0.7.1";
+        return "0.8.0";
     };
 
 
