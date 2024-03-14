@@ -10,6 +10,7 @@
 #### **General Improvements:**
 - All console error logging now goes through the correct method.
 - Objects are now checked and defaulted properly when invalid values are passed.
+- Updated the formatting used in the "package.json" file so that it can always be parsed.
 
 #### **Documentation:**
 - Minor tweaks to the documentation.

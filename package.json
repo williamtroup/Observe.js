@@ -1,35 +1,35 @@
 {
-    "name": "jobserve.js",
-    "title": "Observe.js",
-    "description": "A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.",
-    "version": "0.8.0",
-    "main": "dist/observe.js",
-    "homepage": "https://www.william-troup.com/observe-js/",
-    "author": {
-      "name": "Bunoon"
-    },
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/williamtroup/Observe.js"
-    },
-    "keywords": [
-      "javascript",
-      "css",
-      "observe.js",
-      "observe",
-      "observable",
-      "watcher",
-      "object",
-      "changes",
-      "watch",
-      "event",
-      "events",
-      "trigger",
-      "triggers",
-      "handler"
-    ],
-    "bugs": {
-      "url": "https://github.com/williamtroup/Observe.js/issues"
-    },
-    "license": "MIT"
-  }
+  "name": "jobserve.js",
+  "title": "Observe.js",
+  "description": "A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.",
+  "version": "0.8.0",
+  "main": "dist/observe.js",
+  "homepage": "https://www.william-troup.com/observe-js/",
+  "author": {
+    "name": "Bunoon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/williamtroup/Observe.js"
+  },
+  "keywords": [
+    "javascript",
+    "css",
+    "observe.js",
+    "observe",
+    "observable",
+    "watcher",
+    "object",
+    "changes",
+    "watch",
+    "event",
+    "events",
+    "trigger",
+    "triggers",
+    "handler"
+  ],
+  "bugs": {
+    "url": "https://github.com/williamtroup/Observe.js/issues"
+  },
+  "license": "MIT"
+}
