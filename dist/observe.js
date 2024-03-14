@@ -27,7 +27,9 @@
           if (!isDefinedString(element.id)) {
             element.id = newGuid();
           }
-          element.removeAttribute(_attribute_Name_Watch_Options);
+          if (bindingOptions.removeAttribute) {
+            element.removeAttribute(_attribute_Name_Watch_Options);
+          }
           createWatch(element, bindingOptions, element.id);
         } else {
           logError(_configuration.attributeNotValidErrorText.replace("{{attribute_name}}", _attribute_Name_Watch_Options));
@@ -213,6 +215,7 @@
     options.propertyNames = getDefaultArray(options.propertyNames, null);
     options.allowCanceling = getDefaultBoolean(options.allowCanceling, true);
     options.allowPausing = getDefaultBoolean(options.allowPausing, true);
+    options.removeAttribute = getDefaultBoolean(options.removeAttribute, true);
     options = getWatchOptionsCustomTriggers(options);
     return options;
   }

@@ -73,7 +73,9 @@
                         element.id = newGuid();
                     }
 
-                    element.removeAttribute( _attribute_Name_Watch_Options );
+                    if ( bindingOptions.removeAttribute ) {
+                        element.removeAttribute( _attribute_Name_Watch_Options );
+                    }
 
                     createWatch( element, bindingOptions, element.id );
 
@@ -325,6 +327,7 @@
         options.propertyNames = getDefaultArray( options.propertyNames, null );
         options.allowCanceling = getDefaultBoolean( options.allowCanceling, true );
         options.allowPausing = getDefaultBoolean( options.allowPausing, true );
+        options.removeAttribute = getDefaultBoolean( options.removeAttribute, true );
 
         options = getWatchOptionsCustomTriggers( options );
 

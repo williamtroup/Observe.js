@@ -2,6 +2,9 @@
 
 ## Version 0.8.0:
 
+#### **Binding Options:**
+- Added a new binding option called "removeAttribute", which states if the binding attribute should be removed (defaults to true).
+
 #### **Configuration Options:**
 - Added a new configuration option called "objectErrorText", which states the error text that should be shown when an object error is detected (defaults to "Errors in object: {{error_1}}, {{error_2}}").
 - Added a new configuration option called "attributeNotValidErrorText", which states the error text that should be shown when a binding object is'nt valid (defaults to "The attribute '{{attribute_name}}' is not a valid object.").

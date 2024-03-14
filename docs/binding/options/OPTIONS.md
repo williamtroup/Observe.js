@@ -19,6 +19,7 @@ Below is a list of all the options supported in the "data-observe-watch-options"
 | *string[]* | propertyNames | States the property names that should be watched for changes (defaults to all). |
 | *boolean* | allowCanceling | States if the watch can be cancelled (defaults to true). |
 | *boolean* | allowPausing | States if the watch can be paused (defaults to true). |
+| *boolean* | removeAttribute | States if the binding attribute should be removed (defaults to true). |
 
 <br/>
 
