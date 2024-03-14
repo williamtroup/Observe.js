@@ -1,7 +1,9 @@
 # Observe.js - Change Log:
 
 ## Version 0.8.0:
-- 
+
+#### **Documentation:**
+- Minor tweaks to the documentation.
 
 <br>
 

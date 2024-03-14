@@ -13,6 +13,7 @@ Fires when a change has been detected in an object.
 ***Parameter:*** oldValue: '*object*' - The old value for the object.
 <br>
 ***Parameter:*** newValue: '*object*' - The new value for the object.
+<br>
 
 ### options.onPropertyChange( *propertyName*, *oldValue*, *newValue* ):
 Fires when a change has been detected in an object (states which property changed).
@@ -22,22 +23,25 @@ Fires when a change has been detected in an object (states which property change
 ***Parameter:*** oldValue: '*object*' - The old value.
 <br>
 ***Parameter:*** newValue: '*object*' - The new value.
+<br>
 
 ### options.onCancel( *id* ):
 Fires when a watch has been cancelled.
 <br>
 ***Parameter:*** id: '*string*' - The ID of the watch that has been cancelled.
+<br>
 
 ### options.onRemove( *id* ):
 Fires when a DOM element is no longer available in the DOM.
 <br>
 ***Parameter:*** id: '*string*' - The ID of the DOM element.
+<br>
 
 ### options.onStart( *originalValue* ):
 Fires when a watch is started.
 <br>
 ***Parameter:*** id: '*object*' - The object that the watch as started for.
-
+<br>
 <br>
 
 
