@@ -8,6 +8,7 @@
 - Added a new configuration option called "attributeNotSetErrorText", which states the error text that should be shown when a binding attribute is'nt set (defaults to "The attribute '{{attribute_name}}' has not been set correctly.").
 
 #### **General Improvements:**
+- All console error logging now goes through the correct method.
 - Objects are now checked and defaulted properly when invalid values are passed.
 
 #### **Documentation:**

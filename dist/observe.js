@@ -30,16 +30,12 @@
           element.removeAttribute(_attribute_Name_Watch_Options);
           createWatch(element, bindingOptions, element.id);
         } else {
-          if (!_configuration.safeMode) {
-            console.error(_configuration.attributeNotValidErrorText.replace("{{attribute_name}}", _attribute_Name_Watch_Options));
-            result = false;
-          }
-        }
-      } else {
-        if (!_configuration.safeMode) {
-          console.error(_configuration.attributeNotSetErrorText.replace("{{attribute_name}}", _attribute_Name_Watch_Options));
+          logError(_configuration.attributeNotValidErrorText.replace("{{attribute_name}}", _attribute_Name_Watch_Options));
           result = false;
         }
+      } else {
+        logError(_configuration.attributeNotSetErrorText.replace("{{attribute_name}}", _attribute_Name_Watch_Options));
+        result = false;
       }
     }
     return result;
