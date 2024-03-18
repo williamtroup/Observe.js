@@ -1,5 +1,11 @@
 # Observe.js - Change Log:
 
+## Version 0.8.1:
+- The "unload" window event has been replaced with "pagehide" (due to "unload" being deprecated).
+
+<br>
+
+
 ## Version 0.8.0:
 
 #### **Binding Options:**

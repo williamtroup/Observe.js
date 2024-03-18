@@ -460,7 +460,7 @@
     _parameter_Document.addEventListener("DOMContentLoaded", function() {
       collectDOMObjects();
     });
-    _parameter_Window.addEventListener("unload", function() {
+    _parameter_Window.addEventListener("pagehide", function() {
       _watches_Cancel = true;
       cancelWatchesForObjects();
     });
