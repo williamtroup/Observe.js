@@ -1,15 +1,11 @@
-/*! Observe.js v0.8.0 | (c) Bunoon 2024 | MIT License */
+/*! Observe.js v0.8.1 | (c) Bunoon 2024 | MIT License */
 (function() {
+  var _parameter_Document = null, _parameter_Window = null, _parameter_Math = null, _parameter_Json = null, _public = {}, _string = {empty:""}, _watches = {}, _watches_Cancel = false, _configuration = {}, _attribute_Name_Watch_Options = "data-observe-watch-options";
   function collectDOMObjects() {
-    var tagTypes = _configuration.domElementTypes;
-    var tagTypesLength = tagTypes.length;
-    var tagTypeIndex = 0;
-    for (; tagTypeIndex < tagTypesLength; tagTypeIndex++) {
-      var domElements = _parameter_Document.getElementsByTagName(tagTypes[tagTypeIndex]);
-      var elements = [].slice.call(domElements);
-      var elementsLength = elements.length;
-      var elementIndex = 0;
-      for (; elementIndex < elementsLength; elementIndex++) {
+    var tagTypes = _configuration.domElementTypes, tagTypesLength = tagTypes.length;
+    for (var tagTypeIndex = 0; tagTypeIndex < tagTypesLength; tagTypeIndex++) {
+      var domElements = _parameter_Document.getElementsByTagName(tagTypes[tagTypeIndex]), elements = [].slice.call(domElements), elementsLength = elements.length;
+      for (var elementIndex = 0; elementIndex < elementsLength; elementIndex++) {
         if (!collectDOMObject(elements[elementIndex])) {
           break;
         }
@@ -46,9 +42,7 @@
     var storageId = null;
     if (isDefinedObject(object)) {
       storageId = newGuid();
-      var watchOptions = getWatchOptions(options);
-      var watch = {};
-      var startWatchObject;
+      var watchOptions = getWatchOptions(options), watch = {}, startWatchObject;
       watch.options = watchOptions;
       watch.totalChanges = 0;
       if (isDefinedString(domElementId)) {
@@ -85,9 +79,7 @@
   }
   function watchObjectForChanges(storageId) {
     if (_watches.hasOwnProperty(storageId)) {
-      var watch = _watches[storageId];
-      var isDomElement = isDefinedString(watch.domElementId);
-      var domElement = null;
+      var watch = _watches[storageId], isDomElement = isDefinedString(watch.domElementId), domElement = null;
       if (isDomElement) {
         domElement = _parameter_Document.getElementById(watch.domElementId);
         if (isDefined(domElement)) {
@@ -97,9 +89,7 @@
           fireCustomTrigger(watch.options.onRemove, watch.domElementId);
         }
       }
-      var cachedObject = watch.cachedObject;
-      var originalObject = watch.originalObject;
-      var originalObjectJson = !isDomElement ? _parameter_Json.stringify(originalObject) : originalObject;
+      var cachedObject = watch.cachedObject, originalObject = watch.originalObject, originalObjectJson = !isDomElement ? _parameter_Json.stringify(originalObject) : originalObject;
       if (cachedObject !== originalObjectJson) {
         if (watch.options.reset) {
           if (isDomElement) {
@@ -113,8 +103,7 @@
         if (isDomElement) {
           fireCustomTrigger(watch.options.onChange, cachedObject, originalObjectJson);
         } else {
-          var oldValue = getObjectFromString(cachedObject).result;
-          var newValue = getObjectFromString(originalObjectJson).result;
+          var oldValue = getObjectFromString(cachedObject).result, newValue = getObjectFromString(originalObjectJson).result;
           if (!isDefinedArray(oldValue) && !isDefinedArray(newValue)) {
             compareWatchObject(oldValue, newValue, watch);
             if (isDefinedFunction(watch.options.onPropertyChange)) {
@@ -140,8 +129,7 @@
   function compareWatchObject(oldObject, newObject, watch) {
     if (isDefinedArray(watch.options.propertyNames)) {
       var propertyNamesLength = watch.options.propertyNames.length;
-      var propertyNameIndex = 0;
-      for (; propertyNameIndex < propertyNamesLength; propertyNameIndex++) {
+      for (var propertyNameIndex = 0; propertyNameIndex < propertyNamesLength; propertyNameIndex++) {
         var propertyName = watch.options.propertyNames[propertyNameIndex];
         if (oldObject[propertyName] !== newObject[propertyName]) {
           fireCustomTrigger(watch.options.onChange, oldObject, newObject);
@@ -153,11 +141,9 @@
     }
   }
   function compareWatchObjectProperties(oldObject, newObject, watch) {
-    var propertyName;
-    for (propertyName in oldObject) {
+    for (var propertyName in oldObject) {
       if (oldObject.hasOwnProperty(propertyName)) {
-        var propertyOldValue = oldObject[propertyName];
-        var propertyNewValue = null;
+        var propertyOldValue = oldObject[propertyName], propertyNewValue = null;
         if (newObject.hasOwnProperty(propertyName)) {
           propertyNewValue = newObject[propertyName];
         }
@@ -174,8 +160,7 @@
     }
   }
   function cancelWatchesForObjects() {
-    var storageId;
-    for (storageId in _watches) {
+    for (var storageId in _watches) {
       if (_watches.hasOwnProperty(storageId)) {
         cancelWatchObject(storageId);
       }
@@ -234,8 +219,7 @@
   }
   function newGuid() {
     var result = [];
-    var charIndex = 0;
-    for (; charIndex < 32; charIndex++) {
+    for (var charIndex = 0; charIndex < 32; charIndex++) {
       if (charIndex === 8 || charIndex === 12 || charIndex === 16 || charIndex === 20) {
         result.push("-");
       }
@@ -301,8 +285,7 @@
     return value;
   }
   function getObjectFromString(objectString) {
-    var parsed = true;
-    var result = null;
+    var parsed = true, result = null;
     try {
       if (isDefinedString(objectString)) {
         result = _parameter_Json.parse(objectString);
@@ -328,7 +311,123 @@
     }
     return result;
   }
-  function buildDefaultConfiguration() {
+  _public.watch = function(object, options) {
+    return createWatch(object, options);
+  };
+  _public.cancelWatch = function(id) {
+    var result = false;
+    if (isDefinedString(id)) {
+      if (_watches.hasOwnProperty(id)) {
+        cancelWatchObject(id);
+        result = true;
+      } else {
+        for (var storageId in _watches) {
+          if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
+            cancelWatchObject(storageId);
+            result = true;
+            break;
+          }
+        }
+      }
+    }
+    return result;
+  };
+  _public.cancelWatches = function() {
+    cancelWatchesForObjects();
+    return _public;
+  };
+  _public.getWatch = function(id) {
+    var result = null;
+    if (isDefinedString(id)) {
+      if (_watches.hasOwnProperty(id)) {
+        result = _watches[id];
+      } else {
+        for (var storageId in _watches) {
+          if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
+            result = _watches[storageId];
+            break;
+          }
+        }
+      }
+    }
+    return result;
+  };
+  _public.getWatches = function() {
+    return _watches;
+  };
+  _public.pauseWatch = function(id, milliseconds) {
+    var result = false;
+    if (isDefinedString(id) && isDefinedNumber(milliseconds)) {
+      if (_watches.hasOwnProperty(id)) {
+        result = pauseWatchObject(id, milliseconds);
+      } else {
+        for (var storageId in _watches) {
+          if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
+            result = pauseWatchObject(storageId, milliseconds);
+            break;
+          }
+        }
+      }
+    }
+    return result;
+  };
+  _public.pauseWatches = function(milliseconds) {
+    if (isDefinedNumber(milliseconds)) {
+      for (var storageId in _watches) {
+        if (_watches.hasOwnProperty(storageId)) {
+          pauseWatchObject(storageId, milliseconds);
+        }
+      }
+    }
+    return _public;
+  };
+  _public.resumeWatch = function(id) {
+    var result = false;
+    if (isDefinedString(id)) {
+      if (_watches.hasOwnProperty(id)) {
+        _watches[id].options.starts = null;
+        result = true;
+      } else {
+        for (var storageId in _watches) {
+          if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
+            _watches[storageId].options.starts = null;
+            result = true;
+            break;
+          }
+        }
+      }
+    }
+    return result;
+  };
+  _public.resumeWatches = function() {
+    for (var storageId in _watches) {
+      if (_watches.hasOwnProperty(storageId)) {
+        _watches[storageId].options.starts = null;
+      }
+    }
+    return _public;
+  };
+  _public.searchDomForNewWatches = function() {
+    collectDOMObjects();
+    return _public;
+  };
+  _public.setConfiguration = function(newConfiguration) {
+    if (isDefinedObject(newConfiguration)) {
+      var configurationHasChanged = false;
+      for (var propertyName in newConfiguration) {
+        if (newConfiguration.hasOwnProperty(propertyName) && _configuration.hasOwnProperty(propertyName) && _configuration[propertyName] !== newConfiguration[propertyName]) {
+          _configuration[propertyName] = newConfiguration[propertyName];
+          configurationHasChanged = true;
+        }
+      }
+      if (configurationHasChanged) {
+        buildDefaultConfiguration(_configuration);
+      }
+    }
+    return _public;
+  };
+  function buildDefaultConfiguration(newConfiguration) {
+    _configuration = !isDefinedObject(newConfiguration) ? {} : newConfiguration;
     _configuration.safeMode = getDefaultBoolean(_configuration.safeMode, true);
     _configuration.domElementTypes = getDefaultStringOrArray(_configuration.domElementTypes, ["*"]);
     buildDefaultConfigurationStrings();
@@ -338,118 +437,8 @@
     _configuration.attributeNotValidErrorText = getDefaultString(_configuration.attributeNotValidErrorText, "The attribute '{{attribute_name}}' is not a valid object.");
     _configuration.attributeNotSetErrorText = getDefaultString(_configuration.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly.");
   }
-  var _parameter_Document = null;
-  var _parameter_Window = null;
-  var _parameter_Math = null;
-  var _parameter_Json = null;
-  var _string = {empty:""};
-  var _watches = {};
-  var _watches_Cancel = false;
-  var _configuration = {};
-  var _attribute_Name_Watch_Options = "data-observe-watch-options";
-  this.watch = function(object, options) {
-    return createWatch(object, options);
-  };
-  this.cancelWatch = function(id) {
-    var result = false;
-    if (_watches.hasOwnProperty(id)) {
-      cancelWatchObject(id);
-      result = true;
-    } else {
-      var storageId;
-      for (storageId in _watches) {
-        if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
-          cancelWatchObject(storageId);
-          result = true;
-          break;
-        }
-      }
-    }
-    return result;
-  };
-  this.cancelWatches = function() {
-    cancelWatchesForObjects();
-    return this;
-  };
-  this.getWatch = function(id) {
-    var result = null;
-    if (_watches.hasOwnProperty(id)) {
-      result = _watches[id];
-    } else {
-      var storageId;
-      for (storageId in _watches) {
-        if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
-          result = _watches[storageId];
-          break;
-        }
-      }
-    }
-    return result;
-  };
-  this.getWatches = function() {
-    return _watches;
-  };
-  this.pauseWatch = function(id, milliseconds) {
-    var result = false;
-    if (_watches.hasOwnProperty(id)) {
-      result = pauseWatchObject(id, milliseconds);
-    } else {
-      var storageId;
-      for (storageId in _watches) {
-        if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
-          result = pauseWatchObject(storageId, milliseconds);
-          break;
-        }
-      }
-    }
-    return result;
-  };
-  this.pauseWatches = function(milliseconds) {
-    var storageId;
-    for (storageId in _watches) {
-      if (_watches.hasOwnProperty(storageId)) {
-        pauseWatchObject(storageId, milliseconds);
-      }
-    }
-    return this;
-  };
-  this.resumeWatch = function(id) {
-    var result = false;
-    if (_watches.hasOwnProperty(id)) {
-      _watches[id].options.starts = null;
-      result = true;
-    } else {
-      var storageId;
-      for (storageId in _watches) {
-        if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
-          _watches[storageId].options.starts = null;
-          result = true;
-          break;
-        }
-      }
-    }
-    return result;
-  };
-  this.resumeWatches = function() {
-    var storageId;
-    for (storageId in _watches) {
-      if (_watches.hasOwnProperty(storageId)) {
-        _watches[storageId].options.starts = null;
-      }
-    }
-    return this;
-  };
-  this.searchDomForNewWatches = function() {
-    collectDOMObjects();
-    return this;
-  };
-  this.setConfiguration = function(newConfiguration) {
-    _configuration = getDefaultObject(newConfiguration, {});
-    buildDefaultConfiguration();
-    return this;
-  };
-  this.getVersion = function() {
-    return "0.8.0";
+  _public.getVersion = function() {
+    return "0.8.1";
   };
   (function(documentObject, windowObject, mathObject, jsonObject) {
     _parameter_Document = documentObject;
@@ -460,12 +449,12 @@
     _parameter_Document.addEventListener("DOMContentLoaded", function() {
       collectDOMObjects();
     });
-    _parameter_Window.addEventListener("unload", function() {
+    _parameter_Window.addEventListener("pagehide", function() {
       _watches_Cancel = true;
       cancelWatchesForObjects();
     });
     if (!isDefined(_parameter_Window.$observe)) {
-      _parameter_Window.$observe = this;
+      _parameter_Window.$observe = _public;
     }
   })(document, window, Math, JSON);
 })();

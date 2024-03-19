@@ -4,7 +4,7 @@
  * A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.
  * 
  * @file        observe.js
- * @version     v0.8.0
+ * @version     v0.8.1
  * @author      Bunoon
  * @license     MIT License
  * @copyright   Bunoon 2024
@@ -12,11 +12,16 @@
 
 
 ( function() {
+    "use strict";
+
     var // Variables: Constructor Parameters
         _parameter_Document = null,
         _parameter_Window = null,
         _parameter_Math = null,
         _parameter_Json = null,
+
+        // Variables: Public Scope
+        _public = {},
 
         // Variables: Strings
         _string = {
@@ -528,7 +533,7 @@
      * 
      * @returns     {string}                                                The ID that object watch is stored under.
      */
-    this.watch = function( object, options ) {
+    _public.watch = function( object, options ) {
         return createWatch( object, options );
     };
 
@@ -543,21 +548,23 @@
      * 
      * @returns     {boolean}                                               States if the object being watched has been cancelled.
      */
-    this.cancelWatch = function( id ) {
+    _public.cancelWatch = function( id ) {
         var result = false;
 
-        if ( _watches.hasOwnProperty( id ) ) {
-            cancelWatchObject( id );
-
-            result = true;
-        } else {
-
-            for ( var storageId in _watches ) {
-                if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
-                    cancelWatchObject( storageId );
-        
-                    result = true;
-                    break;
+        if ( isDefinedString( id ) ) {
+            if ( _watches.hasOwnProperty( id ) ) {
+                cancelWatchObject( id );
+    
+                result = true;
+            } else {
+    
+                for ( var storageId in _watches ) {
+                    if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                        cancelWatchObject( storageId );
+            
+                        result = true;
+                        break;
+                    }
                 }
             }
         }
@@ -574,10 +581,10 @@
      * 
      * @returns     {Object}                                                The Observe.js class instance.
      */
-    this.cancelWatches = function() {
+    _public.cancelWatches = function() {
         cancelWatchesForObjects();
 
-        return this;
+        return _public;
     };
 
     /**
@@ -591,17 +598,19 @@
      * 
      * @returns     {Object}                                                The watch properties for an object (null if not found).
      */
-    this.getWatch = function( id ) {
+    _public.getWatch = function( id ) {
         var result = null;
 
-        if ( _watches.hasOwnProperty( id ) ) {
-            result = _watches[ id ];
-        } else {
-
-            for ( var storageId in _watches ) {
-                if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
-                    result = _watches[ storageId ];
-                    break;
+        if ( isDefinedString( id ) ) {
+            if ( _watches.hasOwnProperty( id ) ) {
+                result = _watches[ id ];
+            } else {
+    
+                for ( var storageId in _watches ) {
+                    if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                        result = _watches[ storageId ];
+                        break;
+                    }
                 }
             }
         }
@@ -618,7 +627,7 @@
      * 
      * @returns     {Object}                                                The object of watches currently running, or paused.
      */
-    this.getWatches = function() {
+    _public.getWatches = function() {
         return _watches;
     };
 
@@ -634,17 +643,19 @@
      * 
      * @returns     {boolean}                                               States if the object being watched has been paused.
      */
-    this.pauseWatch = function( id, milliseconds ) {
+    _public.pauseWatch = function( id, milliseconds ) {
         var result = false;
 
-        if ( _watches.hasOwnProperty( id ) ) {
-            result = pauseWatchObject( id, milliseconds );
-        } else {
-
-            for ( var storageId in _watches ) {
-                if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
-                    result = pauseWatchObject( storageId, milliseconds );
-                    break;
+        if ( isDefinedString( id ) && isDefinedNumber( milliseconds ) ) {
+            if ( _watches.hasOwnProperty( id ) ) {
+                result = pauseWatchObject( id, milliseconds );
+            } else {
+    
+                for ( var storageId in _watches ) {
+                    if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                        result = pauseWatchObject( storageId, milliseconds );
+                        break;
+                    }
                 }
             }
         }
@@ -663,14 +674,16 @@
      * 
      * @returns     {Object}                                                The Observe.js class instance.
      */
-    this.pauseWatches = function( milliseconds ) {
-        for ( var storageId in _watches ) {
-            if ( _watches.hasOwnProperty( storageId ) ) {
-                pauseWatchObject( storageId, milliseconds );
+    _public.pauseWatches = function( milliseconds ) {
+        if ( isDefinedNumber( milliseconds ) ) {
+            for ( var storageId in _watches ) {
+                if ( _watches.hasOwnProperty( storageId ) ) {
+                    pauseWatchObject( storageId, milliseconds );
+                }
             }
         }
 
-        return this;
+        return _public;
     };
 
     /**
@@ -684,19 +697,21 @@
      * 
      * @returns     {boolean}                                               States if the watching of an object has been resumed
      */
-    this.resumeWatch = function( id ) {
+    _public.resumeWatch = function( id ) {
         var result = false;
 
-        if ( _watches.hasOwnProperty( id ) ) {
-            _watches[ id ].options.starts = null;
-            result = true;
-        } else {
-
-            for ( var storageId in _watches ) {
-                if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
-                    _watches[ storageId ].options.starts = null;
-                    result = true;
-                    break;
+        if ( isDefinedString( id ) ) {
+            if ( _watches.hasOwnProperty( id ) ) {
+                _watches[ id ].options.starts = null;
+                result = true;
+            } else {
+    
+                for ( var storageId in _watches ) {
+                    if ( _watches.hasOwnProperty( storageId ) && isDefinedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                        _watches[ storageId ].options.starts = null;
+                        result = true;
+                        break;
+                    }
                 }
             }
         }
@@ -713,14 +728,14 @@
      * 
      * @returns     {Object}                                                The Observe.js class instance.
      */
-    this.resumeWatches = function() {
+    _public.resumeWatches = function() {
         for ( var storageId in _watches ) {
             if ( _watches.hasOwnProperty( storageId ) ) {
                 _watches[ storageId ].options.starts = null;
             }
         }
 
-        return this;
+        return _public;
     };
 
     /**
@@ -732,10 +747,10 @@
      * 
      * @returns     {Object}                                                The Observe.js class instance.
      */
-    this.searchDomForNewWatches = function() {
+    _public.searchDomForNewWatches = function() {
         collectDOMObjects();
 
-        return this;
+        return _public;
     };
 
 
@@ -756,15 +771,27 @@
      * 
      * @returns     {Object}                                                The Observe.js class instance.
      */
-    this.setConfiguration = function( newConfiguration ) {
-        _configuration = getDefaultObject( newConfiguration, {} );
+    _public.setConfiguration = function( newConfiguration ) {
+        if ( isDefinedObject( newConfiguration ) ) {
+            var configurationHasChanged = false;
         
-        buildDefaultConfiguration();
+            for ( var propertyName in newConfiguration ) {
+                if ( newConfiguration.hasOwnProperty( propertyName ) && _configuration.hasOwnProperty( propertyName ) && _configuration[ propertyName ] !== newConfiguration[ propertyName ] ) {
+                    _configuration[ propertyName ] = newConfiguration[ propertyName ];
+                    configurationHasChanged = true;
+                }
+            }
+    
+            if ( configurationHasChanged ) {
+                buildDefaultConfiguration( _configuration );
+            }
+        }
 
-        return this;
+        return _public;
     };
 
-    function buildDefaultConfiguration() {
+    function buildDefaultConfiguration( newConfiguration ) {
+        _configuration = !isDefinedObject( newConfiguration ) ? {} : newConfiguration;
         _configuration.safeMode = getDefaultBoolean( _configuration.safeMode, true );
         _configuration.domElementTypes = getDefaultStringOrArray( _configuration.domElementTypes, [ "*" ] );
 
@@ -793,8 +820,8 @@
      * 
      * @returns     {string}                                                The version number.
      */
-    this.getVersion = function() {
-        return "0.8.0";
+    _public.getVersion = function() {
+        return "0.8.1";
     };
 
 
@@ -816,14 +843,14 @@
             collectDOMObjects();
         } );
 
-        _parameter_Window.addEventListener( "unload", function() {
+        _parameter_Window.addEventListener( "pagehide", function() {
             _watches_Cancel = true;
 
             cancelWatchesForObjects();
         } );
 
         if ( !isDefined( _parameter_Window.$observe ) ) {
-            _parameter_Window.$observe = this;
+            _parameter_Window.$observe = _public;
         }
 
     } ) ( document, window, Math, JSON );
