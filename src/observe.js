@@ -757,14 +757,26 @@
      * @returns     {Object}                                                The Observe.js class instance.
      */
     this.setConfiguration = function( newConfiguration ) {
-        _configuration = getDefaultObject( newConfiguration, {} );
+        if ( isDefinedObject( newConfiguration ) ) {
+            var configurationHasChanged = false;
         
-        buildDefaultConfiguration();
+            for ( var propertyName in newConfiguration ) {
+                if ( newConfiguration.hasOwnProperty( propertyName ) && _configuration.hasOwnProperty( propertyName ) && _configuration[ propertyName ] !== newConfiguration[ propertyName ] ) {
+                    _configuration[ propertyName ] = newConfiguration[ propertyName ];
+                    configurationHasChanged = true;
+                }
+            }
+    
+            if ( configurationHasChanged ) {
+                buildDefaultConfiguration( _configuration );
+            }
+        }
 
         return this;
     };
 
-    function buildDefaultConfiguration() {
+    function buildDefaultConfiguration( newConfiguration ) {
+        _configuration = !isDefinedObject( newConfiguration ) ? {} : newConfiguration;
         _configuration.safeMode = getDefaultBoolean( _configuration.safeMode, true );
         _configuration.domElementTypes = getDefaultStringOrArray( _configuration.domElementTypes, [ "*" ] );
 
