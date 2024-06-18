@@ -1,5 +1,12 @@
 # Observe.js - Change Log:
 
+## Version 0.8.2:
+- Added export support for the global "$observe" object, which can now be imported as "observe.js".
+- BREAKING: Renamed the binding attribute "data-observe-watch-options" to "data-observe-js".
+
+<br>
+
+
 ## Version 0.8.1:
 - The "unload" window event has been replaced with "pagehide" (due to "unload" being deprecated).
 - The public function "setConfiguration()" will now only update the configuration if something in the configuration has been changed.

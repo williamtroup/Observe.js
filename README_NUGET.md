@@ -1,8 +1,8 @@
-# Observe.js v0.8.1
+# Observe.js v0.8.2
 
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Observe.js%2C%20a%20free%20JavaScript%observe%builder&url=https://github.com/williamtroup/Observe.js&hashtags=javascript,html,observe)
-[![npm](https://img.shields.io/badge/npmjs-v0.8.1-blue)](https://www.npmjs.com/package/jobserve.js)
-[![nuget](https://img.shields.io/badge/nuget-v0.8.1-purple)](https://www.nuget.org/packages/jObserve.js/)
+[![npm](https://img.shields.io/badge/npmjs-v0.8.2-blue)](https://www.npmjs.com/package/jobserve.js)
+[![nuget](https://img.shields.io/badge/nuget-v0.8.2-purple)](https://www.nuget.org/packages/jObserve.js/)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://github.com/williamtroup/Observe.js/blob/main/LICENSE.txt)
 [![discussions Welcome](https://img.shields.io/badge/discussions-Welcome-red)](https://github.com/williamtroup/Observe.js/discussions)
 [![coded by William Troup](https://img.shields.io/badge/coded_by-William_Troup-yellow)](https://www.william-troup.com/)
@@ -62,7 +62,7 @@ Make sure you include the "DOCTYPE html" tag at the top of your HTML, as follows
 ### 3. DOM Element Binding / Object Watching:
 
 ```markdown
-<div data-observe-watch-options="{ 'onChange': yourCustomJsFunction }">
+<div data-observe-js="{ 'onChange': yourCustomJsFunction }">
     Your HTML.
 </div>
 ```
@@ -75,9 +75,9 @@ Make sure you include the "DOCTYPE html" tag at the top of your HTML, as follows
 </script>
 ```
 
-To see a list of all the available binding options you can use for "data-observe-watch-options", and "watch()", click [here](https://github.com/williamtroup/Observe.js/blob/main/docs/binding/options/OPTIONS.md).
+To see a list of all the available binding options you can use for "data-observe-js", and "watch()", click [here](https://github.com/williamtroup/Observe.js/blob/main/docs/binding/options/OPTIONS.md).
 
-To see a list of all the available custom triggers you can use for "data-observe-watch-options", and "watch()", click [here](https://github.com/williamtroup/Observe.js/blob/main/docs/binding/options/CUSTOM_TRIGGERS.md).
+To see a list of all the available custom triggers you can use for "data-observe-js", and "watch()", click [here](https://github.com/williamtroup/Observe.js/blob/main/docs/binding/options/CUSTOM_TRIGGERS.md).
 
 
 ### 4. Finishing Up:
