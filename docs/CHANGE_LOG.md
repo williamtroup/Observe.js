@@ -1,7 +1,7 @@
 # Observe.js - Change Log:
 
 ## Version 0.8.2:
-- 
+- Added export support for the global "$observe" object, which can now be imported as "observe.js".
 
 <br>
 
