@@ -1,4 +1,4 @@
-/*! Observe.js v0.8.1 | (c) Bunoon 2024 | MIT License */
+/*! Observe.js v0.8.2 | (c) Bunoon 2024 | MIT License */
 (function() {
   var _parameter_Document = null, _parameter_Window = null, _parameter_Math = null, _parameter_Json = null, _public = {}, _string = {empty:""}, _watches = {}, _watches_Cancel = false, _configuration = {}, _attribute_Name_Watch_Options = "data-observe-watch-options";
   function collectDOMObjects() {
@@ -438,7 +438,7 @@
     _configuration.attributeNotSetErrorText = getDefaultString(_configuration.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly.");
   }
   _public.getVersion = function() {
-    return "0.8.1";
+    return "0.8.2";
   };
   (function(documentObject, windowObject, mathObject, jsonObject) {
     _parameter_Document = documentObject;

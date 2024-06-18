@@ -1,5 +1,11 @@
 # Observe.js - Change Log:
 
+## Version 0.8.2:
+- 
+
+<br>
+
+
 ## Version 0.8.1:
 - The "unload" window event has been replaced with "pagehide" (due to "unload" being deprecated).
 - The public function "setConfiguration()" will now only update the configuration if something in the configuration has been changed.
