@@ -1,6 +1,6 @@
 # Observe.js - Binding Options:
 
-Below is a list of all the options supported in the "data-observe-watch-options" binding attribute for DOM elements.  These options are also supported when calling the public function "watch()".
+Below is a list of all the options supported in the "data-observe-js" binding attribute for DOM elements.  These options are also supported when calling the public function "watch()".
 <br>
 <br>
 
@@ -27,7 +27,7 @@ Below is a list of all the options supported in the "data-observe-watch-options"
 ## Binding Example:
 
 ```markdown
-<div data-observe-watch-options="{ 'timeout': 1000 }">
+<div data-observe-js="{ 'timeout': 1000 }">
     Your HTML.
 </div>
 ```

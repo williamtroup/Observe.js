@@ -62,7 +62,7 @@ Make sure you include the "DOCTYPE html" tag at the top of your HTML, as follows
 ### 3. DOM Element Binding / Object Watching:
 
 ```markdown
-<div data-observe-watch-options="{ 'onChange': yourCustomJsFunction }">
+<div data-observe-js="{ 'onChange': yourCustomJsFunction }">
     Your HTML.
 </div>
 ```
@@ -75,9 +75,9 @@ Make sure you include the "DOCTYPE html" tag at the top of your HTML, as follows
 </script>
 ```
 
-To see a list of all the available binding options you can use for "data-observe-watch-options", and "watch()", click [here](https://github.com/williamtroup/Observe.js/blob/main/docs/binding/options/OPTIONS.md).
+To see a list of all the available binding options you can use for "data-observe-js", and "watch()", click [here](https://github.com/williamtroup/Observe.js/blob/main/docs/binding/options/OPTIONS.md).
 
-To see a list of all the available custom triggers you can use for "data-observe-watch-options", and "watch()", click [here](https://github.com/williamtroup/Observe.js/blob/main/docs/binding/options/CUSTOM_TRIGGERS.md).
+To see a list of all the available custom triggers you can use for "data-observe-js", and "watch()", click [here](https://github.com/williamtroup/Observe.js/blob/main/docs/binding/options/CUSTOM_TRIGGERS.md).
 
 
 ### 4. Finishing Up:

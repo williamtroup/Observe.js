@@ -36,7 +36,7 @@
         _configuration = {},
 
         // Variables: Attribute Names
-        _attribute_Name_Watch_Options = "data-observe-watch-options";
+        _attribute_Name_Watch_Options = "data-observe-js";
 
 
     /*
