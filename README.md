@@ -17,7 +17,7 @@ Observe.js
 <h1>What features does Observe.js have?</h1>
 
 - Zero-dependencies and extremely lightweight!
-- Exportable for use in other frameworks!
+- Written in TypeScript, allowing greater support for React, Angular, and other libraries!
 - JS Object and HTML DOM Element watching!
 - Watch for specific property changes!
 - Cancel, Pause, and Resume support!
