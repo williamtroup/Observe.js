@@ -22,7 +22,7 @@ export type ConfigurationText = {
     attributeNotSetErrorText?: string;
 };
 
-export type BindingOptions = {
+export type WatchOptions = {
     timeout?: number;
     starts?: Date;
     expires?: Date;
@@ -34,10 +34,10 @@ export type BindingOptions = {
     allowCanceling?: boolean;
     allowPausing?: boolean;
     removeAttribute?: boolean;
-    events?: BindingOptionEvents;
+    events?: WatchOptionEvents;
 };
 
-export type BindingOptionEvents = {
+export type WatchOptionEvents = {
     onChange?: Function;
     onPropertyChange?: Function;
     onCancel?: Function;
