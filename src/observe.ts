@@ -10,8 +10,9 @@
  * @copyright   Bunoon 2024
  */
 
+import { Data } from "./ts/data";
 import { Is } from "./ts/is";
-import { type Configuration } from "./ts/type";
+import { type WatchOptionEvents, type WatchOptions, type Configuration } from "./ts/type";
 
 
 type StringToJson = {
@@ -25,7 +26,44 @@ type StringToJson = {
     let _configuration: Configuration = {} as Configuration;
 
 
-    
+    /*
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     * Watch Options
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     */
+
+    function getWatchOptions( newOptions: any ) : WatchOptions {
+        let options: WatchOptions = Data.getDefaultObject( newOptions, {} as WatchOptions );
+
+        options.timeout = Data.getDefaultNumber( options.timeout, 250 );
+        options.starts = Data.getDefaultDate( options.starts, null! );
+        options.expires = Data.getDefaultDate( options.expires, null! );
+        options.reset = Data.getDefaultBoolean( options.reset, false );
+        options.cancelOnChange = Data.getDefaultBoolean( options.cancelOnChange, false );
+        options.maximumChangesBeforeCanceling = Data.getDefaultNumber( options.maximumChangesBeforeCanceling, 0 );
+        options.pauseTimeoutOnChange = Data.getDefaultNumber( options.pauseTimeoutOnChange, 0 );
+        options.propertyNames = Data.getDefaultArray( options.propertyNames, null! );
+        options.allowCanceling = Data.getDefaultBoolean( options.allowCanceling, true );
+        options.allowPausing = Data.getDefaultBoolean( options.allowPausing, true );
+        options.removeAttribute = Data.getDefaultBoolean( options.removeAttribute, true );
+
+        options = getWatchOptionsCustomTriggers( options );
+
+        return options;
+    }
+
+    function getWatchOptionsCustomTriggers( options: WatchOptions ) : WatchOptions {
+        options.events = Data.getDefaultObject( options.events, {} as WatchOptionEvents );
+        options.events!.onChange = Data.getDefaultFunction( options.events!.onChange, null! );
+        options.events!.onPropertyChange = Data.getDefaultFunction( options.events!.onPropertyChange, null! );
+        options.events!.onCancel = Data.getDefaultFunction( options.events!.onCancel, null! );
+        options.events!.onRemove = Data.getDefaultFunction( options.events!.onRemove, null! );
+        options.events!.onStart = Data.getDefaultFunction( options.events!.onStart, null! );
+
+        return options;
+    }
+
+
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      * Triggering Custom Events
@@ -88,7 +126,7 @@ type StringToJson = {
         return result;
     }
 
-    
+
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      * Initialize Observe.js

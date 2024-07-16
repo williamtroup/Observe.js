@@ -61,6 +61,10 @@ export namespace Data {
         return Is.definedObject( value ) ? value : defaultValue;
     }
 
+    export function getDefaultDate( value: any, defaultValue: Date ) : Date {
+        return Is.definedDate( value ) ? value : defaultValue;
+    }
+
     export function getDefaultStringOrArray( value: any, defaultValue: string[] ) : string[] {
         let result: string[] = defaultValue;
 
