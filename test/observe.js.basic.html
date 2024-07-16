@@ -100,18 +100,22 @@
 
         function watchNewObject() {
             watchId = $observe.watch( window.observeObject, {
-                onChange: onObservableObjectChange,
-                onPropertyChange: onObservableObjectPropertyChange,
-                onCancel: onCancelWatch,
                 propertyNames: [ "bool", "num" ],
-                onStart: onStartWatch
+                events: {
+                    onChange: onObservableObjectChange,
+                    onPropertyChange: onObservableObjectPropertyChange,
+                    onCancel: onCancelWatch,
+                    onStart: onStartWatch
+                }
             } );
 
             $observe.watch( window.observeArray, {
-                onChange: onObservableObjectChange,
-                onPropertyChange: onObservableObjectPropertyChange,
-                onCancel: onCancelWatch,
-                onStart: onStartWatch
+                events: {
+                    onChange: onObservableObjectChange,
+                    onPropertyChange: onObservableObjectPropertyChange,
+                    onCancel: onCancelWatch,
+                    onStart: onStartWatch
+                }
             } );
         }
 
