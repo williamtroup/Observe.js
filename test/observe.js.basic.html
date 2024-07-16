@@ -15,11 +15,11 @@
         </div>
 
         <div class="contents">
-            <div id="domElementWatch1" data-observe-js="{ 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange, 'onCancel': onCancelWatch, 'onStart': onStartWatch }">
+            <div id="domElementWatch1" data-observe-js="{ 'events': { 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange, 'onCancel': onCancelWatch, 'onStart': onStartWatch } }">
                 When changed, this element should fire a custom trigger.
             </div>
 
-            <div id="domElementWatch2" data-observe-js="{ 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange, 'onCancel': onCancelWatch, 'reset': true, 'pauseTimeoutOnChange': 10000 }">
+            <div id="domElementWatch2" data-observe-js="{ 'events': { 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange, 'onCancel': onCancelWatch }, 'reset': true, 'pauseTimeoutOnChange': 10000 }">
                 When changed, this element should fire a custom trigger (and reset its value back to the original).
             </div>
         </div>
