@@ -2,17 +2,18 @@
   "name": "jobserve.js",
   "title": "Observe.js",
   "description": "A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.",
-  "version": "0.8.2",
-  "main": "dist/observe.js",
+  "version": "1.0.0",
   "homepage": "https://www.william-troup.com/observe-js/",
   "author": {
     "name": "Bunoon"
   },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/williamtroup/Observe.js"
   },
   "keywords": [
+    "typescript",
     "javascript",
     "css",
     "observe.js",
@@ -31,5 +32,21 @@
   "bugs": {
     "url": "https://github.com/williamtroup/Observe.js/issues"
   },
-  "license": "MIT"
+  "main": "dist/observe.js",
+  "types": "dist/observe.d.ts",
+  "scripts": {
+    "build-all": "npm run build && npm run build-minimized",
+    "build": "tsup --config tsup.build.config.ts && tsup --config tsup.build.esm.config.ts",
+    "build-minimized": "tsup --config tsup.build.min.config.ts",
+    "build-typescript": "tsup --config tsup.build.config.ts",
+    "build-typescript-esm": "tsup --config tsup.build.esm.config.ts",
+    "build-typescript-minimized": "tsup --config tsup.build.min.config.ts"
+  },
+  "devDependencies": {
+    "@swc/core": "^1.6.13",
+    "sass": "^1.77.8",
+    "terser": "^5.31.2",
+    "tsup": "^8.1.0",
+    "typescript": "^5.5.3"
+  }
 }

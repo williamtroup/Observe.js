@@ -1,8 +1,8 @@
-# Observe.js v0.8.2
+# Observe.js v1.0.0
 
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Observe.js%2C%20a%20free%20JavaScript%observe%builder&url=https://github.com/williamtroup/Observe.js&hashtags=javascript,html,observe)
-[![npm](https://img.shields.io/badge/npmjs-v0.8.2-blue)](https://www.npmjs.com/package/jobserve.js)
-[![nuget](https://img.shields.io/badge/nuget-v0.8.2-purple)](https://www.nuget.org/packages/jObserve.js/)
+[![npm](https://img.shields.io/badge/npmjs-v1.0.0-blue)](https://www.npmjs.com/package/jobserve.js)
+[![nuget](https://img.shields.io/badge/nuget-v1.0.0-purple)](https://www.nuget.org/packages/jObserve.js/)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://github.com/williamtroup/Observe.js/blob/main/LICENSE.txt)
 [![discussions Welcome](https://img.shields.io/badge/discussions-Welcome-red)](https://github.com/williamtroup/Observe.js/discussions)
 [![coded by William Troup](https://img.shields.io/badge/coded_by-William_Troup-yellow)](https://www.william-troup.com/)
@@ -13,7 +13,7 @@
 ## What features does Observe.js have?
 
 - Zero-dependencies and extremely lightweight!
-- Exportable for use in other frameworks!
+- Written in TypeScript, allowing greater support for React, Angular, and other libraries!
 - JS Object and HTML DOM Element watching!
 - Watch for specific property changes!
 - Cancel, Pause, and Resume support!

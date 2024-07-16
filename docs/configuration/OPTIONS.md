@@ -15,11 +15,11 @@ Below are all the configuration options that can be passed to the "setConfigurat
 
 ### Options - Strings:
 
-| Type: | Name: | Description: |
-| --- | --- | --- |
-| *string* | objectErrorText | The error text that should be shown when an object error is detected (defaults to "Errors in object: {{error_1}}, {{error_2}}"). |
-| *string* | attributeNotValidErrorText | The error text that should be shown when a binding object isn't valid (defaults to "The attribute '{{attribute_name}}' is not a valid object."). |
-| *string* | attributeNotSetErrorText | The error text that should be shown when a binding attribute isn't set (defaults to "The attribute '{{attribute_name}}' has not been set correctly."). |
+| Category: | Type: | Name: | Description: |
+| --- | --- | --- | --- |
+| text | *string* | objectErrorText | The error text that should be shown when an object error is detected (defaults to "Errors in object: {{error_1}}, {{error_2}}"). |
+| text | *string* | attributeNotValidErrorText | The error text that should be shown when a binding object isn't valid (defaults to "The attribute '{{attribute_name}}' is not a valid object."). |
+| text | *string* | attributeNotSetErrorText | The error text that should be shown when a binding attribute isn't set (defaults to "The attribute '{{attribute_name}}' has not been set correctly."). |
 
 <br/>
 

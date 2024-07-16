@@ -3,9 +3,9 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" user-scalable="no" />
-        <title>Observe.js - Basic</title>
-        <link rel="stylesheet" href="../css/styles.css" />
-        <script src="../../src/observe.js"></script>
+        <title>Observe.js - Minimized</title>
+        <link rel="stylesheet" href="css/styles.css" />
+        <script src="../dist/observe.min.js"></script>
     </head>
 
     <body>
@@ -15,11 +15,11 @@
         </div>
 
         <div class="contents">
-            <div id="domElementWatch1" data-observe-js="{ 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange, 'onCancel': onCancelWatch, 'onStart': onStartWatch }">
+            <div id="domElementWatch1" data-observe-js="{ 'events': { 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange, 'onCancel': onCancelWatch, 'onStart': onStartWatch } }">
                 When changed, this element should fire a custom trigger.
             </div>
 
-            <div id="domElementWatch2" data-observe-js="{ 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange, 'onCancel': onCancelWatch, 'reset': true, 'pauseTimeoutOnChange': 10000 }">
+            <div id="domElementWatch2" data-observe-js="{ 'events': { 'onChange': onObservableObjectChange, 'onPropertyChange': onObservableObjectPropertyChange, 'onCancel': onCancelWatch }, 'reset': true, 'pauseTimeoutOnChange': 10000 }">
                 When changed, this element should fire a custom trigger (and reset its value back to the original).
             </div>
         </div>
@@ -70,8 +70,6 @@
             <button onclick="window.observeObject.num = 2;">Change Object Value - 2</button>
             <button onclick="window.observeObject.str = 'This is another string';">Change Object Value - 3</button>
             <br />
-            <button onclick="window.observeArray.push( 10 );">Change Array Value - 1</button>
-            <br />
             <button onclick="document.getElementById( 'domElementWatch1' ).innerHTML = 'This has been changed.'">Change DOM Element 1</button>
             <button onclick="document.getElementById( 'domElementWatch2' ).innerHTML = 'This has been changed.'">Change DOM Element 2</button>
             <br />
@@ -96,22 +94,15 @@
         window.observeObject.num = 1;
         window.observeObject.str = "This is a string";
 
-        window.observeArray = [ 1, 2, 3, 4 ];
-
         function watchNewObject() {
             watchId = $observe.watch( window.observeObject, {
-                onChange: onObservableObjectChange,
-                onPropertyChange: onObservableObjectPropertyChange,
-                onCancel: onCancelWatch,
                 propertyNames: [ "bool", "num" ],
-                onStart: onStartWatch
-            } );
-
-            $observe.watch( window.observeArray, {
-                onChange: onObservableObjectChange,
-                onPropertyChange: onObservableObjectPropertyChange,
-                onCancel: onCancelWatch,
-                onStart: onStartWatch
+                events: {
+                    onChange: onObservableObjectChange,
+                    onPropertyChange: onObservableObjectPropertyChange,
+                    onCancel: onCancelWatch,
+                    onStart: onStartWatch
+                }
             } );
         }
 

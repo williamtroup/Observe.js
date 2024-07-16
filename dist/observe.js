@@ -1,460 +1,524 @@
-/*! Observe.js v0.8.2 | (c) Bunoon 2024 | MIT License */
-(function() {
-  var _parameter_Document = null, _parameter_Window = null, _parameter_Math = null, _parameter_Json = null, _public = {}, _string = {empty:""}, _watches = {}, _watches_Cancel = false, _configuration = {}, _attribute_Name_Watch_Options = "data-observe-js";
-  function collectDOMObjects() {
-    var tagTypes = _configuration.domElementTypes, tagTypesLength = tagTypes.length;
-    for (var tagTypeIndex = 0; tagTypeIndex < tagTypesLength; tagTypeIndex++) {
-      var domElements = _parameter_Document.getElementsByTagName(tagTypes[tagTypeIndex]), elements = [].slice.call(domElements), elementsLength = elements.length;
-      for (var elementIndex = 0; elementIndex < elementsLength; elementIndex++) {
-        if (!collectDOMObject(elements[elementIndex])) {
-          break;
-        }
-      }
+"use strict";
+
+var Constant;
+
+(e => {
+    e.OBSERVE_JS_ATTRIBUTE_NAME = "data-observe-js";
+})(Constant || (Constant = {}));
+
+var Is;
+
+(e => {
+    function t(e) {
+        return e !== null && e !== void 0 && e.toString() !== "";
     }
-  }
-  function collectDOMObject(element) {
-    var result = true;
-    if (isDefined(element) && element.hasAttribute(_attribute_Name_Watch_Options)) {
-      var bindingOptionsData = element.getAttribute(_attribute_Name_Watch_Options);
-      if (isDefinedString(bindingOptionsData)) {
-        var bindingOptions = getObjectFromString(bindingOptionsData);
-        if (bindingOptions.parsed && isDefinedObject(bindingOptions.result)) {
-          bindingOptions = getWatchOptions(bindingOptions.result);
-          if (!isDefinedString(element.id)) {
-            element.id = newGuid();
-          }
-          if (bindingOptions.removeAttribute) {
-            element.removeAttribute(_attribute_Name_Watch_Options);
-          }
-          createWatch(element, bindingOptions, element.id);
-        } else {
-          logError(_configuration.attributeNotValidErrorText.replace("{{attribute_name}}", _attribute_Name_Watch_Options));
-          result = false;
-        }
-      } else {
-        logError(_configuration.attributeNotSetErrorText.replace("{{attribute_name}}", _attribute_Name_Watch_Options));
-        result = false;
-      }
+    e.defined = t;
+    function n(e) {
+        return t(e) && typeof e === "object";
     }
-    return result;
-  }
-  function createWatch(object, options, domElementId) {
-    var storageId = null;
-    if (isDefinedObject(object)) {
-      storageId = newGuid();
-      var watchOptions = getWatchOptions(options), watch = {}, startWatchObject;
-      watch.options = watchOptions;
-      watch.totalChanges = 0;
-      if (isDefinedString(domElementId)) {
-        var domElement = _parameter_Document.getElementById(domElementId);
-        if (isDefined(domElement)) {
-          watch.domElementId = domElementId;
-          watch.cachedObject = domElement.outerHTML;
-          watch.originalObject = domElement.outerHTML;
-          startWatchObject = domElement.outerHTML;
-        }
-      } else {
-        watch.cachedObject = _parameter_Json.stringify(object);
-        watch.originalObject = object;
-        startWatchObject = object;
-      }
-      if (isDefined(watch.cachedObject)) {
-        fireCustomTrigger(watch.options.onStart, startWatchObject);
-        watch.timer = setInterval(function() {
-          watchTimer(watchOptions, storageId);
-        }, watchOptions.timeout);
-        _watches[storageId] = watch;
-      }
+    e.definedObject = n;
+    function r(e) {
+        return t(e) && typeof e === "boolean";
     }
-    return storageId;
-  }
-  function watchTimer(watchOptions, storageId) {
-    var currentDateTime = new Date();
-    if (!isDefinedDate(watchOptions.starts) || currentDateTime >= watchOptions.starts) {
-      watchObjectForChanges(storageId);
-      if (isDefinedDate(watchOptions.expires) && currentDateTime >= watchOptions.expires) {
-        cancelWatchObject(storageId);
-      }
+    e.definedBoolean = r;
+    function a(e) {
+        return t(e) && typeof e === "string";
     }
-  }
-  function watchObjectForChanges(storageId) {
-    if (_watches.hasOwnProperty(storageId)) {
-      var watch = _watches[storageId], isDomElement = isDefinedString(watch.domElementId), domElement = null;
-      if (isDomElement) {
-        domElement = _parameter_Document.getElementById(watch.domElementId);
-        if (isDefined(domElement)) {
-          watch.originalObject = domElement.outerHTML;
-        } else {
-          watch.originalObject = _string.empty;
-          fireCustomTrigger(watch.options.onRemove, watch.domElementId);
-        }
-      }
-      var cachedObject = watch.cachedObject, originalObject = watch.originalObject, originalObjectJson = !isDomElement ? _parameter_Json.stringify(originalObject) : originalObject;
-      if (cachedObject !== originalObjectJson) {
-        if (watch.options.reset) {
-          if (isDomElement) {
-            domElement.outerHTML = watch.cachedObject;
-          } else {
-            watch.originalObject = getObjectFromString(cachedObject).result;
-          }
-        } else {
-          watch.cachedObject = originalObjectJson;
-        }
-        if (isDomElement) {
-          fireCustomTrigger(watch.options.onChange, cachedObject, originalObjectJson);
-        } else {
-          var oldValue = getObjectFromString(cachedObject).result, newValue = getObjectFromString(originalObjectJson).result;
-          if (!isDefinedArray(oldValue) && !isDefinedArray(newValue)) {
-            compareWatchObject(oldValue, newValue, watch);
-            if (isDefinedFunction(watch.options.onPropertyChange)) {
-              compareWatchObjectProperties(oldValue, newValue, watch);
+    e.definedString = a;
+    function o(e) {
+        return t(e) && typeof e === "function";
+    }
+    e.definedFunction = o;
+    function i(e) {
+        return t(e) && typeof e === "number";
+    }
+    e.definedNumber = i;
+    function c(e) {
+        return n(e) && e instanceof Array;
+    }
+    e.definedArray = c;
+    function s(e) {
+        return n(e) && e instanceof Date;
+    }
+    e.definedDate = s;
+})(Is || (Is = {}));
+
+var Data;
+
+(e => {
+    let t;
+    (e => {
+        function t() {
+            const e = [];
+            for (let t = 0; t < 32; t++) {
+                if (t === 8 || t === 12 || t === 16 || t === 20) {
+                    e.push("-");
+                }
+                const n = Math.floor(Math.random() * 16).toString(16);
+                e.push(n);
             }
-          } else {
-            fireCustomTrigger(watch.options.onChange, oldValue, newValue);
-          }
+            return e.join("");
         }
-        watch.totalChanges++;
-        if (watch.options.pauseTimeoutOnChange > 0) {
-          pauseWatchObject(storageId, watch.options.pauseTimeoutOnChange);
-        }
-        if (watch.options.cancelOnChange) {
-          cancelWatchObject(storageId);
-        }
-        if (watch.options.maximumChangesBeforeCanceling > 0 && watch.totalChanges >= watch.options.maximumChangesBeforeCanceling) {
-          cancelWatchObject(storageId);
-        }
-      }
+        e.newGuid = t;
+    })(t = e.String || (e.String = {}));
+    function n(e, t) {
+        return typeof e === "string" ? e : t;
     }
-  }
-  function compareWatchObject(oldObject, newObject, watch) {
-    if (isDefinedArray(watch.options.propertyNames)) {
-      var propertyNamesLength = watch.options.propertyNames.length;
-      for (var propertyNameIndex = 0; propertyNameIndex < propertyNamesLength; propertyNameIndex++) {
-        var propertyName = watch.options.propertyNames[propertyNameIndex];
-        if (oldObject[propertyName] !== newObject[propertyName]) {
-          fireCustomTrigger(watch.options.onChange, oldObject, newObject);
-          break;
-        }
-      }
-    } else {
-      fireCustomTrigger(watch.options.onChange, oldObject, newObject);
+    e.getDefaultAnyString = n;
+    function r(e, t) {
+        return Is.definedString(e) ? e : t;
     }
-  }
-  function compareWatchObjectProperties(oldObject, newObject, watch) {
-    for (var propertyName in oldObject) {
-      if (oldObject.hasOwnProperty(propertyName)) {
-        var propertyOldValue = oldObject[propertyName], propertyNewValue = null;
-        if (newObject.hasOwnProperty(propertyName)) {
-          propertyNewValue = newObject[propertyName];
-        }
-        if (isDefinedObject(propertyOldValue) && isDefinedObject(propertyNewValue)) {
-          compareWatchObjectProperties(propertyOldValue, propertyNewValue, watch.options);
-        } else {
-          if (!isDefinedArray(watch.options.propertyNames) || watch.options.propertyNames.indexOf(propertyName) > -1) {
-            if (_parameter_Json.stringify(propertyOldValue) !== _parameter_Json.stringify(propertyNewValue)) {
-              fireCustomTrigger(watch.options.onPropertyChange, propertyName, propertyOldValue, propertyNewValue);
+    e.getDefaultString = r;
+    function a(e, t) {
+        return Is.definedBoolean(e) ? e : t;
+    }
+    e.getDefaultBoolean = a;
+    function o(e, t) {
+        return Is.definedNumber(e) ? e : t;
+    }
+    e.getDefaultNumber = o;
+    function i(e, t) {
+        return Is.definedFunction(e) ? e : t;
+    }
+    e.getDefaultFunction = i;
+    function c(e, t) {
+        return Is.definedArray(e) ? e : t;
+    }
+    e.getDefaultArray = c;
+    function s(e, t) {
+        return Is.definedObject(e) ? e : t;
+    }
+    e.getDefaultObject = s;
+    function u(e, t) {
+        return Is.definedDate(e) ? e : t;
+    }
+    e.getDefaultDate = u;
+    function f(e, t) {
+        let n = t;
+        if (Is.definedString(e)) {
+            const r = e.toString().split("space");
+            if (r.length === 0) {
+                e = t;
+            } else {
+                n = r;
             }
-          }
+        } else {
+            n = c(e, t);
         }
-      }
+        return n;
     }
-  }
-  function cancelWatchesForObjects() {
-    for (var storageId in _watches) {
-      if (_watches.hasOwnProperty(storageId)) {
-        cancelWatchObject(storageId);
-      }
-    }
-  }
-  function cancelWatchObject(storageId) {
-    if (_watches.hasOwnProperty(storageId)) {
-      var watchOptions = _watches[storageId].options;
-      if (watchOptions.allowCanceling || _watches_Cancel) {
-        fireCustomTrigger(watchOptions.onCancel, storageId);
-        clearInterval(_watches[storageId].timer);
-        delete _watches[storageId];
-      }
-    }
-  }
-  function pauseWatchObject(storageId, milliseconds) {
-    var result = false;
-    if (_watches.hasOwnProperty(storageId)) {
-      var watchOptions = _watches[storageId].options;
-      if (watchOptions.allowPausing) {
-        watchOptions.starts = new Date();
-        watchOptions.starts.setMilliseconds(watchOptions.starts.getMilliseconds() + milliseconds);
-        result = true;
-      }
-    }
-    return result;
-  }
-  function getWatchOptions(newOptions) {
-    var options = getDefaultObject(newOptions, {});
-    options.timeout = getDefaultNumber(options.timeout, 250);
-    options.starts = getDefaultDate(options.starts, null);
-    options.expires = getDefaultDate(options.expires, null);
-    options.reset = getDefaultBoolean(options.reset, false);
-    options.cancelOnChange = getDefaultBoolean(options.cancelOnChange, false);
-    options.maximumChangesBeforeCanceling = getDefaultNumber(options.maximumChangesBeforeCanceling, 0);
-    options.pauseTimeoutOnChange = getDefaultNumber(options.pauseTimeoutOnChange, 0);
-    options.propertyNames = getDefaultArray(options.propertyNames, null);
-    options.allowCanceling = getDefaultBoolean(options.allowCanceling, true);
-    options.allowPausing = getDefaultBoolean(options.allowPausing, true);
-    options.removeAttribute = getDefaultBoolean(options.removeAttribute, true);
-    options = getWatchOptionsCustomTriggers(options);
-    return options;
-  }
-  function getWatchOptionsCustomTriggers(options) {
-    options.onChange = getDefaultFunction(options.onChange, null);
-    options.onPropertyChange = getDefaultFunction(options.onPropertyChange, null);
-    options.onCancel = getDefaultFunction(options.onCancel, null);
-    options.onRemove = getDefaultFunction(options.onRemove, null);
-    options.onStart = getDefaultFunction(options.onStart, null);
-    return options;
-  }
-  function fireCustomTrigger(triggerFunction) {
-    if (isDefinedFunction(triggerFunction)) {
-      triggerFunction.apply(null, [].slice.call(arguments, 1));
-    }
-  }
-  function newGuid() {
-    var result = [];
-    for (var charIndex = 0; charIndex < 32; charIndex++) {
-      if (charIndex === 8 || charIndex === 12 || charIndex === 16 || charIndex === 20) {
-        result.push("-");
-      }
-      var character = _parameter_Math.floor(_parameter_Math.random() * 16).toString(16);
-      result.push(character);
-    }
-    return result.join(_string.empty);
-  }
-  function isDefined(value) {
-    return value !== null && value !== undefined && value !== _string.empty;
-  }
-  function isDefinedObject(object) {
-    return isDefined(object) && typeof object === "object";
-  }
-  function isDefinedBoolean(object) {
-    return isDefined(object) && typeof object === "boolean";
-  }
-  function isDefinedString(object) {
-    return isDefined(object) && typeof object === "string";
-  }
-  function isDefinedFunction(object) {
-    return isDefined(object) && typeof object === "function";
-  }
-  function isDefinedNumber(object) {
-    return isDefined(object) && typeof object === "number";
-  }
-  function isDefinedArray(object) {
-    return isDefinedObject(object) && object instanceof Array;
-  }
-  function isDefinedDate(object) {
-    return isDefinedObject(object) && object instanceof Date;
-  }
-  function getDefaultBoolean(value, defaultValue) {
-    return isDefinedBoolean(value) ? value : defaultValue;
-  }
-  function getDefaultFunction(value, defaultValue) {
-    return isDefinedFunction(value) ? value : defaultValue;
-  }
-  function getDefaultNumber(value, defaultValue) {
-    return isDefinedNumber(value) ? value : defaultValue;
-  }
-  function getDefaultString(value, defaultValue) {
-    return isDefinedString(value) ? value : defaultValue;
-  }
-  function getDefaultDate(value, defaultValue) {
-    return isDefinedDate(value) ? value : defaultValue;
-  }
-  function getDefaultArray(value, defaultValue) {
-    return isDefinedArray(value) ? value : defaultValue;
-  }
-  function getDefaultObject(value, defaultValue) {
-    return isDefinedObject(value) ? value : defaultValue;
-  }
-  function getDefaultStringOrArray(value, defaultValue) {
-    if (isDefinedString(value)) {
-      value = value.split(_string.space);
-      if (value.length === 0) {
-        value = defaultValue;
-      }
-    } else {
-      value = getDefaultArray(value, defaultValue);
-    }
-    return value;
-  }
-  function getObjectFromString(objectString) {
-    var parsed = true, result = null;
-    try {
-      if (isDefinedString(objectString)) {
-        result = _parameter_Json.parse(objectString);
-      }
-    } catch (e1) {
-      try {
-        result = eval("(" + objectString + ")");
-        if (isDefinedFunction(result)) {
-          result = result();
+    e.getDefaultStringOrArray = f;
+})(Data || (Data = {}));
+
+(() => {
+    let _configuration = {};
+    const _watches = {};
+    let _watches_Cancel = false;
+    function collectDOMObjects() {
+        const e = _configuration.domElementTypes;
+        const t = e.length;
+        for (let n = 0; n < t; n++) {
+            const t = document.getElementsByTagName(e[n]);
+            const r = [].slice.call(t);
+            const a = r.length;
+            for (let e = 0; e < a; e++) {
+                if (!collectDOMObject(r[e])) {
+                    break;
+                }
+            }
         }
-      } catch (e2) {
-        parsed = logError(_configuration.objectErrorText.replace("{{error_1}}", e1.message).replace("{{error_2}}", e2.message));
-        result = null;
-      }
     }
-    return {parsed:parsed, result:result};
-  }
-  function logError(error) {
-    var result = true;
-    if (!_configuration.safeMode) {
-      console.error(error);
-      result = false;
-    }
-    return result;
-  }
-  _public.watch = function(object, options) {
-    return createWatch(object, options);
-  };
-  _public.cancelWatch = function(id) {
-    var result = false;
-    if (isDefinedString(id)) {
-      if (_watches.hasOwnProperty(id)) {
-        cancelWatchObject(id);
-        result = true;
-      } else {
-        for (var storageId in _watches) {
-          if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
-            cancelWatchObject(storageId);
-            result = true;
-            break;
-          }
+    function collectDOMObject(e) {
+        let t = true;
+        if (Is.defined(e) && e.hasAttribute(Constant.OBSERVE_JS_ATTRIBUTE_NAME)) {
+            const n = e.getAttribute(Constant.OBSERVE_JS_ATTRIBUTE_NAME);
+            if (Is.definedString(n)) {
+                const r = getObjectFromString(n);
+                if (r.parsed && Is.definedObject(r.object)) {
+                    const t = getWatchOptions(r.object);
+                    if (!Is.definedString(e.id)) {
+                        e.id = Data.String.newGuid();
+                    }
+                    if (t.removeAttribute) {
+                        e.removeAttribute(Constant.OBSERVE_JS_ATTRIBUTE_NAME);
+                    }
+                    createWatch(e, t, e.id);
+                } else {
+                    logError(_configuration.text.attributeNotValidErrorText.replace("{{attribute_name}}", Constant.OBSERVE_JS_ATTRIBUTE_NAME));
+                    t = false;
+                }
+            } else {
+                logError(_configuration.text.attributeNotSetErrorText.replace("{{attribute_name}}", Constant.OBSERVE_JS_ATTRIBUTE_NAME));
+                t = false;
+            }
         }
-      }
+        return t;
     }
-    return result;
-  };
-  _public.cancelWatches = function() {
-    cancelWatchesForObjects();
-    return _public;
-  };
-  _public.getWatch = function(id) {
-    var result = null;
-    if (isDefinedString(id)) {
-      if (_watches.hasOwnProperty(id)) {
-        result = _watches[id];
-      } else {
-        for (var storageId in _watches) {
-          if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
-            result = _watches[storageId];
-            break;
-          }
+    function createWatch(e, t, n = null) {
+        let r = null;
+        if (Is.definedObject(e)) {
+            r = Data.String.newGuid();
+            const a = getWatchOptions(t);
+            const o = {};
+            let i = null;
+            o.options = a;
+            o.totalChanges = 0;
+            if (Is.definedString(n)) {
+                const e = document.getElementById(n);
+                if (Is.defined(e)) {
+                    o.domElementId = n;
+                    o.cachedObject = e.outerHTML;
+                    o.originalObject = e.outerHTML;
+                    i = e.outerHTML;
+                }
+            } else {
+                o.cachedObject = JSON.stringify(e);
+                o.originalObject = e;
+                i = e;
+            }
+            if (Is.defined(o.cachedObject)) {
+                fireCustomTriggerEvent(o.options.events.onStart, i);
+                o.timer = setInterval((function() {
+                    watchTimer(a, r);
+                }), a.timeout);
+                _watches[r] = o;
+            }
         }
-      }
+        return r;
     }
-    return result;
-  };
-  _public.getWatches = function() {
-    return _watches;
-  };
-  _public.pauseWatch = function(id, milliseconds) {
-    var result = false;
-    if (isDefinedString(id) && isDefinedNumber(milliseconds)) {
-      if (_watches.hasOwnProperty(id)) {
-        result = pauseWatchObject(id, milliseconds);
-      } else {
-        for (var storageId in _watches) {
-          if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
-            result = pauseWatchObject(storageId, milliseconds);
-            break;
-          }
+    function watchTimer(e, t) {
+        const n = new Date;
+        if (!Is.definedDate(e.starts) || n >= e.starts) {
+            watchObjectForChanges(t);
+            if (Is.definedDate(e.expires) && n >= e.expires) {
+                cancelWatchObject(t);
+            }
         }
-      }
     }
-    return result;
-  };
-  _public.pauseWatches = function(milliseconds) {
-    if (isDefinedNumber(milliseconds)) {
-      for (var storageId in _watches) {
-        if (_watches.hasOwnProperty(storageId)) {
-          pauseWatchObject(storageId, milliseconds);
+    function watchObjectForChanges(e) {
+        if (_watches.hasOwnProperty(e)) {
+            const t = _watches[e];
+            const n = Is.definedString(t.domElementId);
+            let r = null;
+            if (n) {
+                r = document.getElementById(t.domElementId);
+                if (Is.defined(r)) {
+                    t.originalObject = r.outerHTML;
+                } else {
+                    t.originalObject = "";
+                    fireCustomTriggerEvent(t.options.events.onRemove, t.domElementId);
+                }
+            }
+            const a = t.cachedObject;
+            const o = t.originalObject;
+            const i = !n ? JSON.stringify(o) : o;
+            if (a !== i) {
+                if (t.options.reset) {
+                    if (n) {
+                        r.outerHTML = t.cachedObject;
+                    } else {
+                        t.originalObject = getObjectFromString(a).object;
+                    }
+                } else {
+                    t.cachedObject = i;
+                }
+                if (n) {
+                    fireCustomTriggerEvent(t.options.events.onChange, a, i);
+                } else {
+                    const e = getObjectFromString(a).object;
+                    const n = getObjectFromString(i).object;
+                    if (!Is.definedArray(e) && !Is.definedArray(n)) {
+                        compareWatchObject(e, n, t);
+                        if (Is.definedFunction(t.options.events.onPropertyChange)) {
+                            compareWatchObjectProperties(e, n, t);
+                        }
+                    } else {
+                        fireCustomTriggerEvent(t.options.events.onChange, e, n);
+                    }
+                }
+                t.totalChanges++;
+                if (t.options.pauseTimeoutOnChange > 0) {
+                    pauseWatchObject(e, t.options.pauseTimeoutOnChange);
+                }
+                if (t.options.cancelOnChange) {
+                    cancelWatchObject(e);
+                }
+                if (t.options.maximumChangesBeforeCanceling > 0 && t.totalChanges >= t.options.maximumChangesBeforeCanceling) {
+                    cancelWatchObject(e);
+                }
+            }
         }
-      }
     }
-    return _public;
-  };
-  _public.resumeWatch = function(id) {
-    var result = false;
-    if (isDefinedString(id)) {
-      if (_watches.hasOwnProperty(id)) {
-        _watches[id].options.starts = null;
-        result = true;
-      } else {
-        for (var storageId in _watches) {
-          if (_watches.hasOwnProperty(storageId) && isDefinedString(_watches[storageId].domElementId) && _watches[storageId].domElementId === id) {
-            _watches[storageId].options.starts = null;
-            result = true;
-            break;
-          }
+    function compareWatchObject(e, t, n) {
+        if (Is.definedArray(n.options.propertyNames)) {
+            const r = n.options.propertyNames.length;
+            for (let a = 0; a < r; a++) {
+                const r = n.options.propertyNames[a];
+                if (e[r] !== t[r]) {
+                    fireCustomTriggerEvent(n.options.events.onChange, e, t);
+                    break;
+                }
+            }
+        } else {
+            fireCustomTriggerEvent(n.options.events.onChange, e, t);
         }
-      }
     }
-    return result;
-  };
-  _public.resumeWatches = function() {
-    for (var storageId in _watches) {
-      if (_watches.hasOwnProperty(storageId)) {
-        _watches[storageId].options.starts = null;
-      }
-    }
-    return _public;
-  };
-  _public.searchDomForNewWatches = function() {
-    collectDOMObjects();
-    return _public;
-  };
-  _public.setConfiguration = function(newConfiguration) {
-    if (isDefinedObject(newConfiguration)) {
-      var configurationHasChanged = false;
-      for (var propertyName in newConfiguration) {
-        if (newConfiguration.hasOwnProperty(propertyName) && _configuration.hasOwnProperty(propertyName) && _configuration[propertyName] !== newConfiguration[propertyName]) {
-          _configuration[propertyName] = newConfiguration[propertyName];
-          configurationHasChanged = true;
+    function compareWatchObjectProperties(e, t, n) {
+        for (let r in e) {
+            if (e.hasOwnProperty(r)) {
+                const a = e[r];
+                let o = null;
+                if (t.hasOwnProperty(r)) {
+                    o = t[r];
+                }
+                if (Is.definedObject(a) && Is.definedObject(o)) {
+                    compareWatchObjectProperties(a, o, n);
+                } else {
+                    if (!Is.definedArray(n.options.propertyNames) || n.options.propertyNames.indexOf(r) > -1) {
+                        if (JSON.stringify(a) !== JSON.stringify(o)) {
+                            fireCustomTriggerEvent(n.options.events.onPropertyChange, r, a, o);
+                        }
+                    }
+                }
+            }
         }
-      }
-      if (configurationHasChanged) {
-        buildDefaultConfiguration(_configuration);
-      }
     }
-    return _public;
-  };
-  function buildDefaultConfiguration(newConfiguration) {
-    _configuration = !isDefinedObject(newConfiguration) ? {} : newConfiguration;
-    _configuration.safeMode = getDefaultBoolean(_configuration.safeMode, true);
-    _configuration.domElementTypes = getDefaultStringOrArray(_configuration.domElementTypes, ["*"]);
-    buildDefaultConfigurationStrings();
-  }
-  function buildDefaultConfigurationStrings() {
-    _configuration.objectErrorText = getDefaultString(_configuration.objectErrorText, "Errors in object: {{error_1}}, {{error_2}}");
-    _configuration.attributeNotValidErrorText = getDefaultString(_configuration.attributeNotValidErrorText, "The attribute '{{attribute_name}}' is not a valid object.");
-    _configuration.attributeNotSetErrorText = getDefaultString(_configuration.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly.");
-  }
-  _public.getVersion = function() {
-    return "0.8.2";
-  };
-  (function(documentObject, windowObject, mathObject, jsonObject) {
-    _parameter_Document = documentObject;
-    _parameter_Window = windowObject;
-    _parameter_Math = mathObject;
-    _parameter_Json = jsonObject;
-    buildDefaultConfiguration();
-    _parameter_Document.addEventListener("DOMContentLoaded", function() {
-      collectDOMObjects();
-    });
-    _parameter_Window.addEventListener("pagehide", function() {
-      _watches_Cancel = true;
-      cancelWatchesForObjects();
-    });
-    if (!isDefined(_parameter_Window.$observe)) {
-      _parameter_Window.$observe = _public;
+    function cancelWatchesForObjects() {
+        for (let e in _watches) {
+            if (_watches.hasOwnProperty(e)) {
+                cancelWatchObject(e);
+            }
+        }
     }
-  })(document, window, Math, JSON);
-})();
+    function cancelWatchObject(e) {
+        if (_watches.hasOwnProperty(e)) {
+            const t = _watches[e].options;
+            if (t.allowCanceling || _watches_Cancel) {
+                fireCustomTriggerEvent(t.events.onCancel, e);
+                clearInterval(_watches[e].timer);
+                delete _watches[e];
+            }
+        }
+    }
+    function pauseWatchObject(e, t) {
+        let n = false;
+        if (_watches.hasOwnProperty(e)) {
+            const r = _watches[e].options;
+            if (r.allowPausing) {
+                r.starts = new Date;
+                r.starts.setMilliseconds(r.starts.getMilliseconds() + t);
+                n = true;
+            }
+        }
+        return n;
+    }
+    function getWatchOptions(e) {
+        let t = Data.getDefaultObject(e, {});
+        t.timeout = Data.getDefaultNumber(t.timeout, 250);
+        t.starts = Data.getDefaultDate(t.starts, null);
+        t.expires = Data.getDefaultDate(t.expires, null);
+        t.reset = Data.getDefaultBoolean(t.reset, false);
+        t.cancelOnChange = Data.getDefaultBoolean(t.cancelOnChange, false);
+        t.maximumChangesBeforeCanceling = Data.getDefaultNumber(t.maximumChangesBeforeCanceling, 0);
+        t.pauseTimeoutOnChange = Data.getDefaultNumber(t.pauseTimeoutOnChange, 0);
+        t.propertyNames = Data.getDefaultArray(t.propertyNames, null);
+        t.allowCanceling = Data.getDefaultBoolean(t.allowCanceling, true);
+        t.allowPausing = Data.getDefaultBoolean(t.allowPausing, true);
+        t.removeAttribute = Data.getDefaultBoolean(t.removeAttribute, true);
+        t = getWatchOptionsCustomTriggers(t);
+        return t;
+    }
+    function getWatchOptionsCustomTriggers(e) {
+        e.events = Data.getDefaultObject(e.events, {});
+        e.events.onChange = Data.getDefaultFunction(e.events.onChange, null);
+        e.events.onPropertyChange = Data.getDefaultFunction(e.events.onPropertyChange, null);
+        e.events.onCancel = Data.getDefaultFunction(e.events.onCancel, null);
+        e.events.onRemove = Data.getDefaultFunction(e.events.onRemove, null);
+        e.events.onStart = Data.getDefaultFunction(e.events.onStart, null);
+        return e;
+    }
+    function fireCustomTriggerEvent(e, ...t) {
+        if (Is.definedFunction(e)) {
+            e.apply(null, [].slice.call(t, 0));
+        }
+    }
+    function getObjectFromString(objectString) {
+        const result = {
+            parsed: true,
+            object: null
+        };
+        try {
+            if (Is.definedString(objectString)) {
+                result.object = JSON.parse(objectString);
+            }
+        } catch (e1) {
+            try {
+                result.object = eval(`(${objectString})`);
+                if (Is.definedFunction(result.object)) {
+                    result.object = result.object();
+                }
+            } catch (e) {
+                if (!_configuration.safeMode) {
+                    logError(_configuration.text.objectErrorText.replace("{{error_1}}", e1.message).replace("{{error_2}}", e.message));
+                    result.parsed = false;
+                }
+                result.object = null;
+            }
+        }
+        return result;
+    }
+    function logError(e) {
+        let t = true;
+        if (!_configuration.safeMode) {
+            console.error(e);
+            t = false;
+        }
+        return t;
+    }
+    function buildDefaultConfiguration(e = null) {
+        _configuration = Data.getDefaultObject(e, {});
+        _configuration.safeMode = Data.getDefaultBoolean(_configuration.safeMode, true);
+        _configuration.domElementTypes = Data.getDefaultStringOrArray(_configuration.domElementTypes, [ "*" ]);
+        buildDefaultConfigurationStrings();
+    }
+    function buildDefaultConfigurationStrings() {
+        _configuration.text = Data.getDefaultObject(_configuration.text, {});
+        _configuration.text.objectErrorText = Data.getDefaultString(_configuration.text.objectErrorText, "Errors in object: {{error_1}}, {{error_2}}");
+        _configuration.text.attributeNotValidErrorText = Data.getDefaultString(_configuration.text.attributeNotValidErrorText, "The attribute '{{attribute_name}}' is not a valid object.");
+        _configuration.text.attributeNotSetErrorText = Data.getDefaultString(_configuration.text.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly.");
+    }
+    const _public = {
+        watch: function(e, t) {
+            return createWatch(e, t);
+        },
+        cancelWatch: function(e) {
+            let t = false;
+            if (Is.definedString(e)) {
+                if (_watches.hasOwnProperty(e)) {
+                    cancelWatchObject(e);
+                    t = true;
+                } else {
+                    for (let n in _watches) {
+                        if (_watches.hasOwnProperty(n) && Is.definedString(_watches[n].domElementId) && _watches[n].domElementId === e) {
+                            cancelWatchObject(n);
+                            t = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            return t;
+        },
+        cancelWatches: function() {
+            cancelWatchesForObjects();
+            return _public;
+        },
+        getWatch: function(e) {
+            let t = null;
+            if (Is.definedString(e)) {
+                if (_watches.hasOwnProperty(e)) {
+                    t = _watches[e];
+                } else {
+                    for (let n in _watches) {
+                        if (_watches.hasOwnProperty(n) && Is.definedString(_watches[n].domElementId) && _watches[n].domElementId === e) {
+                            t = _watches[n];
+                            break;
+                        }
+                    }
+                }
+            }
+            return t;
+        },
+        getWatches: function() {
+            return _watches;
+        },
+        pauseWatch: function(e, t) {
+            let n = false;
+            if (Is.definedString(e) && Is.definedNumber(t)) {
+                if (_watches.hasOwnProperty(e)) {
+                    n = pauseWatchObject(e, t);
+                } else {
+                    for (let r in _watches) {
+                        if (_watches.hasOwnProperty(r) && Is.definedString(_watches[r].domElementId) && _watches[r].domElementId === e) {
+                            n = pauseWatchObject(r, t);
+                            break;
+                        }
+                    }
+                }
+            }
+            return n;
+        },
+        pauseWatches: function(e) {
+            if (Is.definedNumber(e)) {
+                for (let t in _watches) {
+                    if (_watches.hasOwnProperty(t)) {
+                        pauseWatchObject(t, e);
+                    }
+                }
+            }
+            return _public;
+        },
+        resumeWatch: function(e) {
+            let t = false;
+            if (Is.definedString(e)) {
+                if (_watches.hasOwnProperty(e)) {
+                    _watches[e].options.starts = null;
+                    t = true;
+                } else {
+                    for (let n in _watches) {
+                        if (_watches.hasOwnProperty(n) && Is.definedString(_watches[n].domElementId) && _watches[n].domElementId === e) {
+                            _watches[n].options.starts = null;
+                            t = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            return t;
+        },
+        resumeWatches: function() {
+            for (let e in _watches) {
+                if (_watches.hasOwnProperty(e)) {
+                    _watches[e].options.starts = null;
+                }
+            }
+            return _public;
+        },
+        searchDomForNewWatches: function() {
+            collectDOMObjects();
+            return _public;
+        },
+        setConfiguration: function(e) {
+            if (Is.definedObject(e)) {
+                let t = false;
+                const n = _configuration;
+                for (let r in e) {
+                    if (e.hasOwnProperty(r) && _configuration.hasOwnProperty(r) && n[r] !== e[r]) {
+                        n[r] = e[r];
+                        t = true;
+                    }
+                }
+                if (t) {
+                    buildDefaultConfiguration(n);
+                }
+            }
+            return _public;
+        },
+        getVersion: function() {
+            return "1.0.0";
+        }
+    };
+    (() => {
+        buildDefaultConfiguration();
+        document.addEventListener("DOMContentLoaded", (function() {
+            collectDOMObjects();
+        }));
+        window.addEventListener("pagehide", (function() {
+            _watches_Cancel = true;
+            cancelWatchesForObjects();
+        }));
+        if (!Is.defined(window.$observe)) {
+            window.$observe = _public;
+        }
+    })();
+})();//# sourceMappingURL=observe.js.map
