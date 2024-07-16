@@ -20,10 +20,22 @@ type StringToJson = {
     object: any;
 };
 
+type ObserveWatch = {
+    options: WatchOptions;
+    totalChanges: number;
+    domElementId: string;
+    cachedObject: any;
+    originalObject: any;
+};
+
 
 ( () => {
     // Variables: Configuration
     let _configuration: Configuration = {} as Configuration;
+
+    // Variables: Watches
+    const _watches: Record<string, ObserveWatch> = {} as Record<string, ObserveWatch>;
+    let _watches_Cancel: boolean = false;
 
 
     /*
