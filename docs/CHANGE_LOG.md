@@ -1,5 +1,11 @@
 # Observe.js - Change Log:
 
+## Version 1.0.0:
+- 
+
+<br>
+
+
 ## Version 0.8.2:
 - Added export support for the global "$observe" object, which can now be imported as "observe.js".
 - BREAKING: Renamed the binding attribute "data-observe-watch-options" to "data-observe-js".
