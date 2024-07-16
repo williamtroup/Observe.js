@@ -11,7 +11,12 @@
  */
 
 
-import { type WatchOptionEvents, type WatchOptions, type Configuration } from "./ts/type";
+import {
+    type WatchOptionEvents,
+    type WatchOptions,
+    type Configuration,
+    type ObserveWatch } from "./ts/type";
+    
 import { Constant } from "./ts/constant";
 import { Data } from "./ts/data";
 import { Char } from "./ts/enum";
@@ -21,15 +26,6 @@ import { Is } from "./ts/is";
 type StringToJson = {
     parsed: boolean;
     object: any;
-};
-
-type ObserveWatch = {
-    options: WatchOptions;
-    totalChanges: number;
-    domElementId: string;
-    cachedObject: any;
-    originalObject: any;
-    timer: number;
 };
 
 

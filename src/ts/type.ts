@@ -45,3 +45,12 @@ export type WatchOptionEvents = {
     onRemove?: Function;
     onStart?: Function;
 }
+
+export type ObserveWatch = {
+    options: WatchOptions;
+    totalChanges: number;
+    domElementId: string;
+    cachedObject: any;
+    originalObject: any;
+    timer: number;
+};
