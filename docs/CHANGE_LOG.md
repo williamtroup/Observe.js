@@ -1,7 +1,25 @@
 # Observe.js - Change Log:
 
 ## Version 1.0.0:
-- 
+
+#### **Language Shift:**
+- The entire project has been rewritten in TypeScript, allowing all components to be exported, which allows better support for libraries such as React, Angular, etc.
+- Added CDN links for the minimized version of the files.
+- The TypeScript code is compiled to ES2016 instead of ES5 (older browsers, such as IE, are no longer supported).
+
+#### **Building:**
+- You can now run separate builds to produce CJS, ESM, and Minimized project versions.
+- All files not required for the NPM packages have now been excluded.
+
+#### **Watch Options:**
+- BREAKING: All the event custom triggers are now under a new section called "events".
+
+#### **Configuration Options:**
+- BREAKING: All the text options are now under a new section called "text".
+
+#### **Testing:**
+- Removed the "src" and "dist" folders under "test".  Only the dist versions remain, removing duplication.
+- Added "BUILD_INSTRUCTIONS.md" to help first-time users set up their dev environments.
 
 <br>
 
