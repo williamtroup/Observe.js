@@ -21,6 +21,7 @@ import { Constant } from "./ts/constant";
 import { Data } from "./ts/data";
 import { Char } from "./ts/enum";
 import { Is } from "./ts/is";
+import { type PublicApi } from "./ts/api";
 
 
 type StringToJson = {
@@ -411,6 +412,83 @@ type StringToJson = {
 
         return result;
     }
+
+
+	/*
+	 * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	 * Public API Functions:
+	 * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	 */
+
+    const _public: PublicApi = {
+        /*
+         * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+         * Public API Functions:  Watching Objects
+         * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+         */
+
+        watch: function ( object: any, options: WatchOptions ) : string {
+            throw new Error("Function not implemented.");
+        },
+
+        cancelWatch: function ( id: string ) : boolean {
+            throw new Error("Function not implemented.");
+        },
+
+        cancelWatches: function () : PublicApi {
+            throw new Error("Function not implemented.");
+        },
+
+        getWatch: function ( id: string ) : ObserveWatch {
+            throw new Error("Function not implemented.");
+        },
+
+        getWatches: function () : Record<string, ObserveWatch> {
+            throw new Error("Function not implemented.");
+        },
+
+        pauseWatch: function ( id: string, milliseconds: number ) : boolean {
+            throw new Error("Function not implemented.");
+        },
+
+        pauseWatches: function ( milliseconds: number ) : PublicApi {
+            throw new Error("Function not implemented.");
+        },
+
+        resumeWatch: function ( id: string ) : boolean {
+            throw new Error("Function not implemented.");
+        },
+
+        resumeWatches: function () : PublicApi {
+            throw new Error("Function not implemented.");
+        },
+
+        searchDomForNewWatches: function () : PublicApi {
+            throw new Error("Function not implemented.");
+        },
+
+
+        /*
+         * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+         * Public API Functions:  Configuration
+         * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+         */
+
+        setConfiguration: function ( configuration: any ) : PublicApi {
+            throw new Error("Function not implemented.");
+        },
+
+
+        /*
+         * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+         * Public API Functions:  Additional Data
+         * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+         */
+
+        getVersion: function () : string {
+            throw new Error("Function not implemented.");
+        }
+    };
 
 
     /*
