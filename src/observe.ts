@@ -252,7 +252,7 @@ type StringToJson = {
     }
 
     function compareWatchObjectProperties( oldObject: any, newObject: any, watch: ObserveWatch ) : void {
-        for ( var propertyName in oldObject ) {
+        for ( let propertyName in oldObject ) {
             if ( oldObject.hasOwnProperty( propertyName ) ) {
                 const propertyOldValue: any = oldObject[ propertyName ];
                 let propertyNewValue: any = null;

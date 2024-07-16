@@ -264,7 +264,7 @@ var Data;
         }
     }
     function compareWatchObjectProperties(e, t, n) {
-        for (var r in e) {
+        for (let r in e) {
             if (e.hasOwnProperty(r)) {
                 const a = e[r];
                 let o = null;
