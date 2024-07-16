@@ -421,7 +421,7 @@ type StringToJson = {
 	 * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 */
 
-    function buildDefaultConfiguration( newConfiguration: any ) : void {
+    function buildDefaultConfiguration( newConfiguration: any = null ) : void {
         _configuration = Data.getDefaultObject( newConfiguration, {} as Configuration );
         _configuration.safeMode = Data.getDefaultBoolean( _configuration.safeMode, true );
         _configuration.domElementTypes = Data.getDefaultStringOrArray( _configuration.domElementTypes, [ "*" ] );
@@ -625,6 +625,20 @@ type StringToJson = {
      */
 
     ( () => {
+        buildDefaultConfiguration();
 
+        document.addEventListener( "DOMContentLoaded", function() {
+            collectDOMObjects();
+        } );
+
+        window.addEventListener( "pagehide", function() {
+            _watches_Cancel = true;
+
+            cancelWatchesForObjects();
+        } );
+
+        if ( !Is.defined( window.$observe ) ) {
+            window.$observe = _public;
+        }
     } )();
 } )();

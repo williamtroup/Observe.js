@@ -415,7 +415,7 @@ var require_observe = __commonJS({
                 }
                 return t;
             }
-            function buildDefaultConfiguration(e) {
+            function buildDefaultConfiguration(e = null) {
                 _configuration = Data.getDefaultObject(e, {});
                 _configuration.safeMode = Data.getDefaultBoolean(_configuration.safeMode, true);
                 _configuration.domElementTypes = Data.getDefaultStringOrArray(_configuration.domElementTypes, [ "*" ]);
@@ -548,7 +548,19 @@ var require_observe = __commonJS({
                     return "1.0.0";
                 }
             };
-            (() => {})();
+            (() => {
+                buildDefaultConfiguration();
+                document.addEventListener("DOMContentLoaded", (function() {
+                    collectDOMObjects();
+                }));
+                window.addEventListener("pagehide", (function() {
+                    _watches_Cancel = true;
+                    cancelWatchesForObjects();
+                }));
+                if (!Is.defined(window.$observe)) {
+                    window.$observe = _public;
+                }
+            })();
         })();
     }
 });
