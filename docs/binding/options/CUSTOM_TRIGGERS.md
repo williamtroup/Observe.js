@@ -7,7 +7,7 @@ Below is a list of all the custom triggers supported in the "data-observe-js" bi
 
 ## When Changes Are Detected:
 
-### options.onChange( *oldValue*, *newValue* ):
+### options.events.onChange( *oldValue*, *newValue* ):
 Fires when a change has been detected in an object.
 <br>
 ***Parameter:*** oldValue: '*object*' - The old value for the object.
@@ -15,7 +15,7 @@ Fires when a change has been detected in an object.
 ***Parameter:*** newValue: '*object*' - The new value for the object.
 <br>
 
-### options.onPropertyChange( *propertyName*, *oldValue*, *newValue* ):
+### options.events.onPropertyChange( *propertyName*, *oldValue*, *newValue* ):
 Fires when a change has been detected in an object (states which property changed).
 <br>
 ***Parameter:*** propertyName: '*string*' - The name of the property that has been changed.
@@ -25,19 +25,19 @@ Fires when a change has been detected in an object (states which property change
 ***Parameter:*** newValue: '*object*' - The new value.
 <br>
 
-### options.onCancel( *id* ):
+### options.events.onCancel( *id* ):
 Fires when a watch has been cancelled.
 <br>
 ***Parameter:*** id: '*string*' - The ID of the watch that has been cancelled.
 <br>
 
-### options.onRemove( *id* ):
+### options.events.onRemove( *id* ):
 Fires when a DOM element is no longer available in the DOM.
 <br>
 ***Parameter:*** id: '*string*' - The ID of the DOM element.
 <br>
 
-### options.onStart( *originalValue* ):
+### options.events.onStart( *originalValue* ):
 Fires when a watch is started.
 <br>
 ***Parameter:*** id: '*object*' - The object that the watch as started for.
@@ -48,7 +48,7 @@ Fires when a watch is started.
 ## Binding Example:
 
 ```markdown
-<div data-observe-js="{ 'onChange': yourCustomJsFunction }">
+<div data-observe-js="{ 'events': { 'onChange': yourCustomJsFunction } }">
     Your HTML.
 </div>
 ```
@@ -61,7 +61,9 @@ Fires when a watch is started.
 ```markdown
 <script> 
     var version = $observe.watch( yourObject, {
-        onChange: yourCustomJsFunction
+        events: {
+            onChange: yourCustomJsFunction
+        }
     } );
 </script>
 ```
