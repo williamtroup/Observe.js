@@ -15,7 +15,8 @@ import {
     type WatchOptionEvents,
     type WatchOptions,
     type Configuration,
-    type ObserveWatch } from "./ts/type";
+    type ObserveWatch, 
+    type ConfigurationText } from "./ts/type";
     
 import { Constant } from "./ts/constant";
 import { Data } from "./ts/data";
@@ -105,7 +106,7 @@ type StringToJson = {
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
 
-    function createWatch( object: any, options: any, domElementId: string ) : string {
+    function createWatch( object: any, options: any, domElementId: string = null! ) : string {
         let storageId: string = null!;
 
         if ( Is.definedObject( object ) ) {
@@ -416,6 +417,28 @@ type StringToJson = {
 
 	/*
 	 * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	 * Public API Functions:  Helpers:  Configuration
+	 * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	 */
+
+    function buildDefaultConfiguration( newConfiguration: any ) : void {
+        _configuration = Data.getDefaultObject( newConfiguration, {} as Configuration );
+        _configuration.safeMode = Data.getDefaultBoolean( _configuration.safeMode, true );
+        _configuration.domElementTypes = Data.getDefaultStringOrArray( _configuration.domElementTypes, [ "*" ] );
+
+        buildDefaultConfigurationStrings();
+    }
+
+    function buildDefaultConfigurationStrings() : void {
+        _configuration.text = Data.getDefaultObject( _configuration.text, {} as ConfigurationText );
+        _configuration.text!.objectErrorText = Data.getDefaultString( _configuration.text!.objectErrorText, "Errors in object: {{error_1}}, {{error_2}}" );
+        _configuration.text!.attributeNotValidErrorText = Data.getDefaultString( _configuration.text!.attributeNotValidErrorText, "The attribute '{{attribute_name}}' is not a valid object." );
+        _configuration.text!.attributeNotSetErrorText = Data.getDefaultString( _configuration.text!.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly." );        
+    }
+
+
+	/*
+	 * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 * Public API Functions:
 	 * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	 */
@@ -428,43 +451,131 @@ type StringToJson = {
          */
 
         watch: function ( object: any, options: WatchOptions ) : string {
-            throw new Error("Function not implemented.");
+            return createWatch( object, options );
         },
 
         cancelWatch: function ( id: string ) : boolean {
-            throw new Error("Function not implemented.");
+            let result: boolean = false;
+
+            if ( Is.definedString( id ) ) {
+                if ( _watches.hasOwnProperty( id ) ) {
+                    cancelWatchObject( id );
+        
+                    result = true;
+                } else {
+        
+                    for ( let storageId in _watches ) {
+                        if ( _watches.hasOwnProperty( storageId ) && Is.definedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                            cancelWatchObject( storageId );
+                
+                            result = true;
+                            break;
+                        }
+                    }
+                }
+            }
+    
+            return result;
         },
 
         cancelWatches: function () : PublicApi {
-            throw new Error("Function not implemented.");
+            cancelWatchesForObjects();
+
+            return _public;
         },
 
         getWatch: function ( id: string ) : ObserveWatch {
-            throw new Error("Function not implemented.");
+            let result: ObserveWatch = null!;
+
+            if ( Is.definedString( id ) ) {
+                if ( _watches.hasOwnProperty( id ) ) {
+                    result = _watches[ id ];
+                } else {
+        
+                    for ( let storageId in _watches ) {
+                        if ( _watches.hasOwnProperty( storageId ) && Is.definedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                            result = _watches[ storageId ];
+                            break;
+                        }
+                    }
+                }
+            }
+    
+            return result;
         },
 
         getWatches: function () : Record<string, ObserveWatch> {
-            throw new Error("Function not implemented.");
+            return _watches;
         },
 
         pauseWatch: function ( id: string, milliseconds: number ) : boolean {
-            throw new Error("Function not implemented.");
+            let result: boolean = false;
+
+            if ( Is.definedString( id ) && Is.definedNumber( milliseconds ) ) {
+                if ( _watches.hasOwnProperty( id ) ) {
+                    result = pauseWatchObject( id, milliseconds );
+                } else {
+        
+                    for ( let storageId in _watches ) {
+                        if ( _watches.hasOwnProperty( storageId ) && Is.definedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                            result = pauseWatchObject( storageId, milliseconds );
+                            break;
+                        }
+                    }
+                }
+            }
+    
+            return result;
         },
 
         pauseWatches: function ( milliseconds: number ) : PublicApi {
-            throw new Error("Function not implemented.");
+            if ( Is.definedNumber( milliseconds ) ) {
+                for ( let storageId in _watches ) {
+                    if ( _watches.hasOwnProperty( storageId ) ) {
+                        pauseWatchObject( storageId, milliseconds );
+                    }
+                }
+            }
+    
+            return _public;
         },
 
         resumeWatch: function ( id: string ) : boolean {
-            throw new Error("Function not implemented.");
+            let result: boolean = false;
+
+            if ( Is.definedString( id ) ) {
+                if ( _watches.hasOwnProperty( id ) ) {
+                    _watches[ id ].options.starts = null!;
+                    result = true;
+                } else {
+        
+                    for ( let storageId in _watches ) {
+                        if ( _watches.hasOwnProperty( storageId ) && Is.definedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                            _watches[ storageId ].options.starts = null!;
+                            result = true;
+                            break;
+                        }
+                    }
+                }
+            }
+    
+            return result;
         },
 
         resumeWatches: function () : PublicApi {
-            throw new Error("Function not implemented.");
+            for ( let storageId in _watches ) {
+                if ( _watches.hasOwnProperty( storageId ) ) {
+                    _watches[ storageId ].options.starts = null!;
+                }
+            }
+    
+            return _public;
         },
 
         searchDomForNewWatches: function () : PublicApi {
-            throw new Error("Function not implemented.");
+            collectDOMObjects();
+
+            return _public;
         },
 
 
@@ -474,8 +585,24 @@ type StringToJson = {
          * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
          */
 
-        setConfiguration: function ( configuration: any ) : PublicApi {
-            throw new Error("Function not implemented.");
+        setConfiguration: function ( newConfiguration: any ) : PublicApi {
+            if ( Is.definedObject( newConfiguration ) ) {
+                let configurationHasChanged: boolean = false;
+                const newInternalConfiguration: any = _configuration;
+            
+                for ( let propertyName in newConfiguration ) {
+                    if ( newConfiguration.hasOwnProperty( propertyName ) && _configuration.hasOwnProperty( propertyName ) && newInternalConfiguration[ propertyName ] !== newConfiguration[ propertyName ] ) {
+                        newInternalConfiguration[ propertyName ] = newConfiguration[ propertyName ];
+                        configurationHasChanged = true;
+                    }
+                }
+        
+                if ( configurationHasChanged ) {
+                    buildDefaultConfiguration( newInternalConfiguration );
+                }
+            }
+    
+            return _public;
         },
 
 
@@ -486,7 +613,7 @@ type StringToJson = {
          */
 
         getVersion: function () : string {
-            throw new Error("Function not implemented.");
+            return "1.0.0";
         }
     };
 

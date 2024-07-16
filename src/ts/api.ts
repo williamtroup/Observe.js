@@ -163,7 +163,7 @@ export type PublicApi = {
 	 *
 	 * @returns     {Object}                                                The Observe.js class instance.
 	 */
-	setConfiguration: ( configuration: any ) => PublicApi;
+	setConfiguration: ( newConfiguration: any ) => PublicApi;
 
 
     /*
