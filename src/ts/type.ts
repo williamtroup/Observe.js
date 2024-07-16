@@ -14,6 +14,7 @@
 export type Configuration = {
     safeMode?: boolean;
     domElementTypes?: string[] | string;
+    text?: ConfigurationText;
 };
 
 export type ConfigurationText = {
