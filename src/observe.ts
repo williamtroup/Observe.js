@@ -10,10 +10,12 @@
  * @copyright   Bunoon 2024
  */
 
+
+import { type WatchOptionEvents, type WatchOptions, type Configuration } from "./ts/type";
+import { Constant } from "./ts/constant";
 import { Data } from "./ts/data";
 import { Char } from "./ts/enum";
 import { Is } from "./ts/is";
-import { type WatchOptionEvents, type WatchOptions, type Configuration } from "./ts/type";
 
 
 type StringToJson = {
@@ -38,6 +40,66 @@ type ObserveWatch = {
     // Variables: Watches
     const _watches: Record<string, ObserveWatch> = {} as Record<string, ObserveWatch>;
     let _watches_Cancel: boolean = false;
+
+
+    /*
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     * Observable DOM Object Creation / Handling
+     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+     */
+
+    function collectDOMObjects() : void {
+        const tagTypes: string[] = _configuration.domElementTypes as string[];
+        const tagTypesLength: number = tagTypes.length;
+
+        for ( let tagTypeIndex: number = 0; tagTypeIndex < tagTypesLength; tagTypeIndex++ ) {
+            const domElements: HTMLCollectionOf<Element> = document.getElementsByTagName( tagTypes[ tagTypeIndex ] );
+            const elements: HTMLElement[] = [].slice.call( domElements );
+            const elementsLength: number = elements.length;
+
+            for ( let elementIndex: number = 0; elementIndex < elementsLength; elementIndex++ ) {
+                if ( !collectDOMObject( elements[ elementIndex ] ) ) {
+                    break;
+                }
+            }
+        }
+    }
+
+    function collectDOMObject( element: HTMLElement ) : boolean {
+        let result: boolean = true;
+
+        if ( Is.defined( element ) && element.hasAttribute( Constant.OBSERVE_JS_ATTRIBUTE_NAME ) ) {
+            const bindingOptionsData: string = element.getAttribute( Constant.OBSERVE_JS_ATTRIBUTE_NAME )!;
+
+            if ( Is.definedString( bindingOptionsData ) ) {
+                const watchOptionsJson: StringToJson = getObjectFromString( bindingOptionsData );
+
+                if ( watchOptionsJson.parsed && Is.definedObject( watchOptionsJson.object ) ) {
+                    const watchOptions: WatchOptions = getWatchOptions( watchOptionsJson.object );
+
+                    if ( !Is.definedString( element.id ) ) {
+                        element.id = Data.String.newGuid();
+                    }
+
+                    if ( watchOptions.removeAttribute ) {
+                        element.removeAttribute( Constant.OBSERVE_JS_ATTRIBUTE_NAME );
+                    }
+
+                    createWatch( element, watchOptions, element.id );
+
+                } else {
+                    logError( _configuration.text!.attributeNotValidErrorText!.replace( "{{attribute_name}}", Constant.OBSERVE_JS_ATTRIBUTE_NAME ) );
+                    result = false;
+                }
+
+            } else {
+                logError( _configuration.text!.attributeNotSetErrorText!.replace( "{{attribute_name}}", Constant.OBSERVE_JS_ATTRIBUTE_NAME ) );
+                result = false;
+            }
+        }
+
+        return result;
+    }
 
 
     /*

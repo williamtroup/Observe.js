@@ -10,6 +10,17 @@ var __commonJS = (e, t) => function n() {
     }).exports, t), t.exports;
 };
 
+var Constant;
+
+var init_constant = __esm({
+    "src/ts/constant.ts"() {
+        "use strict";
+        (e => {
+            e.OBSERVE_JS_ATTRIBUTE_NAME = "data-observe-js";
+        })(Constant || (Constant = {}));
+    }
+});
+
 var init_enum = __esm({
     "src/ts/enum.ts"() {
         "use strict";
@@ -135,6 +146,7 @@ var init_data = __esm({
 
 var require_observe = __commonJS({
     "src/observe.ts"(exports, module) {
+        init_constant();
         init_data();
         init_enum();
         init_is();
@@ -142,6 +154,46 @@ var require_observe = __commonJS({
             let _configuration = {};
             const _watches = {};
             let _watches_Cancel = false;
+            function collectDOMObjects() {
+                const e = _configuration.domElementTypes;
+                const t = e.length;
+                for (let n = 0; n < t; n++) {
+                    const t = document.getElementsByTagName(e[n]);
+                    const r = [].slice.call(t);
+                    const o = r.length;
+                    for (let e = 0; e < o; e++) {
+                        if (!collectDOMObject(r[e])) {
+                            break;
+                        }
+                    }
+                }
+            }
+            function collectDOMObject(e) {
+                let t = true;
+                if (Is.defined(e) && e.hasAttribute(Constant.OBSERVE_JS_ATTRIBUTE_NAME)) {
+                    const n = e.getAttribute(Constant.OBSERVE_JS_ATTRIBUTE_NAME);
+                    if (Is.definedString(n)) {
+                        const r = getObjectFromString(n);
+                        if (r.parsed && Is.definedObject(r.object)) {
+                            const t = getWatchOptions(r.object);
+                            if (!Is.definedString(e.id)) {
+                                e.id = Data.String.newGuid();
+                            }
+                            if (t.removeAttribute) {
+                                e.removeAttribute(Constant.OBSERVE_JS_ATTRIBUTE_NAME);
+                            }
+                            createWatch(e, t, e.id);
+                        } else {
+                            logError(_configuration.text.attributeNotValidErrorText.replace("{{attribute_name}}", Constant.OBSERVE_JS_ATTRIBUTE_NAME));
+                            t = false;
+                        }
+                    } else {
+                        logError(_configuration.text.attributeNotSetErrorText.replace("{{attribute_name}}", Constant.OBSERVE_JS_ATTRIBUTE_NAME));
+                        t = false;
+                    }
+                }
+                return t;
+            }
             function createWatch(e, t, n) {
                 let r = null;
                 if (Is.definedObject(e)) {
