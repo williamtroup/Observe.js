@@ -1,7 +1,7 @@
 # Observe.js - Change Log:
 
 ## Version 1.0.1:
-- 
+- Updated to the latest NPM packages.
 
 <br>
 
