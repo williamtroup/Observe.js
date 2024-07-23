@@ -17,12 +17,13 @@ import {
     type Configuration,
     type ObserveWatch, 
     type ConfigurationText } from "./ts/type";
-    
-import { Constant } from "./ts/constant";
-import { Data } from "./ts/data";
-import { Char } from "./ts/enum";
-import { Is } from "./ts/is";
+
 import { type PublicApi } from "./ts/api";
+import { Constant } from "./ts/constant";
+import { Default } from "./ts/data/default";
+import { Char } from "./ts/data/enum";
+import { Is } from "./ts/data/is";
+import { Str } from "./ts/data/str";
 
 
 type StringToJson = {
@@ -76,7 +77,7 @@ type StringToJson = {
                     const watchOptions: WatchOptions = getWatchOptions( watchOptionsJson.object );
 
                     if ( !Is.definedString( element.id ) ) {
-                        element.id = Data.String.newGuid();
+                        element.id = Str.newGuid();
                     }
 
                     if ( watchOptions.removeAttribute ) {
@@ -110,7 +111,7 @@ type StringToJson = {
         let storageId: string = null!;
 
         if ( Is.definedObject( object ) ) {
-            storageId = Data.String.newGuid();
+            storageId = Str.newGuid();
 
             const watchOptions: WatchOptions = getWatchOptions( options );
             const watch: ObserveWatch = {} as ObserveWatch;
@@ -321,19 +322,19 @@ type StringToJson = {
      */
 
     function getWatchOptions( newOptions: any ) : WatchOptions {
-        let options: WatchOptions = Data.getDefaultObject( newOptions, {} as WatchOptions );
+        let options: WatchOptions = Default.getObject( newOptions, {} as WatchOptions );
 
-        options.timeout = Data.getDefaultNumber( options.timeout, 250 );
-        options.starts = Data.getDefaultDate( options.starts, null! );
-        options.expires = Data.getDefaultDate( options.expires, null! );
-        options.reset = Data.getDefaultBoolean( options.reset, false );
-        options.cancelOnChange = Data.getDefaultBoolean( options.cancelOnChange, false );
-        options.maximumChangesBeforeCanceling = Data.getDefaultNumber( options.maximumChangesBeforeCanceling, 0 );
-        options.pauseTimeoutOnChange = Data.getDefaultNumber( options.pauseTimeoutOnChange, 0 );
-        options.propertyNames = Data.getDefaultArray( options.propertyNames, null! );
-        options.allowCanceling = Data.getDefaultBoolean( options.allowCanceling, true );
-        options.allowPausing = Data.getDefaultBoolean( options.allowPausing, true );
-        options.removeAttribute = Data.getDefaultBoolean( options.removeAttribute, true );
+        options.timeout = Default.getNumber( options.timeout, 250 );
+        options.starts = Default.getDate( options.starts, null! );
+        options.expires = Default.getDate( options.expires, null! );
+        options.reset = Default.getBoolean( options.reset, false );
+        options.cancelOnChange = Default.getBoolean( options.cancelOnChange, false );
+        options.maximumChangesBeforeCanceling = Default.getNumber( options.maximumChangesBeforeCanceling, 0 );
+        options.pauseTimeoutOnChange = Default.getNumber( options.pauseTimeoutOnChange, 0 );
+        options.propertyNames = Default.getArray( options.propertyNames, null! );
+        options.allowCanceling = Default.getBoolean( options.allowCanceling, true );
+        options.allowPausing = Default.getBoolean( options.allowPausing, true );
+        options.removeAttribute = Default.getBoolean( options.removeAttribute, true );
 
         options = getWatchOptionsCustomTriggers( options );
 
@@ -341,12 +342,12 @@ type StringToJson = {
     }
 
     function getWatchOptionsCustomTriggers( options: WatchOptions ) : WatchOptions {
-        options.events = Data.getDefaultObject( options.events, {} as WatchOptionEvents );
-        options.events!.onChange = Data.getDefaultFunction( options.events!.onChange, null! );
-        options.events!.onPropertyChange = Data.getDefaultFunction( options.events!.onPropertyChange, null! );
-        options.events!.onCancel = Data.getDefaultFunction( options.events!.onCancel, null! );
-        options.events!.onRemove = Data.getDefaultFunction( options.events!.onRemove, null! );
-        options.events!.onStart = Data.getDefaultFunction( options.events!.onStart, null! );
+        options.events = Default.getObject( options.events, {} as WatchOptionEvents );
+        options.events!.onChange = Default.getFunction( options.events!.onChange, null! );
+        options.events!.onPropertyChange = Default.getFunction( options.events!.onPropertyChange, null! );
+        options.events!.onCancel = Default.getFunction( options.events!.onCancel, null! );
+        options.events!.onRemove = Default.getFunction( options.events!.onRemove, null! );
+        options.events!.onStart = Default.getFunction( options.events!.onStart, null! );
 
         return options;
     }
@@ -422,18 +423,18 @@ type StringToJson = {
 	 */
 
     function buildDefaultConfiguration( newConfiguration: any = null ) : void {
-        _configuration = Data.getDefaultObject( newConfiguration, {} as Configuration );
-        _configuration.safeMode = Data.getDefaultBoolean( _configuration.safeMode, true );
-        _configuration.domElementTypes = Data.getDefaultStringOrArray( _configuration.domElementTypes, [ "*" ] );
+        _configuration = Default.getObject( newConfiguration, {} as Configuration );
+        _configuration.safeMode = Default.getBoolean( _configuration.safeMode, true );
+        _configuration.domElementTypes = Default.getStringOrArray( _configuration.domElementTypes, [ "*" ] );
 
         buildDefaultConfigurationStrings();
     }
 
     function buildDefaultConfigurationStrings() : void {
-        _configuration.text = Data.getDefaultObject( _configuration.text, {} as ConfigurationText );
-        _configuration.text!.objectErrorText = Data.getDefaultString( _configuration.text!.objectErrorText, "Errors in object: {{error_1}}, {{error_2}}" );
-        _configuration.text!.attributeNotValidErrorText = Data.getDefaultString( _configuration.text!.attributeNotValidErrorText, "The attribute '{{attribute_name}}' is not a valid object." );
-        _configuration.text!.attributeNotSetErrorText = Data.getDefaultString( _configuration.text!.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly." );        
+        _configuration.text = Default.getObject( _configuration.text, {} as ConfigurationText );
+        _configuration.text!.objectErrorText = Default.getString( _configuration.text!.objectErrorText, "Errors in object: {{error_1}}, {{error_2}}" );
+        _configuration.text!.attributeNotValidErrorText = Default.getString( _configuration.text!.attributeNotValidErrorText, "The attribute '{{attribute_name}}' is not a valid object." );
+        _configuration.text!.attributeNotSetErrorText = Default.getString( _configuration.text!.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly." );        
     }
 
 

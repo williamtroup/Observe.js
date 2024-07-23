@@ -22,7 +22,7 @@ var init_constant = __esm({
 });
 
 var init_enum = __esm({
-    "src/ts/enum.ts"() {
+    "src/ts/data/enum.ts"() {
         "use strict";
     }
 });
@@ -30,7 +30,7 @@ var init_enum = __esm({
 var Is;
 
 var init_is = __esm({
-    "src/ts/is.ts"() {
+    "src/ts/data/is.ts"() {
         "use strict";
         init_enum();
         (e => {
@@ -46,18 +46,18 @@ var init_is = __esm({
                 return t(e) && typeof e === "boolean";
             }
             e.definedBoolean = r;
-            function a(e) {
+            function o(e) {
                 return t(e) && typeof e === "string";
             }
-            e.definedString = a;
-            function o(e) {
+            e.definedString = o;
+            function i(e) {
                 return t(e) && typeof e === "function";
             }
-            e.definedFunction = o;
-            function i(e) {
+            e.definedFunction = i;
+            function a(e) {
                 return t(e) && typeof e === "number";
             }
-            e.definedNumber = i;
+            e.definedNumber = a;
             function s(e) {
                 return n(e) && e instanceof Array;
             }
@@ -70,62 +70,47 @@ var init_is = __esm({
     }
 });
 
-var Data;
+var Default;
 
-var init_data = __esm({
-    "src/ts/data.ts"() {
+var init_default = __esm({
+    "src/ts/data/default.ts"() {
         "use strict";
         init_enum();
         init_is();
         (e => {
-            let t;
-            (e => {
-                function t() {
-                    const e = [];
-                    for (let t = 0; t < 32; t++) {
-                        if (t === 8 || t === 12 || t === 16 || t === 20) {
-                            e.push("-");
-                        }
-                        const n = Math.floor(Math.random() * 16).toString(16);
-                        e.push(n);
-                    }
-                    return e.join("");
-                }
-                e.newGuid = t;
-            })(t = e.String || (e.String = {}));
-            function n(e, t) {
+            function t(e, t) {
                 return typeof e === "string" ? e : t;
             }
-            e.getDefaultAnyString = n;
-            function r(e, t) {
+            e.getAnyString = t;
+            function n(e, t) {
                 return Is.definedString(e) ? e : t;
             }
-            e.getDefaultString = r;
-            function a(e, t) {
+            e.getString = n;
+            function r(e, t) {
                 return Is.definedBoolean(e) ? e : t;
             }
-            e.getDefaultBoolean = a;
+            e.getBoolean = r;
             function o(e, t) {
                 return Is.definedNumber(e) ? e : t;
             }
-            e.getDefaultNumber = o;
+            e.getNumber = o;
             function i(e, t) {
                 return Is.definedFunction(e) ? e : t;
             }
-            e.getDefaultFunction = i;
-            function s(e, t) {
+            e.getFunction = i;
+            function a(e, t) {
                 return Is.definedArray(e) ? e : t;
             }
-            e.getDefaultArray = s;
-            function c(e, t) {
+            e.getArray = a;
+            function s(e, t) {
                 return Is.definedObject(e) ? e : t;
             }
-            e.getDefaultObject = c;
-            function u(e, t) {
+            e.getObject = s;
+            function c(e, t) {
                 return Is.definedDate(e) ? e : t;
             }
-            e.getDefaultDate = u;
-            function f(e, t) {
+            e.getDate = c;
+            function u(e, t) {
                 let n = t;
                 if (Is.definedString(e)) {
                     const r = e.toString().split("space");
@@ -135,21 +120,45 @@ var init_data = __esm({
                         n = r;
                     }
                 } else {
-                    n = s(e, t);
+                    n = a(e, t);
                 }
                 return n;
             }
-            e.getDefaultStringOrArray = f;
-        })(Data || (Data = {}));
+            e.getStringOrArray = u;
+        })(Default || (Default = {}));
+    }
+});
+
+var Str;
+
+var init_str = __esm({
+    "src/ts/data/str.ts"() {
+        "use strict";
+        init_enum();
+        (e => {
+            function t() {
+                const e = [];
+                for (let t = 0; t < 32; t++) {
+                    if (t === 8 || t === 12 || t === 16 || t === 20) {
+                        e.push("-");
+                    }
+                    const n = Math.floor(Math.random() * 16).toString(16);
+                    e.push(n);
+                }
+                return e.join("");
+            }
+            e.newGuid = t;
+        })(Str || (Str = {}));
     }
 });
 
 var require_observe = __commonJS({
     "src/observe.ts"(exports, module) {
         init_constant();
-        init_data();
+        init_default();
         init_enum();
         init_is();
+        init_str();
         (() => {
             let _configuration = {};
             const _watches = {};
@@ -160,8 +169,8 @@ var require_observe = __commonJS({
                 for (let n = 0; n < t; n++) {
                     const t = document.getElementsByTagName(e[n]);
                     const r = [].slice.call(t);
-                    const a = r.length;
-                    for (let e = 0; e < a; e++) {
+                    const o = r.length;
+                    for (let e = 0; e < o; e++) {
                         if (!collectDOMObject(r[e])) {
                             break;
                         }
@@ -177,7 +186,7 @@ var require_observe = __commonJS({
                         if (r.parsed && Is.definedObject(r.object)) {
                             const t = getWatchOptions(r.object);
                             if (!Is.definedString(e.id)) {
-                                e.id = Data.String.newGuid();
+                                e.id = Str.newGuid();
                             }
                             if (t.removeAttribute) {
                                 e.removeAttribute(Constant.OBSERVE_JS_ATTRIBUTE_NAME);
@@ -197,31 +206,31 @@ var require_observe = __commonJS({
             function createWatch(e, t, n = null) {
                 let r = null;
                 if (Is.definedObject(e)) {
-                    r = Data.String.newGuid();
-                    const a = getWatchOptions(t);
-                    const o = {};
-                    let i = null;
-                    o.options = a;
-                    o.totalChanges = 0;
+                    r = Str.newGuid();
+                    const o = getWatchOptions(t);
+                    const i = {};
+                    let a = null;
+                    i.options = o;
+                    i.totalChanges = 0;
                     if (Is.definedString(n)) {
                         const e = document.getElementById(n);
                         if (Is.defined(e)) {
-                            o.domElementId = n;
-                            o.cachedObject = e.outerHTML;
-                            o.originalObject = e.outerHTML;
-                            i = e.outerHTML;
+                            i.domElementId = n;
+                            i.cachedObject = e.outerHTML;
+                            i.originalObject = e.outerHTML;
+                            a = e.outerHTML;
                         }
                     } else {
-                        o.cachedObject = JSON.stringify(e);
-                        o.originalObject = e;
-                        i = e;
+                        i.cachedObject = JSON.stringify(e);
+                        i.originalObject = e;
+                        a = e;
                     }
-                    if (Is.defined(o.cachedObject)) {
-                        fireCustomTriggerEvent(o.options.events.onStart, i);
-                        o.timer = setInterval((function() {
-                            watchTimer(a, r);
-                        }), a.timeout);
-                        _watches[r] = o;
+                    if (Is.defined(i.cachedObject)) {
+                        fireCustomTriggerEvent(i.options.events.onStart, a);
+                        i.timer = setInterval((function() {
+                            watchTimer(o, r);
+                        }), o.timeout);
+                        _watches[r] = i;
                     }
                 }
                 return r;
@@ -249,24 +258,24 @@ var require_observe = __commonJS({
                             fireCustomTriggerEvent(t.options.events.onRemove, t.domElementId);
                         }
                     }
-                    const a = t.cachedObject;
-                    const o = t.originalObject;
-                    const i = !n ? JSON.stringify(o) : o;
-                    if (a !== i) {
+                    const o = t.cachedObject;
+                    const i = t.originalObject;
+                    const a = !n ? JSON.stringify(i) : i;
+                    if (o !== a) {
                         if (t.options.reset) {
                             if (n) {
                                 r.outerHTML = t.cachedObject;
                             } else {
-                                t.originalObject = getObjectFromString(a).object;
+                                t.originalObject = getObjectFromString(o).object;
                             }
                         } else {
-                            t.cachedObject = i;
+                            t.cachedObject = a;
                         }
                         if (n) {
-                            fireCustomTriggerEvent(t.options.events.onChange, a, i);
+                            fireCustomTriggerEvent(t.options.events.onChange, o, a);
                         } else {
-                            const e = getObjectFromString(a).object;
-                            const n = getObjectFromString(i).object;
+                            const e = getObjectFromString(o).object;
+                            const n = getObjectFromString(a).object;
                             if (!Is.definedArray(e) && !Is.definedArray(n)) {
                                 compareWatchObject(e, n, t);
                                 if (Is.definedFunction(t.options.events.onPropertyChange)) {
@@ -292,8 +301,8 @@ var require_observe = __commonJS({
             function compareWatchObject(e, t, n) {
                 if (Is.definedArray(n.options.propertyNames)) {
                     const r = n.options.propertyNames.length;
-                    for (let a = 0; a < r; a++) {
-                        const r = n.options.propertyNames[a];
+                    for (let o = 0; o < r; o++) {
+                        const r = n.options.propertyNames[o];
                         if (e[r] !== t[r]) {
                             fireCustomTriggerEvent(n.options.events.onChange, e, t);
                             break;
@@ -306,17 +315,17 @@ var require_observe = __commonJS({
             function compareWatchObjectProperties(e, t, n) {
                 for (let r in e) {
                     if (e.hasOwnProperty(r)) {
-                        const a = e[r];
-                        let o = null;
+                        const o = e[r];
+                        let i = null;
                         if (t.hasOwnProperty(r)) {
-                            o = t[r];
+                            i = t[r];
                         }
-                        if (Is.definedObject(a) && Is.definedObject(o)) {
-                            compareWatchObjectProperties(a, o, n);
+                        if (Is.definedObject(o) && Is.definedObject(i)) {
+                            compareWatchObjectProperties(o, i, n);
                         } else {
                             if (!Is.definedArray(n.options.propertyNames) || n.options.propertyNames.indexOf(r) > -1) {
-                                if (JSON.stringify(a) !== JSON.stringify(o)) {
-                                    fireCustomTriggerEvent(n.options.events.onPropertyChange, r, a, o);
+                                if (JSON.stringify(o) !== JSON.stringify(i)) {
+                                    fireCustomTriggerEvent(n.options.events.onPropertyChange, r, o, i);
                                 }
                             }
                         }
@@ -353,28 +362,28 @@ var require_observe = __commonJS({
                 return n;
             }
             function getWatchOptions(e) {
-                let t = Data.getDefaultObject(e, {});
-                t.timeout = Data.getDefaultNumber(t.timeout, 250);
-                t.starts = Data.getDefaultDate(t.starts, null);
-                t.expires = Data.getDefaultDate(t.expires, null);
-                t.reset = Data.getDefaultBoolean(t.reset, false);
-                t.cancelOnChange = Data.getDefaultBoolean(t.cancelOnChange, false);
-                t.maximumChangesBeforeCanceling = Data.getDefaultNumber(t.maximumChangesBeforeCanceling, 0);
-                t.pauseTimeoutOnChange = Data.getDefaultNumber(t.pauseTimeoutOnChange, 0);
-                t.propertyNames = Data.getDefaultArray(t.propertyNames, null);
-                t.allowCanceling = Data.getDefaultBoolean(t.allowCanceling, true);
-                t.allowPausing = Data.getDefaultBoolean(t.allowPausing, true);
-                t.removeAttribute = Data.getDefaultBoolean(t.removeAttribute, true);
+                let t = Default.getObject(e, {});
+                t.timeout = Default.getNumber(t.timeout, 250);
+                t.starts = Default.getDate(t.starts, null);
+                t.expires = Default.getDate(t.expires, null);
+                t.reset = Default.getBoolean(t.reset, false);
+                t.cancelOnChange = Default.getBoolean(t.cancelOnChange, false);
+                t.maximumChangesBeforeCanceling = Default.getNumber(t.maximumChangesBeforeCanceling, 0);
+                t.pauseTimeoutOnChange = Default.getNumber(t.pauseTimeoutOnChange, 0);
+                t.propertyNames = Default.getArray(t.propertyNames, null);
+                t.allowCanceling = Default.getBoolean(t.allowCanceling, true);
+                t.allowPausing = Default.getBoolean(t.allowPausing, true);
+                t.removeAttribute = Default.getBoolean(t.removeAttribute, true);
                 t = getWatchOptionsCustomTriggers(t);
                 return t;
             }
             function getWatchOptionsCustomTriggers(e) {
-                e.events = Data.getDefaultObject(e.events, {});
-                e.events.onChange = Data.getDefaultFunction(e.events.onChange, null);
-                e.events.onPropertyChange = Data.getDefaultFunction(e.events.onPropertyChange, null);
-                e.events.onCancel = Data.getDefaultFunction(e.events.onCancel, null);
-                e.events.onRemove = Data.getDefaultFunction(e.events.onRemove, null);
-                e.events.onStart = Data.getDefaultFunction(e.events.onStart, null);
+                e.events = Default.getObject(e.events, {});
+                e.events.onChange = Default.getFunction(e.events.onChange, null);
+                e.events.onPropertyChange = Default.getFunction(e.events.onPropertyChange, null);
+                e.events.onCancel = Default.getFunction(e.events.onCancel, null);
+                e.events.onRemove = Default.getFunction(e.events.onRemove, null);
+                e.events.onStart = Default.getFunction(e.events.onStart, null);
                 return e;
             }
             function fireCustomTriggerEvent(e, ...t) {
@@ -416,16 +425,16 @@ var require_observe = __commonJS({
                 return t;
             }
             function buildDefaultConfiguration(e = null) {
-                _configuration = Data.getDefaultObject(e, {});
-                _configuration.safeMode = Data.getDefaultBoolean(_configuration.safeMode, true);
-                _configuration.domElementTypes = Data.getDefaultStringOrArray(_configuration.domElementTypes, [ "*" ]);
+                _configuration = Default.getObject(e, {});
+                _configuration.safeMode = Default.getBoolean(_configuration.safeMode, true);
+                _configuration.domElementTypes = Default.getStringOrArray(_configuration.domElementTypes, [ "*" ]);
                 buildDefaultConfigurationStrings();
             }
             function buildDefaultConfigurationStrings() {
-                _configuration.text = Data.getDefaultObject(_configuration.text, {});
-                _configuration.text.objectErrorText = Data.getDefaultString(_configuration.text.objectErrorText, "Errors in object: {{error_1}}, {{error_2}}");
-                _configuration.text.attributeNotValidErrorText = Data.getDefaultString(_configuration.text.attributeNotValidErrorText, "The attribute '{{attribute_name}}' is not a valid object.");
-                _configuration.text.attributeNotSetErrorText = Data.getDefaultString(_configuration.text.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly.");
+                _configuration.text = Default.getObject(_configuration.text, {});
+                _configuration.text.objectErrorText = Default.getString(_configuration.text.objectErrorText, "Errors in object: {{error_1}}, {{error_2}}");
+                _configuration.text.attributeNotValidErrorText = Default.getString(_configuration.text.attributeNotValidErrorText, "The attribute '{{attribute_name}}' is not a valid object.");
+                _configuration.text.attributeNotSetErrorText = Default.getString(_configuration.text.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly.");
             }
             const _public = {
                 watch: function(e, t) {

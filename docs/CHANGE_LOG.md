@@ -2,6 +2,7 @@
 
 ## Version 1.0.1:
 - Updated to the latest NPM packages.
+- Organized all of the .ts files into separate folders.
 
 <br>
 
