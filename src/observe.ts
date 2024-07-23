@@ -4,7 +4,7 @@
  * A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.
  * 
  * @file        observe.ts
- * @version     v1.0.0
+ * @version     v1.0.1
  * @author      Bunoon
  * @license     MIT License
  * @copyright   Bunoon 2024
@@ -12,17 +12,18 @@
 
 
 import {
-    type WatchOptionEvents,
     type WatchOptions,
     type Configuration,
-    type ObserveWatch, 
-    type ConfigurationText } from "./ts/type";
-    
-import { Constant } from "./ts/constant";
-import { Data } from "./ts/data";
-import { Char } from "./ts/enum";
-import { Is } from "./ts/is";
+    type ObserveWatch } from "./ts/type";
+
 import { type PublicApi } from "./ts/api";
+import { Constant } from "./ts/constant";
+import { Char } from "./ts/data/enum";
+import { Is } from "./ts/data/is";
+import { Str } from "./ts/data/str";
+import { Config } from "./ts/options/config";
+import { Watch } from "./ts/options/watch";
+import { Trigger } from "./ts/area/trigger";
 
 
 type StringToJson = {
@@ -73,10 +74,10 @@ type StringToJson = {
                 const watchOptionsJson: StringToJson = getObjectFromString( bindingOptionsData );
 
                 if ( watchOptionsJson.parsed && Is.definedObject( watchOptionsJson.object ) ) {
-                    const watchOptions: WatchOptions = getWatchOptions( watchOptionsJson.object );
+                    const watchOptions: WatchOptions = Watch.Options.get( watchOptionsJson.object );
 
                     if ( !Is.definedString( element.id ) ) {
-                        element.id = Data.String.newGuid();
+                        element.id = Str.newGuid();
                     }
 
                     if ( watchOptions.removeAttribute ) {
@@ -110,9 +111,9 @@ type StringToJson = {
         let storageId: string = null!;
 
         if ( Is.definedObject( object ) ) {
-            storageId = Data.String.newGuid();
+            storageId = Str.newGuid();
 
-            const watchOptions: WatchOptions = getWatchOptions( options );
+            const watchOptions: WatchOptions = Watch.Options.get( options );
             const watch: ObserveWatch = {} as ObserveWatch;
             let startWatchObject: any = null;
 
@@ -138,7 +139,7 @@ type StringToJson = {
             }
 
             if ( Is.defined( watch.cachedObject ) ) {
-                fireCustomTriggerEvent( watch.options.events!.onStart!, startWatchObject );
+                Trigger.customEvent( watch.options.events!.onStart!, startWatchObject );
 
                 watch.timer = setInterval( function() {
                     watchTimer( watchOptions, storageId );
@@ -177,7 +178,7 @@ type StringToJson = {
                 } else {
                     watch.originalObject = Char.empty;
 
-                    fireCustomTriggerEvent( watch.options.events!.onRemove!, watch.domElementId );
+                    Trigger.customEvent( watch.options.events!.onRemove!, watch.domElementId );
                 }
             }
 
@@ -198,7 +199,7 @@ type StringToJson = {
                 }
 
                 if ( isDomElement ) {
-                    fireCustomTriggerEvent( watch.options.events!.onChange!, cachedObject, originalObjectJson );
+                    Trigger.customEvent( watch.options.events!.onChange!, cachedObject, originalObjectJson );
                 } else {
 
                     const oldValue: any = getObjectFromString( cachedObject ).object;
@@ -212,7 +213,7 @@ type StringToJson = {
                         }
                         
                     } else {
-                        fireCustomTriggerEvent( watch.options.events!.onChange!, oldValue, newValue );
+                        Trigger.customEvent( watch.options.events!.onChange!, oldValue, newValue );
                     }
                 }
 
@@ -241,13 +242,13 @@ type StringToJson = {
                 const propertyName: string = watch.options.propertyNames![ propertyNameIndex ];
 
                 if ( oldObject[ propertyName ] !== newObject[ propertyName ] ) {
-                    fireCustomTriggerEvent( watch.options.events!.onChange!, oldObject, newObject );
+                    Trigger.customEvent( watch.options.events!.onChange!, oldObject, newObject );
                     break;
                 }
             }
 
         } else {
-            fireCustomTriggerEvent( watch.options.events!.onChange!, oldObject, newObject );
+            Trigger.customEvent( watch.options.events!.onChange!, oldObject, newObject );
         }
     }
 
@@ -267,7 +268,7 @@ type StringToJson = {
 
                     if ( !Is.definedArray( watch.options.propertyNames ) || watch.options.propertyNames!.indexOf( propertyName ) > -1 ) {
                         if ( JSON.stringify( propertyOldValue ) !== JSON.stringify( propertyNewValue ) ) {
-                            fireCustomTriggerEvent( watch.options.events!.onPropertyChange!, propertyName, propertyOldValue, propertyNewValue );
+                            Trigger.customEvent( watch.options.events!.onPropertyChange!, propertyName, propertyOldValue, propertyNewValue );
                         }
                     }
                 }
@@ -288,7 +289,7 @@ type StringToJson = {
             const watchOptions: WatchOptions = _watches[ storageId ].options;
 
             if ( watchOptions.allowCanceling || _watches_Cancel ) {
-                fireCustomTriggerEvent( watchOptions.events!.onCancel!, storageId );
+                Trigger.customEvent( watchOptions.events!.onCancel!, storageId );
                 clearInterval( _watches[ storageId ].timer );
                 
                 delete _watches[ storageId ];
@@ -311,57 +312,6 @@ type StringToJson = {
         }
 
         return result;
-    }
-
-
-    /*
-     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     * Watch Options
-     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     */
-
-    function getWatchOptions( newOptions: any ) : WatchOptions {
-        let options: WatchOptions = Data.getDefaultObject( newOptions, {} as WatchOptions );
-
-        options.timeout = Data.getDefaultNumber( options.timeout, 250 );
-        options.starts = Data.getDefaultDate( options.starts, null! );
-        options.expires = Data.getDefaultDate( options.expires, null! );
-        options.reset = Data.getDefaultBoolean( options.reset, false );
-        options.cancelOnChange = Data.getDefaultBoolean( options.cancelOnChange, false );
-        options.maximumChangesBeforeCanceling = Data.getDefaultNumber( options.maximumChangesBeforeCanceling, 0 );
-        options.pauseTimeoutOnChange = Data.getDefaultNumber( options.pauseTimeoutOnChange, 0 );
-        options.propertyNames = Data.getDefaultArray( options.propertyNames, null! );
-        options.allowCanceling = Data.getDefaultBoolean( options.allowCanceling, true );
-        options.allowPausing = Data.getDefaultBoolean( options.allowPausing, true );
-        options.removeAttribute = Data.getDefaultBoolean( options.removeAttribute, true );
-
-        options = getWatchOptionsCustomTriggers( options );
-
-        return options;
-    }
-
-    function getWatchOptionsCustomTriggers( options: WatchOptions ) : WatchOptions {
-        options.events = Data.getDefaultObject( options.events, {} as WatchOptionEvents );
-        options.events!.onChange = Data.getDefaultFunction( options.events!.onChange, null! );
-        options.events!.onPropertyChange = Data.getDefaultFunction( options.events!.onPropertyChange, null! );
-        options.events!.onCancel = Data.getDefaultFunction( options.events!.onCancel, null! );
-        options.events!.onRemove = Data.getDefaultFunction( options.events!.onRemove, null! );
-        options.events!.onStart = Data.getDefaultFunction( options.events!.onStart, null! );
-
-        return options;
-    }
-
-
-    /*
-     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     * Triggering Custom Events
-     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     */
-
-    function fireCustomTriggerEvent( triggerFunction: Function, ...args : any[] ) : void {
-        if ( Is.definedFunction( triggerFunction ) ) {
-            triggerFunction.apply( null, [].slice.call( args, 0 ) );
-        }
     }
 
 
@@ -412,28 +362,6 @@ type StringToJson = {
         }
 
         return result;
-    }
-
-
-	/*
-	 * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	 * Public API Functions:  Helpers:  Configuration
-	 * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	 */
-
-    function buildDefaultConfiguration( newConfiguration: any = null ) : void {
-        _configuration = Data.getDefaultObject( newConfiguration, {} as Configuration );
-        _configuration.safeMode = Data.getDefaultBoolean( _configuration.safeMode, true );
-        _configuration.domElementTypes = Data.getDefaultStringOrArray( _configuration.domElementTypes, [ "*" ] );
-
-        buildDefaultConfigurationStrings();
-    }
-
-    function buildDefaultConfigurationStrings() : void {
-        _configuration.text = Data.getDefaultObject( _configuration.text, {} as ConfigurationText );
-        _configuration.text!.objectErrorText = Data.getDefaultString( _configuration.text!.objectErrorText, "Errors in object: {{error_1}}, {{error_2}}" );
-        _configuration.text!.attributeNotValidErrorText = Data.getDefaultString( _configuration.text!.attributeNotValidErrorText, "The attribute '{{attribute_name}}' is not a valid object." );
-        _configuration.text!.attributeNotSetErrorText = Data.getDefaultString( _configuration.text!.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly." );        
     }
 
 
@@ -598,7 +526,7 @@ type StringToJson = {
                 }
         
                 if ( configurationHasChanged ) {
-                    buildDefaultConfiguration( newInternalConfiguration );
+                    _configuration = Config.Options.get( newInternalConfiguration );
                 }
             }
     
@@ -613,7 +541,7 @@ type StringToJson = {
          */
 
         getVersion: function () : string {
-            return "1.0.0";
+            return "1.0.1";
         }
     };
 
@@ -625,7 +553,7 @@ type StringToJson = {
      */
 
     ( () => {
-        buildDefaultConfiguration();
+        _configuration = Config.Options.get();
 
         document.addEventListener( "DOMContentLoaded", function() {
             collectDOMObjects();

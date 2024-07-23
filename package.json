@@ -2,7 +2,7 @@
   "name": "jobserve.js",
   "title": "Observe.js",
   "description": "A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://www.william-troup.com/observe-js/",
   "author": {
     "name": "Bunoon"
@@ -43,10 +43,10 @@
     "build-typescript-minimized": "tsup --config tsup.build.min.config.ts"
   },
   "devDependencies": {
-    "@swc/core": "^1.6.13",
+    "@swc/core": "^1.7.0",
     "sass": "^1.77.8",
-    "terser": "^5.31.2",
-    "tsup": "^8.1.0",
-    "typescript": "^5.5.3"
+    "terser": "^5.31.3",
+    "tsup": "^8.2.2",
+    "typescript": "^5.5.4"
   }
 }

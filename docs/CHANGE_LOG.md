@@ -1,5 +1,13 @@
 # Observe.js - Change Log:
 
+## Version 1.0.1:
+- Updated to the latest NPM packages.
+- Organized all of the .ts files into separate folders.
+- Removed the dead JS code.
+
+<br>
+
+
 ## Version 1.0.0:
 
 #### **Language Shift:**
