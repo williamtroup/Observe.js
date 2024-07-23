@@ -545,7 +545,7 @@ var require_observe = __commonJS({
                     return _public;
                 },
                 getVersion: function() {
-                    return "1.0.0";
+                    return "1.0.1";
                 }
             };
             (() => {
