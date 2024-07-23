@@ -23,6 +23,7 @@ import { Is } from "./ts/data/is";
 import { Str } from "./ts/data/str";
 import { Config } from "./ts/options/config";
 import { Watch } from "./ts/options/watch";
+import { Trigger } from "./ts/area/trigger";
 
 
 type StringToJson = {
@@ -138,7 +139,7 @@ type StringToJson = {
             }
 
             if ( Is.defined( watch.cachedObject ) ) {
-                fireCustomTriggerEvent( watch.options.events!.onStart!, startWatchObject );
+                Trigger.customEvent( watch.options.events!.onStart!, startWatchObject );
 
                 watch.timer = setInterval( function() {
                     watchTimer( watchOptions, storageId );
@@ -177,7 +178,7 @@ type StringToJson = {
                 } else {
                     watch.originalObject = Char.empty;
 
-                    fireCustomTriggerEvent( watch.options.events!.onRemove!, watch.domElementId );
+                    Trigger.customEvent( watch.options.events!.onRemove!, watch.domElementId );
                 }
             }
 
@@ -198,7 +199,7 @@ type StringToJson = {
                 }
 
                 if ( isDomElement ) {
-                    fireCustomTriggerEvent( watch.options.events!.onChange!, cachedObject, originalObjectJson );
+                    Trigger.customEvent( watch.options.events!.onChange!, cachedObject, originalObjectJson );
                 } else {
 
                     const oldValue: any = getObjectFromString( cachedObject ).object;
@@ -212,7 +213,7 @@ type StringToJson = {
                         }
                         
                     } else {
-                        fireCustomTriggerEvent( watch.options.events!.onChange!, oldValue, newValue );
+                        Trigger.customEvent( watch.options.events!.onChange!, oldValue, newValue );
                     }
                 }
 
@@ -241,13 +242,13 @@ type StringToJson = {
                 const propertyName: string = watch.options.propertyNames![ propertyNameIndex ];
 
                 if ( oldObject[ propertyName ] !== newObject[ propertyName ] ) {
-                    fireCustomTriggerEvent( watch.options.events!.onChange!, oldObject, newObject );
+                    Trigger.customEvent( watch.options.events!.onChange!, oldObject, newObject );
                     break;
                 }
             }
 
         } else {
-            fireCustomTriggerEvent( watch.options.events!.onChange!, oldObject, newObject );
+            Trigger.customEvent( watch.options.events!.onChange!, oldObject, newObject );
         }
     }
 
@@ -267,7 +268,7 @@ type StringToJson = {
 
                     if ( !Is.definedArray( watch.options.propertyNames ) || watch.options.propertyNames!.indexOf( propertyName ) > -1 ) {
                         if ( JSON.stringify( propertyOldValue ) !== JSON.stringify( propertyNewValue ) ) {
-                            fireCustomTriggerEvent( watch.options.events!.onPropertyChange!, propertyName, propertyOldValue, propertyNewValue );
+                            Trigger.customEvent( watch.options.events!.onPropertyChange!, propertyName, propertyOldValue, propertyNewValue );
                         }
                     }
                 }
@@ -288,7 +289,7 @@ type StringToJson = {
             const watchOptions: WatchOptions = _watches[ storageId ].options;
 
             if ( watchOptions.allowCanceling || _watches_Cancel ) {
-                fireCustomTriggerEvent( watchOptions.events!.onCancel!, storageId );
+                Trigger.customEvent( watchOptions.events!.onCancel!, storageId );
                 clearInterval( _watches[ storageId ].timer );
                 
                 delete _watches[ storageId ];
@@ -311,19 +312,6 @@ type StringToJson = {
         }
 
         return result;
-    }
-
-
-    /*
-     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     * Triggering Custom Events
-     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     */
-
-    function fireCustomTriggerEvent( triggerFunction: Function, ...args : any[] ) : void {
-        if ( Is.definedFunction( triggerFunction ) ) {
-            triggerFunction.apply( null, [].slice.call( args, 0 ) );
-        }
     }
 
 

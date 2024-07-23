@@ -221,6 +221,23 @@ var init_watch = __esm({
     }
 });
 
+var Trigger;
+
+var init_trigger = __esm({
+    "src/ts/area/trigger.ts"() {
+        "use strict";
+        init_is();
+        (e => {
+            function t(e, ...t) {
+                if (Is.definedFunction(e)) {
+                    e.apply(null, [].slice.call(t, 0));
+                }
+            }
+            e.customEvent = t;
+        })(Trigger || (Trigger = {}));
+    }
+});
+
 var require_observe = __commonJS({
     "src/observe.ts"(exports, module) {
         init_constant();
@@ -229,6 +246,7 @@ var require_observe = __commonJS({
         init_str();
         init_config();
         init_watch();
+        init_trigger();
         (() => {
             let _configuration = {};
             const _watches = {};
@@ -296,7 +314,7 @@ var require_observe = __commonJS({
                         s = e;
                     }
                     if (Is.defined(i.cachedObject)) {
-                        fireCustomTriggerEvent(i.options.events.onStart, s);
+                        Trigger.customEvent(i.options.events.onStart, s);
                         i.timer = setInterval((function() {
                             watchTimer(o, r);
                         }), o.timeout);
@@ -325,7 +343,7 @@ var require_observe = __commonJS({
                             t.originalObject = r.outerHTML;
                         } else {
                             t.originalObject = "";
-                            fireCustomTriggerEvent(t.options.events.onRemove, t.domElementId);
+                            Trigger.customEvent(t.options.events.onRemove, t.domElementId);
                         }
                     }
                     const o = t.cachedObject;
@@ -342,7 +360,7 @@ var require_observe = __commonJS({
                             t.cachedObject = s;
                         }
                         if (n) {
-                            fireCustomTriggerEvent(t.options.events.onChange, o, s);
+                            Trigger.customEvent(t.options.events.onChange, o, s);
                         } else {
                             const e = getObjectFromString(o).object;
                             const n = getObjectFromString(s).object;
@@ -352,7 +370,7 @@ var require_observe = __commonJS({
                                     compareWatchObjectProperties(e, n, t);
                                 }
                             } else {
-                                fireCustomTriggerEvent(t.options.events.onChange, e, n);
+                                Trigger.customEvent(t.options.events.onChange, e, n);
                             }
                         }
                         t.totalChanges++;
@@ -374,12 +392,12 @@ var require_observe = __commonJS({
                     for (let o = 0; o < r; o++) {
                         const r = n.options.propertyNames[o];
                         if (e[r] !== t[r]) {
-                            fireCustomTriggerEvent(n.options.events.onChange, e, t);
+                            Trigger.customEvent(n.options.events.onChange, e, t);
                             break;
                         }
                     }
                 } else {
-                    fireCustomTriggerEvent(n.options.events.onChange, e, t);
+                    Trigger.customEvent(n.options.events.onChange, e, t);
                 }
             }
             function compareWatchObjectProperties(e, t, n) {
@@ -395,7 +413,7 @@ var require_observe = __commonJS({
                         } else {
                             if (!Is.definedArray(n.options.propertyNames) || n.options.propertyNames.indexOf(r) > -1) {
                                 if (JSON.stringify(o) !== JSON.stringify(i)) {
-                                    fireCustomTriggerEvent(n.options.events.onPropertyChange, r, o, i);
+                                    Trigger.customEvent(n.options.events.onPropertyChange, r, o, i);
                                 }
                             }
                         }
@@ -413,7 +431,7 @@ var require_observe = __commonJS({
                 if (_watches.hasOwnProperty(e)) {
                     const t = _watches[e].options;
                     if (t.allowCanceling || _watches_Cancel) {
-                        fireCustomTriggerEvent(t.events.onCancel, e);
+                        Trigger.customEvent(t.events.onCancel, e);
                         clearInterval(_watches[e].timer);
                         delete _watches[e];
                     }
@@ -430,11 +448,6 @@ var require_observe = __commonJS({
                     }
                 }
                 return n;
-            }
-            function fireCustomTriggerEvent(e, ...t) {
-                if (Is.definedFunction(e)) {
-                    e.apply(null, [].slice.call(t, 0));
-                }
             }
             function getObjectFromString(objectString) {
                 const result = {

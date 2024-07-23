@@ -169,6 +169,17 @@ var Watch;
     })(t = e.Options || (e.Options = {}));
 })(Watch || (Watch = {}));
 
+var Trigger;
+
+(e => {
+    function t(e, ...t) {
+        if (Is.definedFunction(e)) {
+            e.apply(null, [].slice.call(t, 0));
+        }
+    }
+    e.customEvent = t;
+})(Trigger || (Trigger = {}));
+
 (() => {
     let _configuration = {};
     const _watches = {};
@@ -236,7 +247,7 @@ var Watch;
                 a = e;
             }
             if (Is.defined(i.cachedObject)) {
-                fireCustomTriggerEvent(i.options.events.onStart, a);
+                Trigger.customEvent(i.options.events.onStart, a);
                 i.timer = setInterval((function() {
                     watchTimer(o, r);
                 }), o.timeout);
@@ -265,7 +276,7 @@ var Watch;
                     t.originalObject = r.outerHTML;
                 } else {
                     t.originalObject = "";
-                    fireCustomTriggerEvent(t.options.events.onRemove, t.domElementId);
+                    Trigger.customEvent(t.options.events.onRemove, t.domElementId);
                 }
             }
             const o = t.cachedObject;
@@ -282,7 +293,7 @@ var Watch;
                     t.cachedObject = a;
                 }
                 if (n) {
-                    fireCustomTriggerEvent(t.options.events.onChange, o, a);
+                    Trigger.customEvent(t.options.events.onChange, o, a);
                 } else {
                     const e = getObjectFromString(o).object;
                     const n = getObjectFromString(a).object;
@@ -292,7 +303,7 @@ var Watch;
                             compareWatchObjectProperties(e, n, t);
                         }
                     } else {
-                        fireCustomTriggerEvent(t.options.events.onChange, e, n);
+                        Trigger.customEvent(t.options.events.onChange, e, n);
                     }
                 }
                 t.totalChanges++;
@@ -314,12 +325,12 @@ var Watch;
             for (let o = 0; o < r; o++) {
                 const r = n.options.propertyNames[o];
                 if (e[r] !== t[r]) {
-                    fireCustomTriggerEvent(n.options.events.onChange, e, t);
+                    Trigger.customEvent(n.options.events.onChange, e, t);
                     break;
                 }
             }
         } else {
-            fireCustomTriggerEvent(n.options.events.onChange, e, t);
+            Trigger.customEvent(n.options.events.onChange, e, t);
         }
     }
     function compareWatchObjectProperties(e, t, n) {
@@ -335,7 +346,7 @@ var Watch;
                 } else {
                     if (!Is.definedArray(n.options.propertyNames) || n.options.propertyNames.indexOf(r) > -1) {
                         if (JSON.stringify(o) !== JSON.stringify(i)) {
-                            fireCustomTriggerEvent(n.options.events.onPropertyChange, r, o, i);
+                            Trigger.customEvent(n.options.events.onPropertyChange, r, o, i);
                         }
                     }
                 }
@@ -353,7 +364,7 @@ var Watch;
         if (_watches.hasOwnProperty(e)) {
             const t = _watches[e].options;
             if (t.allowCanceling || _watches_Cancel) {
-                fireCustomTriggerEvent(t.events.onCancel, e);
+                Trigger.customEvent(t.events.onCancel, e);
                 clearInterval(_watches[e].timer);
                 delete _watches[e];
             }
@@ -370,11 +381,6 @@ var Watch;
             }
         }
         return n;
-    }
-    function fireCustomTriggerEvent(e, ...t) {
-        if (Is.definedFunction(e)) {
-            e.apply(null, [].slice.call(t, 0));
-        }
     }
     function getObjectFromString(objectString) {
         const result = {
