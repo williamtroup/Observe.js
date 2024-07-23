@@ -44,7 +44,7 @@ export type WatchOptionEvents = {
     onCancel?: Function;
     onRemove?: Function;
     onStart?: Function;
-}
+};
 
 export type ObserveWatch = {
     options: WatchOptions;
