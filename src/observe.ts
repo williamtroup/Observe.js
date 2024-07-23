@@ -12,18 +12,17 @@
 
 
 import {
-    type WatchOptionEvents,
     type WatchOptions,
     type Configuration,
-    type ObserveWatch, 
-    type ConfigurationText } from "./ts/type";
+    type ObserveWatch } from "./ts/type";
 
 import { type PublicApi } from "./ts/api";
 import { Constant } from "./ts/constant";
-import { Default } from "./ts/data/default";
 import { Char } from "./ts/data/enum";
 import { Is } from "./ts/data/is";
 import { Str } from "./ts/data/str";
+import { Config } from "./ts/options/config";
+import { Watch } from "./ts/options/watch";
 
 
 type StringToJson = {
@@ -74,7 +73,7 @@ type StringToJson = {
                 const watchOptionsJson: StringToJson = getObjectFromString( bindingOptionsData );
 
                 if ( watchOptionsJson.parsed && Is.definedObject( watchOptionsJson.object ) ) {
-                    const watchOptions: WatchOptions = getWatchOptions( watchOptionsJson.object );
+                    const watchOptions: WatchOptions = Watch.Options.get( watchOptionsJson.object );
 
                     if ( !Is.definedString( element.id ) ) {
                         element.id = Str.newGuid();
@@ -113,7 +112,7 @@ type StringToJson = {
         if ( Is.definedObject( object ) ) {
             storageId = Str.newGuid();
 
-            const watchOptions: WatchOptions = getWatchOptions( options );
+            const watchOptions: WatchOptions = Watch.Options.get( options );
             const watch: ObserveWatch = {} as ObserveWatch;
             let startWatchObject: any = null;
 
@@ -317,44 +316,6 @@ type StringToJson = {
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     * Watch Options
-     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     */
-
-    function getWatchOptions( newOptions: any ) : WatchOptions {
-        let options: WatchOptions = Default.getObject( newOptions, {} as WatchOptions );
-
-        options.timeout = Default.getNumber( options.timeout, 250 );
-        options.starts = Default.getDate( options.starts, null! );
-        options.expires = Default.getDate( options.expires, null! );
-        options.reset = Default.getBoolean( options.reset, false );
-        options.cancelOnChange = Default.getBoolean( options.cancelOnChange, false );
-        options.maximumChangesBeforeCanceling = Default.getNumber( options.maximumChangesBeforeCanceling, 0 );
-        options.pauseTimeoutOnChange = Default.getNumber( options.pauseTimeoutOnChange, 0 );
-        options.propertyNames = Default.getArray( options.propertyNames, null! );
-        options.allowCanceling = Default.getBoolean( options.allowCanceling, true );
-        options.allowPausing = Default.getBoolean( options.allowPausing, true );
-        options.removeAttribute = Default.getBoolean( options.removeAttribute, true );
-
-        options = getWatchOptionsCustomTriggers( options );
-
-        return options;
-    }
-
-    function getWatchOptionsCustomTriggers( options: WatchOptions ) : WatchOptions {
-        options.events = Default.getObject( options.events, {} as WatchOptionEvents );
-        options.events!.onChange = Default.getFunction( options.events!.onChange, null! );
-        options.events!.onPropertyChange = Default.getFunction( options.events!.onPropertyChange, null! );
-        options.events!.onCancel = Default.getFunction( options.events!.onCancel, null! );
-        options.events!.onRemove = Default.getFunction( options.events!.onRemove, null! );
-        options.events!.onStart = Default.getFunction( options.events!.onStart, null! );
-
-        return options;
-    }
-
-
-    /*
-     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      * Triggering Custom Events
      * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
      */
@@ -413,28 +374,6 @@ type StringToJson = {
         }
 
         return result;
-    }
-
-
-	/*
-	 * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	 * Public API Functions:  Helpers:  Configuration
-	 * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	 */
-
-    function buildDefaultConfiguration( newConfiguration: any = null ) : void {
-        _configuration = Default.getObject( newConfiguration, {} as Configuration );
-        _configuration.safeMode = Default.getBoolean( _configuration.safeMode, true );
-        _configuration.domElementTypes = Default.getStringOrArray( _configuration.domElementTypes, [ "*" ] );
-
-        buildDefaultConfigurationStrings();
-    }
-
-    function buildDefaultConfigurationStrings() : void {
-        _configuration.text = Default.getObject( _configuration.text, {} as ConfigurationText );
-        _configuration.text!.objectErrorText = Default.getString( _configuration.text!.objectErrorText, "Errors in object: {{error_1}}, {{error_2}}" );
-        _configuration.text!.attributeNotValidErrorText = Default.getString( _configuration.text!.attributeNotValidErrorText, "The attribute '{{attribute_name}}' is not a valid object." );
-        _configuration.text!.attributeNotSetErrorText = Default.getString( _configuration.text!.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly." );        
     }
 
 
@@ -599,7 +538,7 @@ type StringToJson = {
                 }
         
                 if ( configurationHasChanged ) {
-                    buildDefaultConfiguration( newInternalConfiguration );
+                    _configuration = Config.Options.get( newInternalConfiguration );
                 }
             }
     
@@ -626,7 +565,7 @@ type StringToJson = {
      */
 
     ( () => {
-        buildDefaultConfiguration();
+        _configuration = Config.Options.get();
 
         document.addEventListener( "DOMContentLoaded", function() {
             collectDOMObjects();

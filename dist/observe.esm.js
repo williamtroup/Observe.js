@@ -54,19 +54,42 @@ var init_is = __esm({
                 return t(e) && typeof e === "function";
             }
             e.definedFunction = i;
-            function a(e) {
+            function s(e) {
                 return t(e) && typeof e === "number";
             }
-            e.definedNumber = a;
-            function s(e) {
+            e.definedNumber = s;
+            function a(e) {
                 return n(e) && e instanceof Array;
             }
-            e.definedArray = s;
+            e.definedArray = a;
             function c(e) {
                 return n(e) && e instanceof Date;
             }
             e.definedDate = c;
         })(Is || (Is = {}));
+    }
+});
+
+var Str;
+
+var init_str = __esm({
+    "src/ts/data/str.ts"() {
+        "use strict";
+        init_enum();
+        (e => {
+            function t() {
+                const e = [];
+                for (let t = 0; t < 32; t++) {
+                    if (t === 8 || t === 12 || t === 16 || t === 20) {
+                        e.push("-");
+                    }
+                    const n = Math.floor(Math.random() * 16).toString(16);
+                    e.push(n);
+                }
+                return e.join("");
+            }
+            e.newGuid = t;
+        })(Str || (Str = {}));
     }
 });
 
@@ -98,14 +121,14 @@ var init_default = __esm({
                 return Is.definedFunction(e) ? e : t;
             }
             e.getFunction = i;
-            function a(e, t) {
+            function s(e, t) {
                 return Is.definedArray(e) ? e : t;
             }
-            e.getArray = a;
-            function s(e, t) {
+            e.getArray = s;
+            function a(e, t) {
                 return Is.definedObject(e) ? e : t;
             }
-            e.getObject = s;
+            e.getObject = a;
             function c(e, t) {
                 return Is.definedDate(e) ? e : t;
             }
@@ -120,7 +143,7 @@ var init_default = __esm({
                         n = r;
                     }
                 } else {
-                    n = a(e, t);
+                    n = s(e, t);
                 }
                 return n;
             }
@@ -129,36 +152,83 @@ var init_default = __esm({
     }
 });
 
-var Str;
+var Config;
 
-var init_str = __esm({
-    "src/ts/data/str.ts"() {
+var init_config = __esm({
+    "src/ts/options/config.ts"() {
         "use strict";
-        init_enum();
+        init_default();
         (e => {
-            function t() {
-                const e = [];
-                for (let t = 0; t < 32; t++) {
-                    if (t === 8 || t === 12 || t === 16 || t === 20) {
-                        e.push("-");
-                    }
-                    const n = Math.floor(Math.random() * 16).toString(16);
-                    e.push(n);
+            let t;
+            (e => {
+                function t(e = null) {
+                    let t = Default.getObject(e, {});
+                    t.safeMode = Default.getBoolean(t.safeMode, true);
+                    t.domElementTypes = Default.getStringOrArray(t.domElementTypes, [ "*" ]);
+                    t = n(t);
+                    return t;
                 }
-                return e.join("");
-            }
-            e.newGuid = t;
-        })(Str || (Str = {}));
+                e.get = t;
+                function n(e) {
+                    e.text = Default.getObject(e.text, {});
+                    e.text.objectErrorText = Default.getString(e.text.objectErrorText, "Errors in object: {{error_1}}, {{error_2}}");
+                    e.text.attributeNotValidErrorText = Default.getString(e.text.attributeNotValidErrorText, "The attribute '{{attribute_name}}' is not a valid object.");
+                    e.text.attributeNotSetErrorText = Default.getString(e.text.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly.");
+                    return e;
+                }
+            })(t = e.Options || (e.Options = {}));
+        })(Config || (Config = {}));
+    }
+});
+
+var Watch;
+
+var init_watch = __esm({
+    "src/ts/options/watch.ts"() {
+        "use strict";
+        init_default();
+        (e => {
+            let t;
+            (e => {
+                function t(e) {
+                    let t = Default.getObject(e, {});
+                    t.timeout = Default.getNumber(t.timeout, 250);
+                    t.starts = Default.getDate(t.starts, null);
+                    t.expires = Default.getDate(t.expires, null);
+                    t.reset = Default.getBoolean(t.reset, false);
+                    t.cancelOnChange = Default.getBoolean(t.cancelOnChange, false);
+                    t.maximumChangesBeforeCanceling = Default.getNumber(t.maximumChangesBeforeCanceling, 0);
+                    t.pauseTimeoutOnChange = Default.getNumber(t.pauseTimeoutOnChange, 0);
+                    t.propertyNames = Default.getArray(t.propertyNames, null);
+                    t.allowCanceling = Default.getBoolean(t.allowCanceling, true);
+                    t.allowPausing = Default.getBoolean(t.allowPausing, true);
+                    t.removeAttribute = Default.getBoolean(t.removeAttribute, true);
+                    t = n(t);
+                    return t;
+                }
+                e.get = t;
+                function n(e) {
+                    e.events = Default.getObject(e.events, {});
+                    e.events.onChange = Default.getFunction(e.events.onChange, null);
+                    e.events.onPropertyChange = Default.getFunction(e.events.onPropertyChange, null);
+                    e.events.onCancel = Default.getFunction(e.events.onCancel, null);
+                    e.events.onRemove = Default.getFunction(e.events.onRemove, null);
+                    e.events.onStart = Default.getFunction(e.events.onStart, null);
+                    return e;
+                }
+            })(t = e.Options || (e.Options = {}));
+        })(Watch || (Watch = {}));
     }
 });
 
 var require_observe = __commonJS({
     "src/observe.ts"(exports, module) {
         init_constant();
-        init_default();
         init_enum();
         init_is();
         init_str();
+        init_config();
+        init_watch();
         (() => {
             let _configuration = {};
             const _watches = {};
@@ -184,7 +254,7 @@ var require_observe = __commonJS({
                     if (Is.definedString(n)) {
                         const r = getObjectFromString(n);
                         if (r.parsed && Is.definedObject(r.object)) {
-                            const t = getWatchOptions(r.object);
+                            const t = Watch.Options.get(r.object);
                             if (!Is.definedString(e.id)) {
                                 e.id = Str.newGuid();
                             }
@@ -207,9 +277,9 @@ var require_observe = __commonJS({
                 let r = null;
                 if (Is.definedObject(e)) {
                     r = Str.newGuid();
-                    const o = getWatchOptions(t);
+                    const o = Watch.Options.get(t);
                     const i = {};
-                    let a = null;
+                    let s = null;
                     i.options = o;
                     i.totalChanges = 0;
                     if (Is.definedString(n)) {
@@ -218,15 +288,15 @@ var require_observe = __commonJS({
                             i.domElementId = n;
                             i.cachedObject = e.outerHTML;
                             i.originalObject = e.outerHTML;
-                            a = e.outerHTML;
+                            s = e.outerHTML;
                         }
                     } else {
                         i.cachedObject = JSON.stringify(e);
                         i.originalObject = e;
-                        a = e;
+                        s = e;
                     }
                     if (Is.defined(i.cachedObject)) {
-                        fireCustomTriggerEvent(i.options.events.onStart, a);
+                        fireCustomTriggerEvent(i.options.events.onStart, s);
                         i.timer = setInterval((function() {
                             watchTimer(o, r);
                         }), o.timeout);
@@ -260,8 +330,8 @@ var require_observe = __commonJS({
                     }
                     const o = t.cachedObject;
                     const i = t.originalObject;
-                    const a = !n ? JSON.stringify(i) : i;
-                    if (o !== a) {
+                    const s = !n ? JSON.stringify(i) : i;
+                    if (o !== s) {
                         if (t.options.reset) {
                             if (n) {
                                 r.outerHTML = t.cachedObject;
@@ -269,13 +339,13 @@ var require_observe = __commonJS({
                                 t.originalObject = getObjectFromString(o).object;
                             }
                         } else {
-                            t.cachedObject = a;
+                            t.cachedObject = s;
                         }
                         if (n) {
-                            fireCustomTriggerEvent(t.options.events.onChange, o, a);
+                            fireCustomTriggerEvent(t.options.events.onChange, o, s);
                         } else {
                             const e = getObjectFromString(o).object;
-                            const n = getObjectFromString(a).object;
+                            const n = getObjectFromString(s).object;
                             if (!Is.definedArray(e) && !Is.definedArray(n)) {
                                 compareWatchObject(e, n, t);
                                 if (Is.definedFunction(t.options.events.onPropertyChange)) {
@@ -361,31 +431,6 @@ var require_observe = __commonJS({
                 }
                 return n;
             }
-            function getWatchOptions(e) {
-                let t = Default.getObject(e, {});
-                t.timeout = Default.getNumber(t.timeout, 250);
-                t.starts = Default.getDate(t.starts, null);
-                t.expires = Default.getDate(t.expires, null);
-                t.reset = Default.getBoolean(t.reset, false);
-                t.cancelOnChange = Default.getBoolean(t.cancelOnChange, false);
-                t.maximumChangesBeforeCanceling = Default.getNumber(t.maximumChangesBeforeCanceling, 0);
-                t.pauseTimeoutOnChange = Default.getNumber(t.pauseTimeoutOnChange, 0);
-                t.propertyNames = Default.getArray(t.propertyNames, null);
-                t.allowCanceling = Default.getBoolean(t.allowCanceling, true);
-                t.allowPausing = Default.getBoolean(t.allowPausing, true);
-                t.removeAttribute = Default.getBoolean(t.removeAttribute, true);
-                t = getWatchOptionsCustomTriggers(t);
-                return t;
-            }
-            function getWatchOptionsCustomTriggers(e) {
-                e.events = Default.getObject(e.events, {});
-                e.events.onChange = Default.getFunction(e.events.onChange, null);
-                e.events.onPropertyChange = Default.getFunction(e.events.onPropertyChange, null);
-                e.events.onCancel = Default.getFunction(e.events.onCancel, null);
-                e.events.onRemove = Default.getFunction(e.events.onRemove, null);
-                e.events.onStart = Default.getFunction(e.events.onStart, null);
-                return e;
-            }
             function fireCustomTriggerEvent(e, ...t) {
                 if (Is.definedFunction(e)) {
                     e.apply(null, [].slice.call(t, 0));
@@ -423,18 +468,6 @@ var require_observe = __commonJS({
                     t = false;
                 }
                 return t;
-            }
-            function buildDefaultConfiguration(e = null) {
-                _configuration = Default.getObject(e, {});
-                _configuration.safeMode = Default.getBoolean(_configuration.safeMode, true);
-                _configuration.domElementTypes = Default.getStringOrArray(_configuration.domElementTypes, [ "*" ]);
-                buildDefaultConfigurationStrings();
-            }
-            function buildDefaultConfigurationStrings() {
-                _configuration.text = Default.getObject(_configuration.text, {});
-                _configuration.text.objectErrorText = Default.getString(_configuration.text.objectErrorText, "Errors in object: {{error_1}}, {{error_2}}");
-                _configuration.text.attributeNotValidErrorText = Default.getString(_configuration.text.attributeNotValidErrorText, "The attribute '{{attribute_name}}' is not a valid object.");
-                _configuration.text.attributeNotSetErrorText = Default.getString(_configuration.text.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly.");
             }
             const _public = {
                 watch: function(e, t) {
@@ -548,7 +581,7 @@ var require_observe = __commonJS({
                             }
                         }
                         if (t) {
-                            buildDefaultConfiguration(n);
+                            _configuration = Config.Options.get(n);
                         }
                     }
                     return _public;
@@ -558,7 +591,7 @@ var require_observe = __commonJS({
                 }
             };
             (() => {
-                buildDefaultConfiguration();
+                _configuration = Config.Options.get();
                 document.addEventListener("DOMContentLoaded", (function() {
                     collectDOMObjects();
                 }));

@@ -43,6 +43,23 @@ var Is;
     e.definedDate = s;
 })(Is || (Is = {}));
 
+var Str;
+
+(e => {
+    function t() {
+        const e = [];
+        for (let t = 0; t < 32; t++) {
+            if (t === 8 || t === 12 || t === 16 || t === 20) {
+                e.push("-");
+            }
+            const n = Math.floor(Math.random() * 16).toString(16);
+            e.push(n);
+        }
+        return e.join("");
+    }
+    e.newGuid = t;
+})(Str || (Str = {}));
+
 var Default;
 
 (e => {
@@ -78,7 +95,7 @@ var Default;
         return Is.definedDate(e) ? e : t;
     }
     e.getDate = s;
-    function u(e, t) {
+    function l(e, t) {
         let n = t;
         if (Is.definedString(e)) {
             const r = e.toString().split("space");
@@ -92,25 +109,65 @@ var Default;
         }
         return n;
     }
-    e.getStringOrArray = u;
+    e.getStringOrArray = l;
 })(Default || (Default = {}));
 
-var Str;
+var Config;
 
 (e => {
-    function t() {
-        const e = [];
-        for (let t = 0; t < 32; t++) {
-            if (t === 8 || t === 12 || t === 16 || t === 20) {
-                e.push("-");
-            }
-            const n = Math.floor(Math.random() * 16).toString(16);
-            e.push(n);
+    let t;
+    (e => {
+        function t(e = null) {
+            let t = Default.getObject(e, {});
+            t.safeMode = Default.getBoolean(t.safeMode, true);
+            t.domElementTypes = Default.getStringOrArray(t.domElementTypes, [ "*" ]);
+            t = n(t);
+            return t;
         }
-        return e.join("");
-    }
-    e.newGuid = t;
-})(Str || (Str = {}));
+        e.get = t;
+        function n(e) {
+            e.text = Default.getObject(e.text, {});
+            e.text.objectErrorText = Default.getString(e.text.objectErrorText, "Errors in object: {{error_1}}, {{error_2}}");
+            e.text.attributeNotValidErrorText = Default.getString(e.text.attributeNotValidErrorText, "The attribute '{{attribute_name}}' is not a valid object.");
+            e.text.attributeNotSetErrorText = Default.getString(e.text.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly.");
+            return e;
+        }
+    })(t = e.Options || (e.Options = {}));
+})(Config || (Config = {}));
+
+var Watch;
+
+(e => {
+    let t;
+    (e => {
+        function t(e) {
+            let t = Default.getObject(e, {});
+            t.timeout = Default.getNumber(t.timeout, 250);
+            t.starts = Default.getDate(t.starts, null);
+            t.expires = Default.getDate(t.expires, null);
+            t.reset = Default.getBoolean(t.reset, false);
+            t.cancelOnChange = Default.getBoolean(t.cancelOnChange, false);
+            t.maximumChangesBeforeCanceling = Default.getNumber(t.maximumChangesBeforeCanceling, 0);
+            t.pauseTimeoutOnChange = Default.getNumber(t.pauseTimeoutOnChange, 0);
+            t.propertyNames = Default.getArray(t.propertyNames, null);
+            t.allowCanceling = Default.getBoolean(t.allowCanceling, true);
+            t.allowPausing = Default.getBoolean(t.allowPausing, true);
+            t.removeAttribute = Default.getBoolean(t.removeAttribute, true);
+            t = n(t);
+            return t;
+        }
+        e.get = t;
+        function n(e) {
+            e.events = Default.getObject(e.events, {});
+            e.events.onChange = Default.getFunction(e.events.onChange, null);
+            e.events.onPropertyChange = Default.getFunction(e.events.onPropertyChange, null);
+            e.events.onCancel = Default.getFunction(e.events.onCancel, null);
+            e.events.onRemove = Default.getFunction(e.events.onRemove, null);
+            e.events.onStart = Default.getFunction(e.events.onStart, null);
+            return e;
+        }
+    })(t = e.Options || (e.Options = {}));
+})(Watch || (Watch = {}));
 
 (() => {
     let _configuration = {};
@@ -137,7 +194,7 @@ var Str;
             if (Is.definedString(n)) {
                 const r = getObjectFromString(n);
                 if (r.parsed && Is.definedObject(r.object)) {
-                    const t = getWatchOptions(r.object);
+                    const t = Watch.Options.get(r.object);
                     if (!Is.definedString(e.id)) {
                         e.id = Str.newGuid();
                     }
@@ -160,7 +217,7 @@ var Str;
         let r = null;
         if (Is.definedObject(e)) {
             r = Str.newGuid();
-            const o = getWatchOptions(t);
+            const o = Watch.Options.get(t);
             const i = {};
             let a = null;
             i.options = o;
@@ -314,31 +371,6 @@ var Str;
         }
         return n;
     }
-    function getWatchOptions(e) {
-        let t = Default.getObject(e, {});
-        t.timeout = Default.getNumber(t.timeout, 250);
-        t.starts = Default.getDate(t.starts, null);
-        t.expires = Default.getDate(t.expires, null);
-        t.reset = Default.getBoolean(t.reset, false);
-        t.cancelOnChange = Default.getBoolean(t.cancelOnChange, false);
-        t.maximumChangesBeforeCanceling = Default.getNumber(t.maximumChangesBeforeCanceling, 0);
-        t.pauseTimeoutOnChange = Default.getNumber(t.pauseTimeoutOnChange, 0);
-        t.propertyNames = Default.getArray(t.propertyNames, null);
-        t.allowCanceling = Default.getBoolean(t.allowCanceling, true);
-        t.allowPausing = Default.getBoolean(t.allowPausing, true);
-        t.removeAttribute = Default.getBoolean(t.removeAttribute, true);
-        t = getWatchOptionsCustomTriggers(t);
-        return t;
-    }
-    function getWatchOptionsCustomTriggers(e) {
-        e.events = Default.getObject(e.events, {});
-        e.events.onChange = Default.getFunction(e.events.onChange, null);
-        e.events.onPropertyChange = Default.getFunction(e.events.onPropertyChange, null);
-        e.events.onCancel = Default.getFunction(e.events.onCancel, null);
-        e.events.onRemove = Default.getFunction(e.events.onRemove, null);
-        e.events.onStart = Default.getFunction(e.events.onStart, null);
-        return e;
-    }
     function fireCustomTriggerEvent(e, ...t) {
         if (Is.definedFunction(e)) {
             e.apply(null, [].slice.call(t, 0));
@@ -376,18 +408,6 @@ var Str;
             t = false;
         }
         return t;
-    }
-    function buildDefaultConfiguration(e = null) {
-        _configuration = Default.getObject(e, {});
-        _configuration.safeMode = Default.getBoolean(_configuration.safeMode, true);
-        _configuration.domElementTypes = Default.getStringOrArray(_configuration.domElementTypes, [ "*" ]);
-        buildDefaultConfigurationStrings();
-    }
-    function buildDefaultConfigurationStrings() {
-        _configuration.text = Default.getObject(_configuration.text, {});
-        _configuration.text.objectErrorText = Default.getString(_configuration.text.objectErrorText, "Errors in object: {{error_1}}, {{error_2}}");
-        _configuration.text.attributeNotValidErrorText = Default.getString(_configuration.text.attributeNotValidErrorText, "The attribute '{{attribute_name}}' is not a valid object.");
-        _configuration.text.attributeNotSetErrorText = Default.getString(_configuration.text.attributeNotSetErrorText, "The attribute '{{attribute_name}}' has not been set correctly.");
     }
     const _public = {
         watch: function(e, t) {
@@ -501,7 +521,7 @@ var Str;
                     }
                 }
                 if (t) {
-                    buildDefaultConfiguration(n);
+                    _configuration = Config.Options.get(n);
                 }
             }
             return _public;
@@ -511,7 +531,7 @@ var Str;
         }
     };
     (() => {
-        buildDefaultConfiguration();
+        _configuration = Config.Options.get();
         document.addEventListener("DOMContentLoaded", (function() {
             collectDOMObjects();
         }));
