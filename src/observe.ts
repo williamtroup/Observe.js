@@ -503,7 +503,7 @@ import { Log } from "./ts/area/log";
 
         document.addEventListener( "DOMContentLoaded", () => collectDOMObjects() );
 
-        window.addEventListener( "pagehide", function() {
+        window.addEventListener( "pagehide", () => {
             _watches_Cancel = true;
 
             cancelWatchesForObjects();

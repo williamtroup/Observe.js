@@ -530,7 +530,7 @@ var Trigger;
     (() => {
         e = Config.Options.get();
         document.addEventListener("DOMContentLoaded", (() => r()));
-        window.addEventListener("pagehide", (function() {
+        window.addEventListener("pagehide", (() => {
             n = true;
             l();
         }));
