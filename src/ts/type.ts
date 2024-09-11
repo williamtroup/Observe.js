@@ -11,6 +11,11 @@
  */
 
 
+export type StringToJson = {
+    parsed: boolean;
+    object: any;
+};
+
 export type Configuration = {
     safeMode?: boolean;
     domElementTypes?: string[] | string;

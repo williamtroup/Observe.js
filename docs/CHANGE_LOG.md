@@ -2,6 +2,7 @@
 
 ## Version 1.1.0:
 - Improved the HTML testing files.
+- Improved event assignments, and re-organized the code into separate files.
 
 <br>
 
