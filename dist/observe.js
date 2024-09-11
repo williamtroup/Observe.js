@@ -272,7 +272,7 @@ var Trigger;
             }
             if (Is.defined(s.cachedObject)) {
                 Trigger.customEvent(s.options.events.onStart, u);
-                s.timer = setInterval((() => {
+                s.timerId = setInterval((() => {
                     a(i, o);
                 }), i.timeout);
                 t[o] = s;
@@ -389,7 +389,7 @@ var Trigger;
             const r = t[e].options;
             if (r.allowCanceling || n) {
                 Trigger.customEvent(r.events.onCancel, e);
-                clearInterval(t[e].timer);
+                clearInterval(t[e].timerId);
                 delete t[e];
             }
         }

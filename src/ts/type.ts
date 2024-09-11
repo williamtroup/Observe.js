@@ -57,5 +57,5 @@ export type ObserveWatch = {
     domElementId: string;
     cachedObject: any;
     originalObject: any;
-    timer: number;
+    timerId: number;
 };

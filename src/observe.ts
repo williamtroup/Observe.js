@@ -137,7 +137,7 @@ import { Log } from "./ts/area/log";
             if ( Is.defined( watch.cachedObject ) ) {
                 Trigger.customEvent( watch.options.events!.onStart!, startWatchObject );
 
-                watch.timer = setInterval( () => {
+                watch.timerId = setInterval( () => {
                     watchTimer( watchOptions, storageId );
                 }, watchOptions.timeout );
     
@@ -286,7 +286,7 @@ import { Log } from "./ts/area/log";
 
             if ( watchOptions.allowCanceling || _watches_Cancel ) {
                 Trigger.customEvent( watchOptions.events!.onCancel!, storageId );
-                clearInterval( _watches[ storageId ].timer );
+                clearInterval( _watches[ storageId ].timerId );
                 
                 delete _watches[ storageId ];
             }
