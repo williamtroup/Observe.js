@@ -4,7 +4,7 @@
  * A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.
  * 
  * @file        observe.ts
- * @version     v1.0.1
+ * @version     v1.1.0
  * @author      Bunoon
  * @license     MIT License
  * @copyright   Bunoon 2024
@@ -14,22 +14,18 @@
 import {
     type WatchOptions,
     type Configuration,
-    type ObserveWatch } from "./ts/type";
+    type ObserveWatch, 
+    type StringToJson } from "./ts/type";
 
 import { type PublicApi } from "./ts/api";
 import { Constant } from "./ts/constant";
 import { Char } from "./ts/data/enum";
 import { Is } from "./ts/data/is";
-import { Str } from "./ts/data/str";
 import { Config } from "./ts/options/config";
 import { Watch } from "./ts/options/watch";
 import { Trigger } from "./ts/area/trigger";
-
-
-type StringToJson = {
-    parsed: boolean;
-    object: any;
-};
+import { Default } from "./ts/data/default";
+import { Log } from "./ts/area/log";
 
 
 ( () => {
@@ -71,13 +67,13 @@ type StringToJson = {
             const bindingOptionsData: string = element.getAttribute( Constant.OBSERVE_JS_ATTRIBUTE_NAME )!;
 
             if ( Is.definedString( bindingOptionsData ) ) {
-                const watchOptionsJson: StringToJson = getObjectFromString( bindingOptionsData );
+                const watchOptionsJson: StringToJson = Default.getObjectFromString( bindingOptionsData, _configuration );
 
                 if ( watchOptionsJson.parsed && Is.definedObject( watchOptionsJson.object ) ) {
                     const watchOptions: WatchOptions = Watch.Options.get( watchOptionsJson.object );
 
                     if ( !Is.definedString( element.id ) ) {
-                        element.id = Str.newGuid();
+                        element.id = crypto.randomUUID();
                     }
 
                     if ( watchOptions.removeAttribute ) {
@@ -87,12 +83,12 @@ type StringToJson = {
                     createWatch( element, watchOptions, element.id );
 
                 } else {
-                    logError( _configuration.text!.attributeNotValidErrorText!.replace( "{{attribute_name}}", Constant.OBSERVE_JS_ATTRIBUTE_NAME ) );
+                    Log.error( _configuration.text!.attributeNotValidErrorText!.replace( "{{attribute_name}}", Constant.OBSERVE_JS_ATTRIBUTE_NAME ), _configuration );
                     result = false;
                 }
 
             } else {
-                logError( _configuration.text!.attributeNotSetErrorText!.replace( "{{attribute_name}}", Constant.OBSERVE_JS_ATTRIBUTE_NAME ) );
+                Log.error( _configuration.text!.attributeNotSetErrorText!.replace( "{{attribute_name}}", Constant.OBSERVE_JS_ATTRIBUTE_NAME ), _configuration );
                 result = false;
             }
         }
@@ -111,7 +107,7 @@ type StringToJson = {
         let storageId: string = null!;
 
         if ( Is.definedObject( object ) ) {
-            storageId = Str.newGuid();
+            storageId = crypto.randomUUID();
 
             const watchOptions: WatchOptions = Watch.Options.get( options );
             const watch: ObserveWatch = {} as ObserveWatch;
@@ -141,7 +137,7 @@ type StringToJson = {
             if ( Is.defined( watch.cachedObject ) ) {
                 Trigger.customEvent( watch.options.events!.onStart!, startWatchObject );
 
-                watch.timer = setInterval( function() {
+                watch.timerId = setInterval( () => {
                     watchTimer( watchOptions, storageId );
                 }, watchOptions.timeout );
     
@@ -191,7 +187,7 @@ type StringToJson = {
                     if ( isDomElement ) {
                         domElement.outerHTML = watch.cachedObject;
                     } else {
-                        watch.originalObject = getObjectFromString( cachedObject ).object;
+                        watch.originalObject = Default.getObjectFromString( cachedObject, _configuration ).object;
                     }
 
                 } else {
@@ -202,8 +198,8 @@ type StringToJson = {
                     Trigger.customEvent( watch.options.events!.onChange!, cachedObject, originalObjectJson );
                 } else {
 
-                    const oldValue: any = getObjectFromString( cachedObject ).object;
-                    const newValue: any = getObjectFromString( originalObjectJson ).object;
+                    const oldValue: any = Default.getObjectFromString( cachedObject, _configuration ).object;
+                    const newValue: any = Default.getObjectFromString( originalObjectJson, _configuration ).object;
 
                     if ( !Is.definedArray( oldValue ) && !Is.definedArray( newValue ) ) {
                         compareWatchObject( oldValue, newValue, watch );
@@ -290,7 +286,7 @@ type StringToJson = {
 
             if ( watchOptions.allowCanceling || _watches_Cancel ) {
                 Trigger.customEvent( watchOptions.events!.onCancel!, storageId );
-                clearInterval( _watches[ storageId ].timer );
+                clearInterval( _watches[ storageId ].timerId );
                 
                 delete _watches[ storageId ];
             }
@@ -314,54 +310,8 @@ type StringToJson = {
         return result;
     }
 
-
-    /*
-     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     * Default Parameter/Option Handling
-     * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     */
-
-    function getObjectFromString( objectString: any ) : StringToJson {
-        const result: StringToJson = {
-            parsed: true,
-            object: null
-        } as StringToJson;
-
-        try {
-            if ( Is.definedString( objectString ) ) {
-                result.object = JSON.parse( objectString );
-            }
-
-        } catch ( e1: any ) {
-            try {
-                result.object = eval( `(${objectString})` );
-
-                if ( Is.definedFunction( result.object ) ) {
-                    result.object = result.object();
-                }
-                
-            } catch ( e2: any ) {
-                if ( !_configuration.safeMode ) {
-                    logError( _configuration.text!.objectErrorText!.replace( "{{error_1}}",  e1.message ).replace( "{{error_2}}",  e2.message ) );
-                    result.parsed = false;
-                }
-                
-                result.object = null;
-            }
-        }
-
-        return result;
-    }
-
-    function logError( error: string ) : boolean {
-        let result: boolean = true;
-
-        if ( !_configuration.safeMode ) {
-            console.error( error );
-            result = false;
-        }
-
-        return result;
+    function isWatchDomIdAvailable( storageId: string, domElementId: string ) : boolean {
+        return _watches.hasOwnProperty( storageId ) && Is.definedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === domElementId;
     }
 
 
@@ -393,7 +343,7 @@ type StringToJson = {
                 } else {
         
                     for ( let storageId in _watches ) {
-                        if ( _watches.hasOwnProperty( storageId ) && Is.definedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                        if ( isWatchDomIdAvailable( storageId, id ) ) {
                             cancelWatchObject( storageId );
                 
                             result = true;
@@ -421,7 +371,7 @@ type StringToJson = {
                 } else {
         
                     for ( let storageId in _watches ) {
-                        if ( _watches.hasOwnProperty( storageId ) && Is.definedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                        if ( isWatchDomIdAvailable( storageId, id ) ) {
                             result = _watches[ storageId ];
                             break;
                         }
@@ -445,7 +395,7 @@ type StringToJson = {
                 } else {
         
                     for ( let storageId in _watches ) {
-                        if ( _watches.hasOwnProperty( storageId ) && Is.definedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                        if ( isWatchDomIdAvailable( storageId, id ) ) {
                             result = pauseWatchObject( storageId, milliseconds );
                             break;
                         }
@@ -478,7 +428,7 @@ type StringToJson = {
                 } else {
         
                     for ( let storageId in _watches ) {
-                        if ( _watches.hasOwnProperty( storageId ) && Is.definedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                        if ( isWatchDomIdAvailable( storageId, id ) ) {
                             _watches[ storageId ].options.starts = null!;
                             result = true;
                             break;
@@ -541,7 +491,7 @@ type StringToJson = {
          */
 
         getVersion: function () : string {
-            return "1.0.1";
+            return "1.1.0";
         }
     };
 
@@ -555,11 +505,9 @@ type StringToJson = {
     ( () => {
         _configuration = Config.Options.get();
 
-        document.addEventListener( "DOMContentLoaded", function() {
-            collectDOMObjects();
-        } );
+        document.addEventListener( "DOMContentLoaded", () => collectDOMObjects() );
 
-        window.addEventListener( "pagehide", function() {
+        window.addEventListener( "pagehide", () => {
             _watches_Cancel = true;
 
             cancelWatchesForObjects();

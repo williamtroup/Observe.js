@@ -1,8 +1,8 @@
-# Observe.js v1.0.1
+# Observe.js v1.1.0
 
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Observe.js%2C%20a%20free%20JavaScript%observe%builder&url=https://github.com/williamtroup/Observe.js&hashtags=javascript,html,observe)
-[![npm](https://img.shields.io/badge/npmjs-v1.0.1-blue)](https://www.npmjs.com/package/jobserve.js)
-[![nuget](https://img.shields.io/badge/nuget-v1.0.1-purple)](https://www.nuget.org/packages/jObserve.js/)
+[![npm](https://img.shields.io/badge/npmjs-v1.1.0-blue)](https://www.npmjs.com/package/jobserve.js)
+[![nuget](https://img.shields.io/badge/nuget-v1.1.0-purple)](https://www.nuget.org/packages/jObserve.js/)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://github.com/williamtroup/Observe.js/blob/main/LICENSE.txt)
 [![discussions Welcome](https://img.shields.io/badge/discussions-Welcome-red)](https://github.com/williamtroup/Observe.js/discussions)
 [![coded by William Troup](https://img.shields.io/badge/coded_by-William_Troup-yellow)](https://www.william-troup.com/)
@@ -12,15 +12,15 @@
 
 ## What features does Observe.js have?
 
-- Zero-dependencies and extremely lightweight!
-- Written in TypeScript, allowing greater support for React, Angular, and other libraries!
-- JS Object and HTML DOM Element watching!
-- Watch for specific property changes!
-- Cancel, Pause, and Resume support!
-- Full API available via public functions.
-- Fully configurable!
-- Fully configurable per watch!
-- Custom triggers for actions (when changes are detected, on cancellation, etc).
+- 😏 Zero-dependencies and extremely lightweight!
+- 🦾 Written in TypeScript, allowing greater support for React, Angular, and other libraries!
+- 💻 Full API available via public functions.
+- 🎥 JS Object and HTML DOM Element watching!
+- 🔍 Watch for specific property changes!
+- 🚀 Cancel, Pause, and Resume support!
+- ☑️ Fully configurable!
+- ☑️ Fully configurable per watch!
+- ❓ Custom triggers for actions (when changes are detected, on cancellation, etc).
 
 
 ## What browsers are supported?

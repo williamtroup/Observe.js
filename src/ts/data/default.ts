@@ -4,13 +4,15 @@
  * A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.
  * 
  * @file        default.ts
- * @version     v1.0.1
+ * @version     v1.1.0
  * @author      Bunoon
  * @license     MIT License
  * @copyright   Bunoon 2024
  */
 
 
+import { type Configuration, type StringToJson } from "../type";
+import { Log } from "../area/log";
 import { Char } from "./enum";
 import { Is } from "./is";
 
@@ -62,6 +64,38 @@ export namespace Default {
 
         } else {
             result = getArray( value, defaultValue );
+        }
+
+        return result;
+    }
+
+    export function getObjectFromString( objectString: any, configuration: Configuration ) : StringToJson {
+        const result: StringToJson = {
+            parsed: true,
+            object: null
+        } as StringToJson;
+
+        try {
+            if ( Is.definedString( objectString ) ) {
+                result.object = JSON.parse( objectString );
+            }
+
+        } catch ( e1: any ) {
+            try {
+                result.object = eval( `(${objectString})` );
+
+                if ( Is.definedFunction( result.object ) ) {
+                    result.object = result.object();configuration
+                }
+                
+            } catch ( e2: any ) {
+                if ( !configuration.safeMode ) {
+                    Log.error( configuration.text!.objectErrorText!.replace( "{{error_1}}",  e1.message ).replace( "{{error_2}}",  e2.message ), configuration );
+                    result.parsed = false;
+                }
+                
+                result.object = null;
+            }
         }
 
         return result;
