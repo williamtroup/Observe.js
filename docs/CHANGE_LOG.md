@@ -4,6 +4,7 @@
 - Improved the HTML testing files.
 - Improved event assignments, and re-organized the code into separate files.
 - The GUIDs generated now used the "crypto.randomUUID()" instead of the custom-built one (this is now RFC4122-compliant).
+- Updated all the NPM packages to the latest versions.
 
 <br>
 
