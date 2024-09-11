@@ -21,7 +21,6 @@ import { type PublicApi } from "./ts/api";
 import { Constant } from "./ts/constant";
 import { Char } from "./ts/data/enum";
 import { Is } from "./ts/data/is";
-import { Str } from "./ts/data/str";
 import { Config } from "./ts/options/config";
 import { Watch } from "./ts/options/watch";
 import { Trigger } from "./ts/area/trigger";
@@ -74,7 +73,7 @@ import { Log } from "./ts/area/log";
                     const watchOptions: WatchOptions = Watch.Options.get( watchOptionsJson.object );
 
                     if ( !Is.definedString( element.id ) ) {
-                        element.id = Str.newGuid();
+                        element.id = crypto.randomUUID();
                     }
 
                     if ( watchOptions.removeAttribute ) {
@@ -108,7 +107,7 @@ import { Log } from "./ts/area/log";
         let storageId: string = null!;
 
         if ( Is.definedObject( object ) ) {
-            storageId = Str.newGuid();
+            storageId = crypto.randomUUID();
 
             const watchOptions: WatchOptions = Watch.Options.get( options );
             const watch: ObserveWatch = {} as ObserveWatch;

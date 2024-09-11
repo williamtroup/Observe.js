@@ -41,23 +41,6 @@ var Is;
     e.definedDate = u;
 })(Is || (Is = {}));
 
-var Str;
-
-(e => {
-    function t() {
-        const e = [];
-        for (let t = 0; t < 32; t++) {
-            if (t === 8 || t === 12 || t === 16 || t === 20) {
-                e.push("-");
-            }
-            const n = Math.floor(Math.random() * 16).toString(16);
-            e.push(n);
-        }
-        return e.join("");
-    }
-    e.newGuid = t;
-})(Str || (Str = {}));
-
 var Log;
 
 (e => {
@@ -246,7 +229,7 @@ var Trigger;
                 if (o.parsed && Is.definedObject(o.object)) {
                     const e = Watch.Options.get(o.object);
                     if (!Is.definedString(t.id)) {
-                        t.id = Str.newGuid();
+                        t.id = crypto.randomUUID();
                     }
                     if (e.removeAttribute) {
                         t.removeAttribute(Constant.OBSERVE_JS_ATTRIBUTE_NAME);
@@ -266,7 +249,7 @@ var Trigger;
     function i(e, n, r = null) {
         let o = null;
         if (Is.definedObject(e)) {
-            o = Str.newGuid();
+            o = crypto.randomUUID();
             const i = Watch.Options.get(n);
             const s = {};
             let u = null;

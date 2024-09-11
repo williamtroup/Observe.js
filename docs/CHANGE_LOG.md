@@ -3,6 +3,7 @@
 ## Version 1.1.0:
 - Improved the HTML testing files.
 - Improved event assignments, and re-organized the code into separate files.
+- The GUIDs generated now used the "crypto.randomUUID()" instead of the custom-built one (this is now RFC4122-compliant).
 
 <br>
 

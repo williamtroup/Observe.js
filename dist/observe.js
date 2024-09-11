@@ -29,36 +29,19 @@ var Is;
         return t(e) && typeof e === "function";
     }
     e.definedFunction = i;
-    function s(e) {
+    function a(e) {
         return t(e) && typeof e === "number";
     }
-    e.definedNumber = s;
-    function a(e) {
+    e.definedNumber = a;
+    function s(e) {
         return n(e) && e instanceof Array;
     }
-    e.definedArray = a;
+    e.definedArray = s;
     function u(e) {
         return n(e) && e instanceof Date;
     }
     e.definedDate = u;
 })(Is || (Is = {}));
-
-var Str;
-
-(e => {
-    function t() {
-        const e = [];
-        for (let t = 0; t < 32; t++) {
-            if (t === 8 || t === 12 || t === 16 || t === 20) {
-                e.push("-");
-            }
-            const n = Math.floor(Math.random() * 16).toString(16);
-            e.push(n);
-        }
-        return e.join("");
-    }
-    e.newGuid = t;
-})(Str || (Str = {}));
 
 var Log;
 
@@ -248,7 +231,7 @@ var Trigger;
                 if (o.parsed && Is.definedObject(o.object)) {
                     const e = Watch.Options.get(o.object);
                     if (!Is.definedString(t.id)) {
-                        t.id = Str.newGuid();
+                        t.id = crypto.randomUUID();
                     }
                     if (e.removeAttribute) {
                         t.removeAttribute(Constant.OBSERVE_JS_ATTRIBUTE_NAME);
@@ -268,45 +251,45 @@ var Trigger;
     function i(e, n, r = null) {
         let o = null;
         if (Is.definedObject(e)) {
-            o = Str.newGuid();
+            o = crypto.randomUUID();
             const i = Watch.Options.get(n);
-            const a = {};
+            const s = {};
             let u = null;
-            a.options = i;
-            a.totalChanges = 0;
+            s.options = i;
+            s.totalChanges = 0;
             if (Is.definedString(r)) {
                 const e = document.getElementById(r);
                 if (Is.defined(e)) {
-                    a.domElementId = r;
-                    a.cachedObject = e.outerHTML;
-                    a.originalObject = e.outerHTML;
+                    s.domElementId = r;
+                    s.cachedObject = e.outerHTML;
+                    s.originalObject = e.outerHTML;
                     u = e.outerHTML;
                 }
             } else {
-                a.cachedObject = JSON.stringify(e);
-                a.originalObject = e;
+                s.cachedObject = JSON.stringify(e);
+                s.originalObject = e;
                 u = e;
             }
-            if (Is.defined(a.cachedObject)) {
-                Trigger.customEvent(a.options.events.onStart, u);
-                a.timer = setInterval((() => {
-                    s(i, o);
+            if (Is.defined(s.cachedObject)) {
+                Trigger.customEvent(s.options.events.onStart, u);
+                s.timer = setInterval((() => {
+                    a(i, o);
                 }), i.timeout);
-                t[o] = a;
+                t[o] = s;
             }
         }
         return o;
     }
-    function s(e, t) {
+    function a(e, t) {
         const n = new Date;
         if (!Is.definedDate(e.starts) || n >= e.starts) {
-            a(t);
+            s(t);
             if (Is.definedDate(e.expires) && n >= e.expires) {
                 c(t);
             }
         }
     }
-    function a(n) {
+    function s(n) {
         if (t.hasOwnProperty(n)) {
             const r = t[n];
             const o = Is.definedString(r.domElementId);
@@ -320,23 +303,23 @@ var Trigger;
                     Trigger.customEvent(r.options.events.onRemove, r.domElementId);
                 }
             }
-            const s = r.cachedObject;
-            const a = r.originalObject;
-            const l = !o ? JSON.stringify(a) : a;
-            if (s !== l) {
+            const a = r.cachedObject;
+            const s = r.originalObject;
+            const l = !o ? JSON.stringify(s) : s;
+            if (a !== l) {
                 if (r.options.reset) {
                     if (o) {
                         i.outerHTML = r.cachedObject;
                     } else {
-                        r.originalObject = Default2.getObjectFromString(s, e).object;
+                        r.originalObject = Default2.getObjectFromString(a, e).object;
                     }
                 } else {
                     r.cachedObject = l;
                 }
                 if (o) {
-                    Trigger.customEvent(r.options.events.onChange, s, l);
+                    Trigger.customEvent(r.options.events.onChange, a, l);
                 } else {
-                    const t = Default2.getObjectFromString(s, e).object;
+                    const t = Default2.getObjectFromString(a, e).object;
                     const n = Default2.getObjectFromString(l, e).object;
                     if (!Is.definedArray(t) && !Is.definedArray(n)) {
                         u(t, n, r);
