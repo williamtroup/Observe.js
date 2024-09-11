@@ -2,14 +2,14 @@
 
 ## Version 1.1.0:
 - Improved the HTML testing files.
-- Improved event assignments, and re-organized the code into separate files.
+- Improved event assigning, and re-organized the code into separate files.
 - The GUIDs generated now used the "crypto.randomUUID()" instead of the custom-built one (this is now RFC4122-compliant).
 - Updated all the NPM packages to the latest versions.
 - Moved all event assignments to use lambdas.
 - Updates to the README files to make the features stand out.
 - Added an ignore path for ".DS_Store" files when packing the NuGet package.
 - Removed replicated conditions to check for DOM elements.
-- Internal renames to reflected the correct return types.
+- Internal renames to reflect the correct return types.
 
 <br>
 
