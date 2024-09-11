@@ -16,15 +16,15 @@ Observe.js
 
 <h1>What features does Observe.js have?</h1>
 
-- Zero-dependencies and extremely lightweight!
-- Written in TypeScript, allowing greater support for React, Angular, and other libraries!
-- JS Object and HTML DOM Element watching!
-- Watch for specific property changes!
-- Cancel, Pause, and Resume support!
-- Full API available via public functions.
-- Fully configurable!
-- Fully configurable per watch!
-- Custom triggers for actions (when changes are detected, on cancellation, etc).
+- 😏 Zero-dependencies and extremely lightweight!
+- 🦾 Written in TypeScript, allowing greater support for React, Angular, and other libraries!
+- 💻 Full API available via public functions.
+- 🎥 JS Object and HTML DOM Element watching!
+- 🔍 Watch for specific property changes!
+- 🚀 Cancel, Pause, and Resume support!
+- ☑️ Fully configurable!
+- ☑️ Fully configurable per watch!
+- ❓ Custom triggers for actions (when changes are detected, on cancellation, etc).
 <br />
 <br />
 

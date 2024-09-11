@@ -6,6 +6,7 @@
 - The GUIDs generated now used the "crypto.randomUUID()" instead of the custom-built one (this is now RFC4122-compliant).
 - Updated all the NPM packages to the latest versions.
 - Moved all event assignments to use lambdas.
+- Updates to the README files to make the features stand out.
 
 <br>
 
