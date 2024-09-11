@@ -310,6 +310,10 @@ import { Log } from "./ts/area/log";
         return result;
     }
 
+    function isWatchDomIdAvailable( storageId: string, domElementId: string ) : boolean {
+        return _watches.hasOwnProperty( storageId ) && Is.definedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === domElementId;
+    }
+
 
 	/*
 	 * ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -339,7 +343,7 @@ import { Log } from "./ts/area/log";
                 } else {
         
                     for ( let storageId in _watches ) {
-                        if ( _watches.hasOwnProperty( storageId ) && Is.definedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                        if ( isWatchDomIdAvailable( storageId, id ) ) {
                             cancelWatchObject( storageId );
                 
                             result = true;
@@ -367,7 +371,7 @@ import { Log } from "./ts/area/log";
                 } else {
         
                     for ( let storageId in _watches ) {
-                        if ( _watches.hasOwnProperty( storageId ) && Is.definedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                        if ( isWatchDomIdAvailable( storageId, id ) ) {
                             result = _watches[ storageId ];
                             break;
                         }
@@ -391,7 +395,7 @@ import { Log } from "./ts/area/log";
                 } else {
         
                     for ( let storageId in _watches ) {
-                        if ( _watches.hasOwnProperty( storageId ) && Is.definedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                        if ( isWatchDomIdAvailable( storageId, id ) ) {
                             result = pauseWatchObject( storageId, milliseconds );
                             break;
                         }
@@ -424,7 +428,7 @@ import { Log } from "./ts/area/log";
                 } else {
         
                     for ( let storageId in _watches ) {
-                        if ( _watches.hasOwnProperty( storageId ) && Is.definedString( _watches[ storageId ].domElementId ) && _watches[ storageId ].domElementId === id ) {
+                        if ( isWatchDomIdAvailable( storageId, id ) ) {
                             _watches[ storageId ].options.starts = null!;
                             result = true;
                             break;

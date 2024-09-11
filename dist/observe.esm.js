@@ -404,7 +404,10 @@ var Trigger;
         }
         return r;
     }
-    const d = {
+    function d(e, n) {
+        return t.hasOwnProperty(e) && Is.definedString(t[e].domElementId) && t[e].domElementId === n;
+    }
+    const p = {
         watch: function(e, t) {
             return i(e, t);
         },
@@ -416,7 +419,7 @@ var Trigger;
                     n = true;
                 } else {
                     for (let r in t) {
-                        if (t.hasOwnProperty(r) && Is.definedString(t[r].domElementId) && t[r].domElementId === e) {
+                        if (d(r, e)) {
                             c(r);
                             n = true;
                             break;
@@ -428,7 +431,7 @@ var Trigger;
         },
         cancelWatches: function() {
             l();
-            return d;
+            return p;
         },
         getWatch: function(e) {
             let n = null;
@@ -437,7 +440,7 @@ var Trigger;
                     n = t[e];
                 } else {
                     for (let r in t) {
-                        if (t.hasOwnProperty(r) && Is.definedString(t[r].domElementId) && t[r].domElementId === e) {
+                        if (d(r, e)) {
                             n = t[r];
                             break;
                         }
@@ -456,7 +459,7 @@ var Trigger;
                     r = g(e, n);
                 } else {
                     for (let o in t) {
-                        if (t.hasOwnProperty(o) && Is.definedString(t[o].domElementId) && t[o].domElementId === e) {
+                        if (d(o, e)) {
                             r = g(o, n);
                             break;
                         }
@@ -473,7 +476,7 @@ var Trigger;
                     }
                 }
             }
-            return d;
+            return p;
         },
         resumeWatch: function(e) {
             let n = false;
@@ -483,7 +486,7 @@ var Trigger;
                     n = true;
                 } else {
                     for (let r in t) {
-                        if (t.hasOwnProperty(r) && Is.definedString(t[r].domElementId) && t[r].domElementId === e) {
+                        if (d(r, e)) {
                             t[r].options.starts = null;
                             n = true;
                             break;
@@ -499,11 +502,11 @@ var Trigger;
                     t[e].options.starts = null;
                 }
             }
-            return d;
+            return p;
         },
         searchDomForNewWatches: function() {
             r();
-            return d;
+            return p;
         },
         setConfiguration: function(t) {
             if (Is.definedObject(t)) {
@@ -519,7 +522,7 @@ var Trigger;
                     e = Config.Options.get(r);
                 }
             }
-            return d;
+            return p;
         },
         getVersion: function() {
             return "1.1.0";
@@ -533,7 +536,7 @@ var Trigger;
             l();
         }));
         if (!Is.defined(window.$observe)) {
-            window.$observe = d;
+            window.$observe = p;
         }
     })();
 })();//# sourceMappingURL=observe.esm.js.map
