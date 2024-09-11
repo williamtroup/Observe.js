@@ -7,6 +7,7 @@
 - Updated all the NPM packages to the latest versions.
 - Moved all event assignments to use lambdas.
 - Updates to the README files to make the features stand out.
+- Added an ignore path for ".DS_Store" files when packing the NuGet package.
 
 <br>
 
