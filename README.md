@@ -2,15 +2,15 @@
 Observe.js
 
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Observe.js%2C%20a%20free%20JavaScript%observe%builder&url=https://github.com/williamtroup/Observe.js&hashtags=javascript,html,observe)
-[![npm](https://img.shields.io/badge/npmjs-v1.0.1-blue)](https://www.npmjs.com/package/jobserve.js)
-[![nuget](https://img.shields.io/badge/nuget-v1.0.1-purple)](https://www.nuget.org/packages/jObserve.js/)
+[![npm](https://img.shields.io/badge/npmjs-v1.1.0-blue)](https://www.npmjs.com/package/jobserve.js)
+[![nuget](https://img.shields.io/badge/nuget-v1.1.0-purple)](https://www.nuget.org/packages/jObserve.js/)
 [![license](https://img.shields.io/badge/license-MIT-green)](https://github.com/williamtroup/Observe.js/blob/main/LICENSE.txt)
 [![discussions Welcome](https://img.shields.io/badge/discussions-Welcome-red)](https://github.com/williamtroup/Observe.js/discussions)
 [![coded by William Troup](https://img.shields.io/badge/coded_by-William_Troup-yellow)](https://www.william-troup.com/)
 </h1>
 
 > <p align="center">A lightweight JavaScript library that allows developers to keep track of changes to JavaScript objects and/or DOM elements.</p>
-> <p align="center">v1.0.1</p>
+> <p align="center">v1.1.0</p>
 <br />
 <br>
 
